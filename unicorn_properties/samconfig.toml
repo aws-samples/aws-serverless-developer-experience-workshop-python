@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+disable_rollback = true
+stack_name = "uni-prop-local-properties"
+s3_prefix = "uni-prop-local-properties"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Stage=\"Local\""
+resolve_s3 = true
+resolve_image_repositories = true

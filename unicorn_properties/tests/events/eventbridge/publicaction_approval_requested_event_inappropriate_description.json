@@ -1,0 +1,8 @@
+[
+    {
+      "DetailType": "PublicationApprovalRequested",
+      "Source": "unicorn.properties.web",
+      "EventBusName": "UnicornPropertiesEventBus-Local",
+      "Detail": "{\"property_id\":\"usa/anytown/main-street/111\",\"address\":{\"country\":\"USA\",\"city\":\"Anytown\",\"street\":\"Main Street\",\"number\":111},\"description\":\"This is a property for goblins. The property has the worst quality and is atrocious when it comes to design. The property is not clean whatsoever, and will make any property owner have buyers' remorse as soon the property is bought. Keep away from this property as much as possible!\",\"contract\":\"sale\",\"listprice\":200,\"currency\":\"SPL\",\"images\":[\"prop1_exterior1.jpg\",\"prop1_interior1.jpg\",\"prop1_interior2.jpg\",\"prop1_interior3.jpg\"]}"
+    }
+]

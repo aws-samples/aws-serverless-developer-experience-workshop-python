@@ -1,0 +1,137 @@
+Comment: >-
+  The property approval workflow ensures that its images and content is safe
+  to publish and that there is an approved contract in place before the listing is
+  made available to the public through the Unicorn Properties website.
+StartAt: VerifyContractExists
+
+States:
+  VerifyContractExists:
+      Type: Task
+      Resource: arn:aws:states:::lambda:invoke
+      InputPath: $.detail
+      ResultPath: $.contract_exists_check
+      Parameters:
+        Payload:
+          Input.$: $
+        FunctionName: ${ContractExistsChecker}
+      Next: CheckImageIntegrity
+      Catch:
+        - ErrorEquals:
+            - ContractStatusNotFoundException
+          Next: NotFound
+      Comment: >-
+        ContractExistsChecker checks to see if a contract for a psecified
+        property  exists.
+  
+  NotFound:
+    Type: Fail
+
+  CheckImageIntegrity:
+    Type: Map
+    Parameters:
+      ImageName.$: "$$.Map.Item.Value"
+    Iterator:
+      StartAt: CheckForUnsafeContentInImages
+      States:
+        CheckForUnsafeContentInImages:
+          Type: Task
+          End: true
+          Parameters:
+            Image:
+              S3Object:
+                Bucket: ${ImageUploadBucketName}
+                Name.$: "$.ImageName"
+          Resource: arn:aws:states:::aws-sdk:rekognition:detectModerationLabels
+    Next: CheckDescriptionSentiment
+    Comment: >-
+      Loop through all the images for the property and ensure they don't have
+      unsafe content.
+    ItemsPath: "$.detail.images"
+    ResultPath: "$.imageModerations"
+  
+  CheckDescriptionSentiment:
+    Type: Task
+    Parameters:
+      LanguageCode: en
+      Text.$: $.detail.description
+    Resource: arn:aws:states:::aws-sdk:comprehend:detectSentiment
+    Next: ValidateContentIntegrity
+    ResultPath: "$.contentSentiment"
+
+  ValidateContentIntegrity:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    ResultPath: "$.validation_check"
+    ResultSelector :
+      validation_result.$: "$.Payload.validation_result"
+    Parameters:
+      Payload.$: $
+      FunctionName: ${ContentIntegrityValidator}
+    Retry:
+    - ErrorEquals:
+      - Lambda.ServiceException
+      - Lambda.AWSLambdaException
+      - Lambda.SdkClientException
+      IntervalSeconds: 2
+      MaxAttempts: 6
+      BackoffRate: 2
+    Next: IsContentSafe
+
+  IsContentSafe:
+    Type: Choice
+    Choices:
+    - Variable: $.validation_check.validation_result
+      StringEquals: PASS
+      Next: WaitForContractApproval
+    Default: PublicationEvaluationCompletedDeclined
+
+  PublicationEvaluationCompletedDeclined:
+    Type: Task
+    Resource: arn:aws:states:::events:putEvents
+    Parameters:
+      Entries:
+      - Detail:
+          property_id.$: "$.detail.property_id"
+          evaluation_result: "DECLINED"
+        DetailType: PublicationEvaluationCompleted
+        EventBusName: ${EventBusName}
+        Source: ${ServiceName}
+    Next: Declined
+  Declined:
+    Type: Succeed
+  
+  WaitForContractApproval:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke.waitForTaskToken
+    InputPath: "$.detail"
+    ResultPath: "$.status_check"
+    Parameters:
+      Payload:
+        Input.$: $
+        TaskToken.$: $$.Task.Token
+      FunctionName: ${WaitForContractApproval}
+    Retry:
+    - ErrorEquals:
+      - Lambda.ServiceException
+      - Lambda.AWSLambdaException
+      - Lambda.SdkClientException
+      IntervalSeconds: 2
+      MaxAttempts: 6
+      BackoffRate: 2
+    Next: PublicationEvaluationCompletedApproved
+    Comment: ContractStatusChecker
+
+  PublicationEvaluationCompletedApproved:
+    Type: Task
+    Resource: arn:aws:states:::events:putEvents
+    Parameters:
+      Entries:
+      - Detail:
+          property_id.$: "$.detail.property_id"
+          evaluation_result: "APPROVED"
+        DetailType: PublicationEvaluationCompleted
+        EventBusName: ${EventBusName}
+        Source: ${ServiceName}
+    Next: Approved
+  Approved:
+    Type: Succeed

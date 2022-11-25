@@ -1,0 +1,59 @@
+[
+  {
+      "PK": "PROPERTY#usa#anytown",
+      "SK": "main-street#111",
+      "country": "USA",
+      "city": "Anytown",
+      "street": "Main Street",
+      "number": 111,
+      "description": "This classic Anytown estate comes with a covetable lake view. The romantic and comfortable backyard is the perfect setting for unicorn get-togethers. The open concept Main Stable is fully equipped with all the desired amenities. Second floor features 6 straw bales including large Rainbow Suite with private training pool terrace and Jr Sparkles Suite.",
+      "contract": "sale",
+      "listprice": 200,
+      "currency": "SPL",
+      "images": [
+          "prop1_exterior1.jpg",
+          "prop1_interior1.jpg",
+          "prop1_interior2.jpg",
+          "prop1_interior3.jpg"
+      ],
+      "status": "NEW"
+  },
+  {
+      "PK": "PROPERTY#usa#main-town",
+      "SK": "main-street#222",
+      "country": "USA",
+      "city": "Main Town",
+      "street": "My Street",
+      "number": 222,
+      "description": "This picturesque Main Town property is ideally suited for the DIY enthusiast unicorns. The antique art-nouveau pillars at the entrance offer a reminder of historic times. This property comes uniquely suited with no electricity, offering a tranquil environment with no digital disruptions. The rooftop has only minor fire damages from fireworks incidents during the 1970s.",
+      "contract": "sale",
+      "listprice": 150,
+      "currency": "SPL",
+      "images": [
+          "prop2_exterior1.jpg",
+          "prop2_exterior2.jpg",
+          "prop2_interior1.jpg",
+          "prop2_interior2.jpg"
+      ],
+      "status": "NEW"
+  },
+  {
+      "PK": "PROPERTY#usa#anytown",
+      "SK": "main-street#333",
+      "country": "USA",
+      "city": "Anytown",
+      "street": "Main Street",
+      "number": 333,
+      "description": "State of the art mansion featuring the most luxurious facilities, not only of Anytown but the whole Anytown region. The garden is equipped with three separate landing pads; one for the owner, one for guests and one for employees of the owner. The estate has its own satellite dish receiver and is equipped with double fiber connections for high-speed internet. The house has both an indoor and an outdoor swimming pool with automated pool cleaning facilities.",
+      "contract": "sale",
+      "listprice": 250,
+      "currency": "SPL",
+      "images": [
+          "prop3_exterior1.jpg",
+          "prop3_interior1.jpg",
+          "prop3_interior2.jpg",
+          "prop3_interior3.jpg"
+      ],
+      "status": "NEW"
+  }
+]

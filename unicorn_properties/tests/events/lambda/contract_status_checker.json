@@ -1,0 +1,27 @@
+{
+    "TaskToken": "AQDEAAAAKgAAAAMAAAAAAAAAARiOOKKd+buOiVJU0RsyGctHVuxjnqzSR8qzoNVjIJWmzvM4wbscLH6byQBoI7gaGBNs868gn1nbupV/NhbOJdxtpihcN5C89dqQOexSc9DhTmCZcLAzi+7spQCMDJTVNmLPDAyUEOAyarKIkNYabsX+iuq4RDaxd8LIB+r9ZUXOHho=ZmlL0eZFBzXM322UOAGLo5vQbI5HtuLD7ZF1zCUCEdq95UyJPBDcs06JCcQgl+wgXlknlUIHprHVTzhKxrKSFQI9VDqGBvRNX9GVEcbaZVlHjZfOTC6sg5oSzX5uTe7FL5LP9eyk9RCbzdG/WDMtinUK2NVSIbBmTJ8E3OppBBd/ITNnnVGCBOpeqCEpVkuacI1EogtWRxTpngpgjBP29yn4gMz+XV17fpqZgx2k3Rg1opT0JXVEPysCRpCH1yzV8ZtMnsmvFPi8lw+Mpa1jqqkpUfD0Kgpz6KDR08cJZfAL2DYariw2YEfICDFCKgvv3878Xi4Tj7TFTkFBR62SnRDf9ntbmP+gPfKUhscyaOU0t/u1o0zz4ja3Oft75g++W2X1rEY6n28+FUOtmgxhtdICdrhka1ozlYrIx4kyKhXBLb6p1bC8HQ7rPxpmIzAXvFDoL6z2MhKnD/eCWquU545fCPWrVC8K5AmW72a5QLVj9RtUxdCuoPVu4/LHF9UV7NClEGt4+GmxSz2nMYIk",
+    "Payload": {
+        "version": "0",
+        "id": "0bb7ae26-5950-fb3e-f011-fee8ded20b07",
+        "detail-type": "PublicationApprovalRequested",
+        "source": "unicorn.properties.web",
+        "account": "123456789012",
+        "time": "2022-08-17T05:35:21Z",
+        "region": "ap-southeast-2",
+        "resources": [],
+        "detail": {
+            "property_id": "usa/anytown/main-street/123",
+            "country": "USA",
+            "city": "Anytown",
+            "street": "Main Street",
+            "number": 123,
+            "description": "This classic Anytown estate comes with a covetable lake view. The romantic and comfortable backyard is the perfect setting for unicorn get-togethers. The open concept Main Stable is fully equipped with all the desired amenities. Second floor features 6 straw bales including large Rainbow Suite with private training pool terrace and Jr Sparkles Suite.",
+            "contract": "sale",
+            "listprice": 200.0,
+            "currency": "SPL",
+            "images": [
+                "usa/anytown/main-street-123-0d61b4e3"
+            ]
+        }
+    }
+}

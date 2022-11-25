@@ -1,0 +1,8 @@
+[
+  {
+    "DetailType": "ContractStatusChanged",
+    "Source": "unicorn.contracts",
+    "EventBusName": "UnicornPropertiesEventBus-Local",
+    "Detail": "{ \"contract_updated_on\": \"10/08/2022 19:56:30\", \"contract_id\": \"9183453b-d284-4466-a2d9-f00b1d569ad7\", \"property_id\": \"usa/anytown/main-street/222\", \"contract_status\": \"APPROVED\" }"
+  }
+]

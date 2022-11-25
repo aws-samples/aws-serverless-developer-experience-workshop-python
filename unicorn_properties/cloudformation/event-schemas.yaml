@@ -1,0 +1,203 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description: 'Event Schemas for use by the Property Service'
+Resources:
+  UnicornPropertiesEventRegistry:
+    Type: AWS::EventSchemas::Registry
+    Properties: 
+      Description: 'Event schemas for Unicorn Properties'
+      RegistryName: 'unicorn.contracts'
+  UnicornWebEventRegistry:
+    Type: AWS::EventSchemas::Registry
+    Properties: 
+      Description: 'Event schemas for Unicorn Web'
+      RegistryName: 'unicorn.web'
+  ContractApprovedEventSchema:
+    Type: AWS::EventSchemas::Schema
+    Properties:
+      SchemaName: 'unicorn.contracts@ContractStatusChanged'
+      Content: '
+        {
+          "openapi": "3.0.0",
+          "info": {
+            "version": "1.0.0",
+            "title": "ContractStatusChanged"
+          },
+          "paths": {},
+          "components": {
+            "schemas": {
+              "AWSEvent": {
+                "type": "object",
+                "required": ["detail-type", "resources", "detail", "id", "source", "time", "region", "version", "account"],
+                "x-amazon-events-detail-type": "ContractStatusChanged",
+                "x-amazon-events-source": "unicorn.contracts",
+                "properties": {
+                  "detail": {
+                    "$ref": "#/components/schemas/ContractStatusChanged"
+                  },
+                  "account": {
+                    "type": "string"
+                  },
+                  "detail-type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                }
+              },
+              "ContractStatusChanged": {
+                "type": "object",
+                "required": ["contract_last_modified_on", "contract_id", "contract_status", "property_id"],
+                "properties": {
+                  "contract_id": {
+                    "type": "string"
+                  },
+                  "contract_last_modified_on": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "contract_status": {
+                    "type": "string"
+                  },
+                  "property_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }'
+      Description: 'The schema for a property approval event'
+      RegistryName: !GetAtt UnicornPropertiesEventRegistry.RegistryName
+      Type: 'OpenApi3'
+  PublicationApprovalRequested:
+    Type: AWS::EventSchemas::Schema
+    Properties:
+      SchemaName: 'unicorn.web@PublicationApprovalRequested'
+      Content: '
+        {
+          "openapi": "3.0.0",
+          "info": {
+            "version": "1.0.0",
+            "title": "PublicationApprovalRequested"
+          },
+          "paths": {},
+          "components": {
+            "schemas": {
+              "AWSEvent": {
+                "type": "object",
+                "required": ["detail-type", "resources", "detail", "id", "source", "time", "region", "version", "account"],
+                "x-amazon-events-detail-type": "PublicationApprovalRequested",
+                "x-amazon-events-source": "unicorn.properties.web",
+                "properties": {
+                  "detail": {
+                    "$ref": "#/components/schemas/PublicationApprovalRequested"
+                  },
+                  "account": {
+                    "type": "string"
+                  },
+                  "detail-type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                }
+              },
+              "PublicationApprovalRequested": {
+                "type": "object",
+                "required": ["images", "address", "listprice", "contract", "description", "currency", "property_id", "status"],
+                "properties": {
+                  "address": {
+                    "$ref": "#/components/schemas/Address"
+                  },
+                  "contract": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "listprice": {
+                    "type": "string"
+                  },
+                  "property_id": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              },
+              "Address": {
+                "type": "object",
+                "required": ["country", "number", "city", "street"],
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }'
+      Description: 'The schema for a request to publish a property'
+      RegistryName: !GetAtt UnicornWebEventRegistry.RegistryName
+      Type: 'OpenApi3'

@@ -1,0 +1,17 @@
+{
+      "version": "0",
+      "id": "a1b2c3d4-5678-90ab-cdef-EXAMPLEaaaaa",
+      "detail-type": "PublicationEvaluationCompleted",
+      "source": "unicorn.properties",
+      "account": "111122223333",
+      "time": "2022-12-01T01:01:01Z",
+      "region": "ap-southeast-1",
+      "resources": [
+          "arn:aws:states:ap-southeast-1:111122223333:stateMachine:testStateMachine",
+          "arn:aws:states:ap-southeast-1:111122223333:execution:testmyStateMachine:a1b2c3d4-5678-90ab-cdef-EXAMPLEbbbbb"
+      ],
+      "detail": {
+          "evaluation_result": "APPROVED",
+          "property_id": "usa/anytown/main-street/126"
+      }
+  }

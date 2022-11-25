@@ -1,0 +1,81 @@
+{
+    "resource": "/request_approval",
+    "path": "/request_approval",
+    "body": "{\n    \"property_id\": \"usa/anytown/main-street/123\"\n}",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "Host": "test_api_id.execute-api.ap-southeast-1.amazonaws.com",
+        "User-Agent": "PyTest",
+        "X-Forwarded-For": "203.0.113.123",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "*/*"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate, br"
+        ],
+        "Cache-Control": [
+            "no-cache"
+        ],
+        "Content-Type": [
+            "application/json"
+        ],
+        "Host": [
+            "test_api_id.execute-api.ap-southeast-1.amazonaws.com"
+        ],
+        "User-Agent": [
+            "PyTest"
+        ],
+        "X-Forwarded-For": [
+            "203.0.113.123"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "resource",
+        "resourcePath": "/request_approval",
+        "httpMethod": "POST",
+        "extendedRequestId": "testReqId=",
+        "requestTime": "01/Dec/2022:01:01:01 +0000",
+        "path": "/Local/request_approval",
+        "accountId": "111122223333",
+        "protocol": "HTTP/1.1",
+        "stage": "Local",
+        "domainPrefix": "test_api_id",
+        "requestTimeEpoch": 1669856461000,
+        "requestId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "203.0.113.123",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "PyTest",
+            "user": null
+        },
+        "domainName": "test_api_id.execute-api.ap-southeast-1.amazonaws.com",
+        "apiId": "test_api_id"
+    },
+    "isBase64Encoded": false
+}

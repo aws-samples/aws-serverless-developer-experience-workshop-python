@@ -1,0 +1,84 @@
+### Linux ###
+**/*~
+**/.fuse_hidden*
+**/.directory
+**/.Trash-*
+**/.nfs*
+
+### OSX ###
+**/*.DS_Store
+**/.AppleDouble
+**/.LSOverride
+**/.DocumentRevisions-V100
+**/.fseventsd
+**/.Spotlight-V100
+**/.TemporaryItems
+**/.Trashes
+**/.VolumeIcon.icns
+**/.com.apple.timemachine.donotpresent
+
+### JetBrains IDEs ###
+**/*.iws
+**/.idea/
+**/.idea_modules/
+
+### Python ###
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.Python
+**/build/
+**/develop-eggs/
+**/dist/
+**/downloads/
+**/eggs/
+**/.eggs/
+**/parts/
+**/sdist/
+**/wheels/
+**/*.egg
+**/*.egg-info/
+**/.installed.cfg
+**/pip-log.txt
+**/pip-delete-this-directory.txt
+
+### Unit test / coverage reports ###
+**/.cache
+**/.coverage
+**/.hypothesis/
+**/.pytest_cache/
+**/.tox/
+**/*.cover
+**/coverage.xml
+**/htmlcov/
+**/nosetests.xml
+
+### pyenv ###
+**/.python-version
+
+### Environments ###
+**/.env
+**/.venv
+**/env/
+**/venv/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+
+### VisualStudioCode ###
+**/.vscode/
+**/.history
+
+### Windows ###
+# Windows thumbnail cache files
+**/Thumbs.db
+**/ehthumbs.db
+**/ehthumbs_vista.db
+**/Desktop.ini
+**/$RECYCLE.BIN/
+**/*.lnk
+
+### requirements.txt ###
+# We ignore Python's requirements.txt as we use Poetry instead
+**/requirements.txt
+**/.aws-sam

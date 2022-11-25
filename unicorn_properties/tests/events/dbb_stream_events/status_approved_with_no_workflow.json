@@ -1,0 +1,31 @@
+{
+  "Records": [
+    {
+      "eventID": "8178a46079764b693e00ef96c1f6cfa6",
+      "eventName": "MODIFY",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "ap-southeast-2",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1661270661.0,
+        "Keys": { "property_id": { "S": "usa/anytown/main-street/999" } },
+        "NewImage": {
+          "contract_last_modified_on": { "S": "23/08/2022 16:04:19" },
+          "contract_id": { "S": "b9c03b51-5b8c-47c8-9d76-223679cde774" },
+          "contract_status": { "S": "APPROVED" },
+          "property_id": { "S": "usa/anytown/main-street/999" }
+        },
+        "OldImage": {
+          "contract_last_modified_on": { "S": "23/08/2022 15:51:44" },
+          "contract_id": { "S": "b9c03b51-5b8c-47c8-9d76-223679cde774" },
+          "contract_status": { "S": "DRAFT" },
+          "property_id": { "S": "usa/anytown/main-street/999" }
+        },
+        "SequenceNumber": "200000000005392276079",
+        "SizeBytes": 339,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:ap-southeast-2:123456789012:table/aws-unicorn-properties-properties-service-local-ContractStatusTable-GPGCVR510KFA/stream/2022-08-23T15:46:44.107"
+    }
+  ]
+}

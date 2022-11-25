@@ -1,0 +1,16 @@
+{
+    "version": "0",
+    "id": "f849f683-76e1-1c84-669d-544a9828dfef",
+    "detail-type": "PublicationEvaluationCompleted",
+    "source": "unicorn.properties",
+    "account": "123456789012",
+    "time": "2022-08-16T06:33:05Z",
+    "region": "ap-southeast-2",
+    "resources": [],
+    "detail": {
+      "property_id": "usa/anytown/main-street/111",
+      "evaluation_result": "APPROVED|DECLINED",
+      "result_reason": "UNSAFE_IMAGE_DETECTED|BAD_SENTIMENT_DETECTED|..."
+    }
+  }
+  

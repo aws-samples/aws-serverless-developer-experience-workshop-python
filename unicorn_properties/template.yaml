@@ -1,0 +1,406 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Unicorn Properties Service - events synchronization with Contract Service +
+  Property Approval Workflow
+
+######################################
+# METADATA
+######################################
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - ES6000
+        - ES2003
+        - I3042
+        - I3011   # Required to ignore retention policy of inline-created SQS queue for ApprovalStateMachine's EventBridge Rule
+        - I3013   # Required to ignore retention policy of inline-created SQS queue for ApprovalStateMachine's EventBridge Rule
+
+######################################
+# PARAMETERS
+######################################
+Parameters:
+  Stage:
+    Type: String
+    Default: Local
+    AllowedValues:
+      - Local
+      - Dev
+      - Prod
+
+######################################
+# MAPPINGS
+######################################
+Mappings:
+  LogsRetentionPeriodMap:
+    Local:
+      Days: 3
+    Dev:
+      Days: 3
+    Prod:
+      Days: 14
+
+######################################
+# CONDITIONS
+######################################
+Conditions:
+  IsProd: !Equals
+    - !Ref Stage
+    - Prod
+
+######################################
+# GLOBALS
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+######################################
+Globals:
+  Function:
+    Runtime: python3.9
+    MemorySize: 128
+    Timeout: 15
+    Tracing: Active
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
+        EVENT_BUS: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_TRACE_DISABLED: "false"                                                                # Explicitly disables tracing, default
+        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"]                                        # Logs incoming event, default
+        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]                                           # Debug log sampling percentage, default
+        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+        LOG_LEVEL: INFO                                                                                   # Log level for Logger (INFO, DEBUG, etc.), default
+    Tags:
+      stage: !Ref Stage
+      project: AWS Serverless Developer Experience
+      service: Unicorn Properties Service
+
+######################################
+# RESOURCES
+######################################
+Resources:
+  ######################################
+  # LAMBDA FUNCTIONS
+  ######################################
+  ContractStatusChangedHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: properties_service.contract_status_changed.lambda_handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ContractStatusTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt PropertiesServiceDLQ.QueueName
+      Events:
+        StatusChanged:
+          Type: EventBridgeRule
+          Properties:
+            RuleName: properties.contstatuschangedhdr-contracts.contstatuschanged
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+            Pattern:
+              source:
+                - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+              detail-type:
+                - ContractStatusChanged
+            RetryPolicy:
+              MaximumRetryAttempts: 5
+              MaximumEventAgeInSeconds: 900
+            DeadLetterConfig:
+              Arn: !GetAtt PropertiesEventBusRuleDLQ.Arn
+      EventInvokeConfig:
+        DestinationConfig:
+          OnFailure:
+            Type: SQS
+            Destination: !GetAtt PropertiesServiceDLQ.Arn
+
+  PropertiesApprovalSyncFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: properties_service.properties_approval_sync.lambda_handler
+      Policies:
+        - DynamoDBStreamReadPolicy:
+            TableName: !Ref ContractStatusTable
+            StreamName: !Select
+              - 3
+              - !Split
+                - /
+                - !GetAtt ContractStatusTable.StreamArn
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt PropertiesServiceDLQ.QueueName
+        - Statement:
+            - Effect: Allow
+              Action:
+                - states:SendTaskSuccess
+              Resource:
+                - !Ref ApprovalStateMachine
+      Events:
+        Stream:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt ContractStatusTable.StreamArn
+            BatchSize: 100
+            StartingPosition: TRIM_HORIZON
+            MaximumRetryAttempts: 3
+            DestinationConfig:
+              OnFailure:
+                Destination: !GetAtt PropertiesServiceDLQ.Arn
+      EventInvokeConfig:
+        DestinationConfig:
+          OnFailure:
+            Type: SQS
+            Destination: !GetAtt PropertiesServiceDLQ.Arn
+
+  ContractExistsCheckerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: properties_service.contract_exists_checker.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ContractStatusTable
+
+  ContentIntegrityValidatorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: properties_service.contract_content_integrity_validator.lambda_handler
+
+  WaitForContractApprovalFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: properties_service.wait_for_contract_approval.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ContractStatusTable
+
+  ######################################
+  # DLQs
+  ######################################
+  PropertiesEventBusRuleDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      Tags:
+        - Key: project
+          Value: AWS Serverless Developer Experience
+        - Key: service
+          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+        - Key: stage
+          Value: !Ref Stage
+
+  PropertiesServiceDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      Tags:
+        - Key: project
+          Value: AWS Serverless Developer Experience
+        - Key: service
+          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+        - Key: stage
+          Value: !Ref Stage
+
+  ######################################
+  # STATE MACHINE
+  ######################################
+  ApprovalStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Name: !Sub "${AWS::StackName}-ApprovalStateMachine"
+      DefinitionUri: src/state_machine/property_approval.asl.yaml
+      Tracing:
+        Enabled: true
+      Policies:
+        - AWSXRayDaemonWriteAccess
+        - LambdaInvokePolicy:
+            FunctionName: !Ref WaitForContractApprovalFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ContentIntegrityValidatorFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ContractExistsCheckerFunction
+        - S3ReadPolicy:
+            BucketName: !Sub "{{resolve:ssm:/UniProp/${Stage}/ImagesBucket}}"
+        - ComprehendBasicAccessPolicy: {}
+        - RekognitionDetectOnlyPolicy: {}
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+        - Statement:
+            - Effect: Allow
+              Action:
+                - "logs:CreateLogDelivery"
+                - "logs:GetLogDelivery"
+                - "logs:UpdateLogDelivery"
+                - "logs:DeleteLogDelivery"
+                - "logs:ListLogDeliveries"
+                - "logs:PutResourcePolicy"
+                - "logs:DescribeResourcePolicies"
+                - "logs:DescribeLogGroups"
+                - "cloudwatch:PutMetricData"
+              Resource: "*"
+      Logging:
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt ApprovalStateMachineLogGroup.Arn
+        Level: ALL
+        IncludeExecutionData: true
+      Events:
+        PubApproReqEvent:
+          Type: EventBridgeRule
+          Properties:
+            RuleName: properties.pubapprovalwf-web.pubapprovalrequested
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+            Pattern:
+              source:
+                - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
+              detail-type:
+                - PublicationApprovalRequested
+            RetryPolicy:
+              MaximumRetryAttempts: 5
+              MaximumEventAgeInSeconds: 900
+            DeadLetterConfig:
+              Type: SQS
+              Destination: !GetAtt PropertiesServiceDLQ.Arn
+      DefinitionSubstitutions:
+        ContractExistsChecker: !GetAtt ContractExistsCheckerFunction.Arn
+        WaitForContractApproval: !GetAtt WaitForContractApprovalFunction.Arn
+        ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
+        ImageUploadBucketName: !Sub "{{resolve:ssm:/UniProp/${Stage}/ImagesBucket}}"
+        EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+        ServiceName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+
+  ######################################
+  # CLOUDWATCH LOG GROUPS
+  ######################################
+  ContractStatusChangedHandlerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContractStatusChangedHandlerFunction}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  PropertiesApprovalSyncFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${PropertiesApprovalSyncFunction}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  ContractExistsCheckerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContractExistsCheckerFunction}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  ContentIntegrityValidatorFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContentIntegrityValidatorFunction}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  WaitForContractApprovalFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${WaitForContractApprovalFunction}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  ApprovalStateMachineLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/states/${AWS::StackName}-ApprovalStateMachine"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  ######################################
+  # DYNAMODB TABLE
+  ######################################
+  ContractStatusTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: property_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: property_id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: project
+          Value: AWS Serverless Developer Experience
+        - Key: service
+          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+        - Key: stage
+          Value: !Ref Stage
+
+######################################
+# OUTPUTS
+######################################
+Outputs:
+  ContractStatusTableName:
+    Value: !Ref ContractStatusTable
+
+  ContractStatusChangedHandlerFunctionName:
+    Value: !Ref ContractStatusChangedHandlerFunction
+  ContractStatusChangedHandlerFunctionArn:
+    Value: !GetAtt ContractStatusChangedHandlerFunction.Arn
+
+  PropertiesApprovalSyncFunctionName:
+    Value: !Ref PropertiesApprovalSyncFunction
+  PropertiesApprovalSyncFunctionArn:
+    Value: !GetAtt PropertiesApprovalSyncFunction.Arn
+
+  ContractExistsCheckerFunctionName:
+    Value: !Ref ContractExistsCheckerFunction
+  ContractExistsCheckerFunctionArn:
+    Value: !GetAtt ContractExistsCheckerFunction.Arn
+
+  ContentIntegrityValidatorFunctionName:
+    Value: !Ref ContentIntegrityValidatorFunction
+  ContentIntegrityValidatorFunctionArn:
+    Value: !GetAtt ContentIntegrityValidatorFunction.Arn
+
+  WaitForContractApprovalFunctionName:
+    Value: !Ref WaitForContractApprovalFunction
+  WaitForContractApprovalFunctionArn:
+    Value: !GetAtt WaitForContractApprovalFunction.Arn

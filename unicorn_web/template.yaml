@@ -1,0 +1,315 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Unicorn Properties Services - web interface. Add, list and get details for Unicorn Properties.
+
+######################################
+# PARAMETERS
+######################################
+Parameters:
+  Stage:
+    Type: String
+    Default: Local
+    AllowedValues:
+      - Local
+      - Dev
+      - Prod
+
+######################################
+# CONDITIONS
+######################################   
+Conditions:
+  IsProd: !Equals 
+    - !Ref Stage
+    - Prod
+
+######################################
+# METADATA
+######################################
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - ES1007
+        - ES6000
+        - I3042
+
+######################################
+# Mappings
+######################################
+Mappings:
+  LogsRetentionPeriodMap:
+    Local:
+      Days: 3
+    Dev:
+      Days: 3
+    Prod:
+      Days: 14
+
+######################################
+# GLOBALS
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+######################################
+Globals:
+  Function:
+    Runtime: python3.9
+    Tracing: Active
+    Timeout: 15
+    MemorySize: 128
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+        DYNAMODB_TABLE: !Ref WebTable
+        EVENT_BUS: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
+        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
+        POWERTOOLS_TRACE_DISABLED: "false"                                                            # Explicitly disables tracing, default
+        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"]                                    # Logs incoming event, default
+        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]                                       # Debug log sampling percentage, default
+        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
+        POWERTOOLS_LOG_LEVEL: INFO                                                                    # Log level for Logger (INFO, DEBUG, etc.), default
+    Tags:
+      stage: !Ref Stage
+      project: AWS Serverless Developer Experience
+      service: Unicorn Web Service
+
+######################################
+# RESOURCES
+######################################
+Resources:
+  ######################################
+  # LAMBDA FUNCTIONS
+  ######################################
+  SearchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: search_service.property_search.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref WebTable
+      Events:
+        ListPropertiesByCity:
+          Type: Api
+          Properties:
+            Path: /search/{country}/{city}
+            Method: get
+            RestApiId: !Ref WebApi
+        ListPropertiesByStreet:
+          Type: Api
+          Properties:
+            Path: /search/{country}/{city}/{street}
+            Method: get
+            RestApiId: !Ref WebApi
+        PropertyDetails:
+          Type: Api
+          Properties:
+            Path: /properties/{country}/{city}/{street}/{number}
+            Method: get
+            RestApiId: !Ref WebApi
+
+  RequestApprovalFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: approvals_service.request_approval.lambda_handler
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+        - DynamoDBReadPolicy:
+            TableName: !Ref WebTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref WebTable
+      Events:
+        AddProperty:
+          Type: Api
+          Properties:
+            Path: /request_approval
+            Method: post
+            RestApiId: !Ref WebApi
+
+  PublicationApprovedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: approvals_service.publication_approved.lambda_handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref WebTable
+      Events:
+        ApprovalEvent:
+          Type: EventBridgeRule
+          Properties:
+            RuleName: web.publication_approved-properties.pub_eval_completed
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+            Pattern:
+              source:
+                - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+              detail-type:
+                - PublicationEvaluationCompleted
+            RetryPolicy:
+              MaximumRetryAttempts: 5
+              MaximumEventAgeInSeconds: 900
+            DeadLetterConfig:
+              Arn: !GetAtt WebEventBusRuleDLQ.Arn
+
+  ######################################
+  # DLQs
+  ######################################
+  WebEventBusRuleDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      Tags:
+        - Key: project
+          Value: AWS Serverless Developer Experience
+        - Key: service
+          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
+        - Key: stage
+          Value: !Ref Stage
+
+  ######################################
+  # API
+  ######################################
+  WebApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+      EndpointConfiguration:
+        Type: REGIONAL
+      TracingEnabled: true
+      MethodSettings:
+        - MetricsEnabled: true
+          ResourcePath: /*
+          HttpMethod: '*'
+          LoggingLevel: !If 
+            - IsProd
+            - ERROR
+            - INFO
+          ThrottlingBurstLimit: 10
+          ThrottlingRateLimit: 100
+      AccessLogSetting:
+        DestinationArn: !GetAtt WebApiLogGroup.Arn
+        Format: >
+          {"requestId":"$context.requestId",
+          "integration-error":"$context.integration.error",
+          "integration-status":"$context.integration.status",
+          "integration-latency":"$context.integration.latency",
+          "integration-requestId":"$context.integration.requestId",
+          "integration-integrationStatus":"$context.integration.integrationStatus",
+          "response-latency":"$context.responseLatency",
+          "status":"$context.status"}
+      Tags:
+        stage: !Ref Stage
+        project: AWS Serverless Developer Experience
+        service: Unicorn Web Service
+
+  ######################################
+  # DYNAMODB
+  ######################################
+  WebTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "PK"
+          AttributeType: "S"
+        - AttributeName: "SK"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "PK"
+          KeyType: "HASH"
+        - AttributeName: "SK"
+          KeyType: "RANGE"
+      BillingMode: PAY_PER_REQUEST
+
+  ######################################
+  # CLOUDWATCH LOG GROUPS
+  ######################################
+  WebApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  SearchFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${SearchFunction}"
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  RequestApprovalFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${RequestApprovalFunction}"
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  PublicationApprovedFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${PublicationApprovedFunction}"
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+######################################
+# OUTPUTS
+######################################
+Outputs:
+  SearchPropertiesByCity:
+    Description: "GET request to list all properties in a given city"
+    Value: !Sub "https://${WebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}"
+
+  SearchPropertiesByStreet:
+    Description: "GET request to list all properties in a given street"
+    Value: !Sub "https://${WebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}/{street}"
+
+  PropertyApproval:
+    Description: "POST request to add a property to the database"
+    Value: !Sub "https://${WebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/request_approval"
+
+  PropertyDetails:
+    Description: "GET request to get the full details of a single property"
+    Value: !Sub "https://${WebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/properties/{country}/{city}/{street}/{number}"
+
+  IsProd:
+    Description: Is Production?
+    Value: !If 
+      - IsProd
+      - "true"
+      - "false"
+
+  WebTableName:
+    Description: Name of the DynamoDB Table for Unicorn Web
+    Value: !Ref WebTable
+
+  ApiUrl:
+    Description: Web service API endpoint
+    Value: !Sub "https://${WebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
+
+  BaseUrl:
+    Description: Web service API endpoint
+    Value: !Sub "https://${WebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"

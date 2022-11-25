@@ -1,0 +1,16 @@
+{
+  "version": "0",
+  "account": "123456789012",
+  "region": "us-east-1",
+  "detail-type": "ContractStatusChanged",
+  "source": "unicorn.contracts",
+  "time": "2022-08-14T22:06:31Z",
+  "id": "c071bfbf-83c4-49ca-a6ff-3df053957145",
+  "resources": [],
+  "detail": {
+    "contract_updated_on": "10/08/2022 19:56:30",
+    "contract_id": "222",
+    "property_id": "usa/anytown/main-street/123",
+    "contract_status": "DRAFT"
+  }
+}

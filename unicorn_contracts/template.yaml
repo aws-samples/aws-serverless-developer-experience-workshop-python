@@ -1,0 +1,276 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Unicorn Contracts Service resources.
+
+######################################
+# METADATA
+######################################
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - I3042
+
+######################################
+# PARAMETERS
+######################################
+Parameters:
+  Stage:
+    Type: String
+    Default: Local
+    AllowedValues:
+      - Local
+      - Dev
+      - Prod
+    
+######################################
+# MAPPINGS
+######################################   
+Mappings:
+  LogsRetentionPeriodMap:
+    Local:
+      Days: 3
+    Dev:
+      Days: 3
+    Prod:
+      Days: 14
+
+######################################
+# CONDITIONS
+######################################   
+Conditions:
+  IsProd: !Equals 
+    - !Ref Stage
+    - Prod
+
+######################################
+# GLOBALS
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+######################################
+Globals:
+  Api:
+    OpenApiVersion: 3.0.1
+  Function:
+    Runtime: python3.9
+    MemorySize: 128
+    Timeout: 3
+    Tracing: Active
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        DYNAMODB_TABLE: !Ref ContractsTable
+        EVENT_BUS: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+        POWERTOOLS_TRACE_DISABLED: "false"                                                                # Explicitly disables tracing, default
+        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"]                                        # Logs incoming event, default
+        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]                                           # Debug log sampling percentage, default
+        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"  # Metric Namespace
+        LOG_LEVEL: INFO                                                                                   # Log level for Logger (INFO, DEBUG, etc.), default
+    Tags:
+      stage: !Ref Stage
+      project: AWS Serverless Developer Experience
+      service: Unicorn Contracts Service
+
+######################################
+# RESOURCES
+######################################
+Resources:
+  ######################################
+  # LAMBDA FUNCTIONS
+  ######################################
+  CreateContractFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: contracts_service.create_contract.lambda_handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ContractsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractsTable
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+      Events:
+        CreateContract:
+          Type: Api
+          Properties:
+            Path: /contracts
+            Method: post
+            RestApiId: !Ref ContractsApi
+  
+  UpdateContractFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: contracts_service.update_contract.lambda_handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ContractsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractsTable
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+      Events:
+        UpdateContract:
+          Type: Api
+          Properties:
+            Path: /contracts
+            Method: put
+            RestApiId: !Ref ContractsApi
+  
+  ######################################
+  # API GATEWAY REST API
+  ######################################
+  ContractsApi:
+    Type: AWS::Serverless::Api
+    DependsOn: ContractsApiGwAccountConfig
+    Properties:
+      StageName: !Ref Stage
+      EndpointConfiguration: 
+        Type: REGIONAL
+      TracingEnabled: true
+      MethodSettings:
+        - MetricsEnabled: true
+          ResourcePath: /*
+          HttpMethod: "*"
+          LoggingLevel: !If 
+            - IsProd
+            - ERROR
+            - INFO
+          ThrottlingBurstLimit: 10
+          ThrottlingRateLimit: 100
+      AccessLogSetting:
+        DestinationArn: !GetAtt ContractsApiLogGroup.Arn
+        Format: >
+          {"requestId":"$context.requestId",
+          "integration-error":"$context.integration.error",
+          "integration-status":"$context.integration.status",
+          "integration-latency":"$context.integration.latency",
+          "integration-requestId":"$context.integration.requestId",
+          "integration-integrationStatus":"$context.integration.integrationStatus",
+          "response-latency":"$context.responseLatency",
+          "status":"$context.status"}
+      Tags:
+        stage: !Ref Stage
+        project: AWS Serverless Developer Experience
+        service: Unicorn Contracts Service
+  
+  ContractsApiGwAccountConfig:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt ContractsApiAccessLogsRole.Arn
+
+  ######################################
+  # CLOUDWATCH LOG GROUPS
+  ######################################
+  ContractsApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  CreateContractFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${CreateContractFunction}"
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+  
+  UpdateContractFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${UpdateContractFunction}"
+      RetentionInDays: !FindInMap 
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  ######################################
+  # IAM ROLES
+  ######################################
+  ContractsApiAccessLogsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+
+  ApiInvokeLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !GetAtt CreateContractFunction.Arn
+                  - !GetAtt UpdateContractFunction.Arn
+
+  ######################################
+  # DYNAMODB TABLE
+  ######################################
+  ContractsTable:
+    Type: AWS::Serverless::SimpleTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      PrimaryKey:
+        Name: property_id
+        Type: String
+
+######################################
+# OUTPUTS
+######################################
+Outputs:
+  ApiUrl:
+    Description: Contract service API endpoint
+    Value: !Sub "https://${ContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
+
+  ContractsTableName:
+    Value: !Ref ContractsTable
+
+  CreateContractFunction:
+    Value: !GetAtt CreateContractFunction.Arn
+
+  UpdateContractFunction:
+    Value: !GetAtt UpdateContractFunction.Arn
+
+  IsProd:
+    Description: Is Production?
+    Value: !If 
+      - IsProd
+      - 'true'
+      - 'false'
+
+  BaseUrl:
+    Description: Web service API endpoint
+    Value: !Sub "https://${ContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"

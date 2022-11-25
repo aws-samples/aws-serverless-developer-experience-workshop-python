@@ -1,0 +1,57 @@
+{
+  "Records": [
+    {
+      "eventID": "ce16edd66e3812941e0d721e877c752a",
+      "eventName": "MODIFY",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "ap-southeast-2",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1661391844,
+        "Keys": {
+          "property_id": {
+            "S": "usa/anytown/main-street/111"
+          }
+        },
+        "NewImage": {
+          "contract_last_modified_on": {
+            "S": "25/08/2022 01:44:02"
+          },
+          "contract_id": {
+            "S": "ef3f01a5-79ec-411a-b59a-7dbb19208ead"
+          },
+          "contract_status": {
+            "S": "APPROVED"
+          },
+          "property_id": {
+            "S": "usa/anytown/main-street/111"
+          }
+        },
+        "OldImage": {
+          "contract_last_modified_on": {
+            "S": "24/08/2022 15:53:26"
+          },
+          "sfn_wait_approved_task_token": {
+            "S": "AQDIAAAAKgAAAAMAAAAAAAAAAapnwdMR3Z7RAg3IavSq2hbHt+CZPIQYaakFO6Em9Ik00VsGcaznxotIUGB2t7kihvuu/ffeoF+Z4yg4dggTxtzVwvRJwUDQr33/s/LhJyvEfNS57PXCv/CYFssJZ+28FRCAYbGekKaopYhaUlvq0taLGMaEfIbRBeLUmLHInDkPPDbwTA==N0LRrCP3bIFW1MPkMQC3kd35p8yflvpThHCeviqe3qeyKBX03+ziocuyvNHVpktMuECnHL3MN9a6BfpSM1KItYI+qdIC74ls83ALSjjOs8G8pOz4OudcliLYAvmZPRQXvFaw6aSMLfJJ7xRpEFSBwj1zDzbadMLtfudG78pmZX1m75/idMU5gz0UPkC87bVQN6Kyjl7obxAeUO4aoqGJeNz6WbJQtrsUhiQWVEH/AwjUAj9Q0DwRqRPqeWyrv4MIMKea/Xu9vhXbcS+zPWPq8onN9fyAqoMNh64K6wSGWxtAbaaByKxNpQu7o9ho/Iu/ME0KOAqyUK6vcnXOpIwIoMAZiG34KF4UnQsD0gIokQcGLbehMGRixvEJMDZIloLxkuH0jvpIvD5xokGxpHwiVMISi2XRJ92nnGmWTCLWqsqJlsg4We6snJp0Akw2w1Nt41lgY8kWkjxHNWEHDIMjzx1zeWiVa9b9aDDcckb71ouknJCN4gbxVs+yP30M97qnCEmMrc25Yq7cEXLhu5Dh"
+          },
+          "contract_id": {
+            "S": "ef3f01a5-79ec-411a-b59a-7dbb19208ead"
+          },
+          "contract_status": {
+            "S": "DRAFT"
+          },
+          "property_id": {
+            "S": "usa/anytown/main-street/111"
+          },
+          "sfn_contract_exists_task_token": {
+            "S": "AQDIAAAAKgAAAAMAAAAAAAAAAfL0WOHwLPeUsqktBZSKrsN4dJqIHsLoClU1UUkV+fstVYTXYkMNsmLNyfmrWPVOpQrtK0JKSw+SmuA0qq5qIx/bwz10JfWY7EUB8BHSW6AeYPdzOwHUDqSLs+OzCBl4HhqbeLWCadXOrXRylY5N6P0QOmjLUN/08v+8Ioz2DvKqa3pUbQ==InWjQiaSHWHtJgpe+1IxIipKGyk0vg+LqvlIKRiJENbE1Hz2zZK3aROztTCnHISR2rYBjTDihcn3S6QTqRrlhLvlkxBrxIIzz8UB4v4PaPLklUFPV8IEF0JpT4uhpRST2QV7RuHBZWgQOcMRpM+0yvHZ5Pq4YNzJHKpkvEW34Kv4wsduWbYG3Wl6Yej5TvAHNpoqi3PS+Z2/cih/EDQmTiznmwLPptnA0wc1RrhShT7Izm2hR/lINW9LcY9346oyxEK2riWm9v9kxMB8vg926nqdIKwwDNCsMrpQGgOsIfW+ECQNPTefuPWIwZ4ycvzWeEP6mdhZ+pusD4+XUDIZ5Jjok74YIxqHE2nSck+kLyqpXxcxBc6CRX+SUSCUuWyWEpjYx43qAfTRgLhm1r+DlI5sg1ARHe0oVUoeuvV7jX2b9AHarMEiPUxvTGqn/lRM9c8x55TskXxF9EE7AV0hCzCC+DiT3nj70LZ/7iSJZpyORH3B3KEEJQA/7BtE4LYPVWmIhbVjXr0mf67zVl6Y"
+          }
+        },
+        "SequenceNumber": "6547000000000005631781392",
+        "SizeBytes": 1869,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:ap-southeast-2:123456789012:table/aws-unicorn-properties-properties-service-local-ContractStatusTable-GPGCVR510KFA/stream/2022-08-23T15:46:44.107"
+    }
+  ]
+}
