@@ -13,14 +13,11 @@ from botocore.exceptions import ClientError
 from contracts_service.contract_status import ContractStatus
 from contracts_service.exceptions import (ContractNotFoundException,
                                   EventValidationException)
-from contracts_service.helper import get_current_date, get_event_body, publish_event
+from contracts_service.helper import get_current_date, get_event_body, publish_event, validate_event, get_env
 
 # Initialise Environment variables
-if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
-    raise EnvironmentError("SERVICE_NAMESPACE environment variable is undefined")
-
-if (DYNAMODB_TABLE := os.environ.get("DYNAMODB_TABLE")) is None:
-    raise EnvironmentError("DYNAMODB_TABLE environment variable is undefined")
+SERVICE_NAMESPACE = get_env("SERVICE_NAMESPACE")
+DYNAMODB_TABLE = get_env("DYNAMODB_TABLE")
 
 # Initialise PowerTools
 logger: Logger = Logger()
@@ -53,7 +50,7 @@ def lambda_handler(event, context):
 
     # Get contract and property details from the event
     try:
-        event_json = validate_event(event)
+        event_json = validate_event(event, {"property_id"})
     except EventValidationException as ex:
         return ex.apigw_return
 
@@ -155,36 +152,3 @@ def get_existing_contract(property_id: str) -> dict:
         raise error
     except KeyError as _:
         raise ContractNotFoundException() from _
-
-
-@tracer.capture_method
-def validate_event(event):
-    """Validates the body of the API Gateway event
-
-    Parameters
-    ----------
-    event : dict
-        API Gateway event
-
-    Returns
-    -------
-    dict
-        The body of the API
-
-    Raises
-    ------
-    EventValidationException
-        The ``Raises`` section is a list of all exceptions
-        that are relevant to the interface.
-    """
-    try:
-        event_json = get_event_body(event)
-    except Exception as ex:
-        logger.exception(ex)
-        raise EventValidationException() from ex
-
-    for i in ["property_id"]:
-        if i not in event_json.keys():
-            raise EventValidationException()
-
-    return event_json
