@@ -57,7 +57,7 @@ Conditions:
 ######################################
 Globals:
   Function:
-    Runtime: python3.9
+    Runtime: python3.10
     MemorySize: 128
     Timeout: 15
     Tracing: Active
