@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'csharp' ]
+        language: [ 'python' ]
 
     steps:
     - name: Checkout repository
@@ -35,8 +35,8 @@ jobs:
         
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@2ca79b6fa8d3ec278944088b4aa5f46912db5d63  #v2
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@2ca79b6fa8d3ec278944088b4aa5f46912db5d63  #v2
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
