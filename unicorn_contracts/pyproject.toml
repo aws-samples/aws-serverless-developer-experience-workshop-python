@@ -7,7 +7,7 @@ exclude = ["src/events/"]
 packages = [{ include = "contracts_service", from = "src" }]
 
 [tool.poetry.dependencies]
-`python = "^3.10"
+python = "^3.10"
 boto3 = "^1.26.121"
 aws-lambda-powertools = {extras = ["tracer"], version = "^2.14.1"}
 
