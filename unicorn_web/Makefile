@@ -22,3 +22,9 @@ clean:
 
 delete:
 	sam delete --no-prompts --region "$$(aws configure get region)"
+
+# NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
+ci_init:
+	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt --with dev
+	poetry run pip install -r src/requirements.txt
+	poetry install -n
