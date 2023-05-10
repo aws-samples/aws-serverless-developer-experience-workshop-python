@@ -13,15 +13,13 @@ python = "^3.9"
 boto3 = "^1.26.121"
 aws-lambda-powertools = {extras = ["tracer"], version = "^2.14.1"}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
 pytest-mock = "^3.7.0"
 pytest-cov = "^3.0.0"
 coverage = "^6.4.2"
 requests = "^2.28.1"
 moto = "^3.1.17"
-
-[tool.poetry.group.dev.dependencies]
 aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.14.1"}
 
 [build-system]
