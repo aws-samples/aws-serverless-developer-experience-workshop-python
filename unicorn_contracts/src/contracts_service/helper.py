@@ -124,3 +124,43 @@ def publish_event(contract, request_id):
                 }
             ]
         )
+
+@tracer.capture_method
+def validate_event(event, required_keys):
+    """Validates the body of the API Gateway event
+
+    Parameters
+    ----------
+    event : dict
+        API Gateway event
+    required_keys: set
+        Set of required field names
+
+    Returns
+    -------
+    dict
+        The body of the API
+
+    Raises
+    ------
+    EventValidationException
+        The ``Raises`` section is a list of all exceptions
+        that are relevant to the interface.
+    """
+
+    try:
+        event_json = get_event_body(event)
+    except Exception as ex:
+        logger.exception(ex)
+        raise EventValidationException() from ex
+
+    if not required_keys.issubset(event_json.keys()):
+        raise EventValidationException()
+
+    return event_json
+
+def get_env(name):
+  try:
+    return os.environ[name]
+  except KeyError:
+    raise EnvironmentError("%s environment variable is undefined" % name)
