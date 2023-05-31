@@ -27,28 +27,26 @@ event_bridge = boto3.client('events')
 request_dates = {}
 
 @tracer.capture_method
-def get_current_date(request_id=None):
-    """Return current date for this invocation. To keep the return value consistent while function is 
-    queried multiple times, function maintains the value returned for each request id and returns same 
-    value on subsequent requests.
+def get_stable_date(id=None):
+    """Return current date for this invocation. The return value remains consistent
+    across multiple requests for the same id. 
 
     Parameters
     ----------
-    request_id : str
-        context.aws_request_id
+    id : str
+        identifier of the local context, e.g. context.aws_request_id
 
     Returns
     -------
     str
-        Current date time i.e. '01/08/2022 20:36:30'
+        Current date time in iso format, e.g. '2023-02-10T10:04:14Z'
     """
-    if request_id is not None and request_id in request_dates.keys():
-        return request_dates[request_id]
-        
-    now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    logger.info(f"Time recorded: {now_str} for request {request_id}")
-    request_dates[request_id] = now_str
-    return now_str
+    if not (id in request_dates.keys()):
+        now_str = datetime.now().isoformat()
+        print(f"Time recorded: {now_str} for request {id}")
+        request_dates[id] = now_str        
+
+    return request_dates[id]
     
 
 @tracer.capture_method
@@ -116,7 +114,7 @@ def publish_event(contract, request_id):
     return event_bridge.put_events(
             Entries=[
                 {
-                    'Time': get_current_date(request_id),
+                    'Time': get_stable_date(request_id),
                     "Source": SERVICE_NAMESPACE,
                     "DetailType": "ContractStatusChanged",
                     "Detail": json.dumps(contract_status_changed_event),

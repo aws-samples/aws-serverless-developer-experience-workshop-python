@@ -11,7 +11,7 @@ from aws_lambda_powertools.tracing import Tracer
 
 from contracts_service.contract_status import ContractStatus
 from contracts_service.exceptions import EventValidationException
-from contracts_service.helper import get_current_date, get_event_body, publish_event
+from contracts_service.helper import get_stable_date, get_event_body, validate_event, publish_event, get_env
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
         return ex.apigw_return
 
     # Create new Contract
-    current_date: str = get_current_date(context.aws_request_id)
+    current_date: str = get_stable_date(context.aws_request_id)
 
     contract = {
         "property_id": event_json["property_id"],  # PK

@@ -13,7 +13,8 @@ from botocore.exceptions import ClientError
 from contracts_service.contract_status import ContractStatus
 from contracts_service.exceptions import (ContractNotFoundException,
                                   EventValidationException)
-from contracts_service.helper import get_current_date, get_event_body, publish_event
+
+from contracts_service.helper import get_stable_date, get_event_body, publish_event, validate_event, get_env
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
@@ -66,7 +67,7 @@ def lambda_handler(event, context):
         return ex.apigw_return
 
     #  Set current date
-    current_date = get_current_date(context.aws_request_id)
+    current_date = get_stable_date(context.aws_request_id)
 
     # define contract with approved status
     contract = {
