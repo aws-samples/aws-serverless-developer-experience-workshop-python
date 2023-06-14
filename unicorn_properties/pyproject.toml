@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-boto3 = "^1.26.151"
+boto3 = "^1.26.153"
 aws-lambda-powertools = {extras = ["tracer"], version = "^2.16.2"}
 aws-xray-sdk = "^2.12.0"
 
