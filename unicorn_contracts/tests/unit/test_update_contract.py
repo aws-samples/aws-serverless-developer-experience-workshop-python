@@ -18,12 +18,12 @@ from contracts_service.exceptions import EventValidationException
 def test_valid_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/update_valid_event.json')
     # Loading function here so that mocking works correctly
-    from contracts_service import update_contract
-    reload(update_contract)
+    from contracts_service import update_contract_function
+    reload(update_contract_function)
     create_ddb_table_contracts_with_entry(dynamodb)
 
     context = LambdaContext()
-    ret = update_contract.lambda_handler(apigw_event, context)
+    ret = update_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
@@ -34,12 +34,12 @@ def test_valid_event(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_body_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/update_missing_body_event.json')
-    from contracts_service import update_contract
-    reload(update_contract)
+    from contracts_service import update_contract_function
+    reload(update_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
-    ret = update_contract.lambda_handler(apigw_event, context)
+    ret = update_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 400
@@ -50,13 +50,13 @@ def test_missing_body_event(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_empty_dict_body_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/update_empty_dict_body_event.json')
-    from contracts_service import update_contract
-    reload(update_contract)
+    from contracts_service import update_contract_function
+    reload(update_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
     
-    ret = update_contract.lambda_handler(apigw_event, context)
+    ret = update_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 400
@@ -67,13 +67,13 @@ def test_empty_dict_body_event(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_wrong_event_data(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/update_wrong_event.json')
-    from contracts_service import update_contract
-    reload(update_contract)
+    from contracts_service import update_contract_function
+    reload(update_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
     
-    ret = update_contract.lambda_handler(apigw_event, context)
+    ret = update_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 400
@@ -86,9 +86,9 @@ def test_missing_ddb_env_var(dynamodb, eventbridge, mocker):
     del os.environ['DYNAMODB_TABLE']
     apigw_event = load_event('events/update_valid_event.json')
     # Loading function here so that mocking works correctly
-    from contracts_service import update_contract
+    from contracts_service import update_contract_function
     with pytest.raises(EnvironmentError):
-        reload(update_contract)
+        reload(update_contract_function)
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -114,11 +114,11 @@ def test_missing_sm_env_var(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict({"DYNAMODB_TABLE": "table27"}), clear=True)
 def test_wrong_dynamodb_table(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/update_valid_event.json')
-    from contracts_service import update_contract
-    reload(update_contract)
+    from contracts_service import update_contract_function
+    reload(update_contract_function)
     create_ddb_table_contracts_with_entry(dynamodb)
 
     context = LambdaContext()
     # with pytest.raises(ClientError):
-    ret = update_contract.lambda_handler(apigw_event, context)
+    ret = update_contract_function.lambda_handler(apigw_event, context)
     assert ret["statusCode"] == 400
