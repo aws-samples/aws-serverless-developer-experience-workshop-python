@@ -19,10 +19,10 @@ from .helper import load_event, return_env_vars_dict, create_ddb_table_propertie
 def test_handle_contract_status_changed_event(dynamodb, mocker):
     eventbridge_event = load_event('tests/events/lambda/contract_status_changed.json')
 
-    from properties_service import contract_status_changed
+    from properties_service import contract_status_changed_event_handler
     create_ddb_table_properties(dynamodb)
 
     context = LambdaContext()
-    ret = contract_status_changed.lambda_handler(eventbridge_event, context)
+    ret = contract_status_changed_event_handler.lambda_handler(eventbridge_event, context)
 
     assert ret["statusCode"] == 200
