@@ -16,7 +16,7 @@ def test_valid_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_approval_event.json')
 
     # Loading function here so that mocking works correctly.
-    import approvals_service.request_approval as app
+    import approvals_service.request_approval_function as app
 
     # Reload is required to prevent function setup reuse from another test 
     reload(app)
@@ -36,7 +36,7 @@ def test_broken_input_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_approval_bad_input.json')
 
     # Loading function here so that mocking works correctly.
-    import approvals_service.request_approval as app
+    import approvals_service.request_approval_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -56,7 +56,7 @@ def test_invalid_property_id(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_invalid_property_id.json')
 
     # Loading function here so that mocking works correctly.
-    import approvals_service.request_approval as app
+    import approvals_service.request_approval_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -76,7 +76,7 @@ def test_already_approved(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_already_approved.json')
 
     # Loading function here so that mocking works correctly.
-    import approvals_service.request_approval as app
+    import approvals_service.request_approval_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -96,7 +96,7 @@ def test_property_does_not_exist(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_non_existent_property.json')
 
     # Loading function here so that mocking works correctly.
-    import approvals_service.request_approval as app
+    import approvals_service.request_approval_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)

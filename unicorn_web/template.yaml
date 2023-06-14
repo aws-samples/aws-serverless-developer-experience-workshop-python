@@ -87,7 +87,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: search_service.property_search.lambda_handler
+      Handler: search_service.property_search_function.lambda_handler
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref WebTable
@@ -115,7 +115,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.request_approval.lambda_handler
+      Handler: approvals_service.request_approval_function.lambda_handler
       Policies:
         - EventBridgePutEventsPolicy:
             EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
@@ -135,7 +135,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.publication_approved.lambda_handler
+      Handler: approvals_service.publication_approved_event_handler.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref WebTable
