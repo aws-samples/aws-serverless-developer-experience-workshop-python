@@ -54,7 +54,7 @@ Mappings:
 ######################################
 Globals:
   Function:
-    Runtime: python3.9
+    Runtime: python3.10
     Tracing: Active
     Timeout: 15
     MemorySize: 128

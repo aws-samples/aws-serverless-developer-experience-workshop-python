@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "contracts_service"
-version = "0.1.0"
+version = "0.2.0"
 description = "Unicorn Properties Contact Service"
 authors = ["Amazon Web Services"]
 exclude = ["src/events/"]
@@ -9,7 +9,8 @@ packages = [{ include = "contracts_service", from = "src" }]
 [tool.poetry.dependencies]
 python = "3.10.11"
 boto3 = "^1.26.121"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.14.1"}
+aws-lambda-powertools = {extras = ["tracer"], version = "^2.16.2"}
+aws-xray-sdk = "^2.12.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
@@ -19,7 +20,6 @@ coverage = "^6.4.2"
 requests = "^2.28.1"
 moto = "^3.1.17"
 importlib-metadata = "^4.12.0"
-aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.14.1"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
