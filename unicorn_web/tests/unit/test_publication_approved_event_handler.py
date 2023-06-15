@@ -16,7 +16,7 @@ def test_property_approved(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/property_approved.json')
 
     # Loading function here so that mocking works correctly.
-    import  approvals_service.publication_approved as app
+    import  approvals_service.publication_approved_event_handler as app
 
     # Reload is required to prevent function setup reuse from another test 
     reload(app)

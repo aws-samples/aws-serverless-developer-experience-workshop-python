@@ -18,15 +18,15 @@ def test_valid_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/create_valid_event.json')
 
     # Loading function here so that mocking works correctly.
-    from contracts_service import create_contract
+    from contracts_service import create_contract_function
 
     # Reload is required to prevent function setup reuse from another test 
-    reload(create_contract)
+    reload(create_contract_function)
 
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
-    ret = create_contract.lambda_handler(apigw_event, context)
+    ret = create_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
@@ -37,12 +37,12 @@ def test_valid_event(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_body_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/create_missing_body_event.json')
-    from contracts_service import create_contract
-    reload(create_contract)
+    from contracts_service import create_contract_function
+    reload(create_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
-    ret = create_contract.lambda_handler(apigw_event, context)
+    ret = create_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 400
@@ -53,13 +53,13 @@ def test_missing_body_event(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_empty_dict_body_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/create_empty_dict_body_event.json')
-    from contracts_service import create_contract
-    reload(create_contract)
+    from contracts_service import create_contract_function
+    reload(create_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
 
-    ret = create_contract.lambda_handler(apigw_event, context)
+    ret = create_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 400
@@ -70,13 +70,13 @@ def test_empty_dict_body_event(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_wrong_event_data(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/create_wrong_event.json')
-    from contracts_service import create_contract
-    reload(create_contract)
+    from contracts_service import create_contract_function
+    reload(create_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
 
-    ret = create_contract.lambda_handler(apigw_event, context)
+    ret = create_contract_function.lambda_handler(apigw_event, context)
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 400
@@ -89,9 +89,9 @@ def test_missing_ddb_env_var(dynamodb, eventbridge, mocker):
     del os.environ['DYNAMODB_TABLE']
     apigw_event = load_event('events/create_valid_event.json')
     # Loading function here so that mocking works correctly
-    from contracts_service import create_contract
+    from contracts_service import create_contract_function
     with pytest.raises(EnvironmentError):
-        reload(create_contract)
+        reload(create_contract_function)
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -117,10 +117,10 @@ def test_missing_sm_env_var(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict({"DYNAMODB_TABLE": "table27"}), clear=True)
 def test_wrong_dynamodb_table(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/create_valid_event.json')
-    from contracts_service import create_contract
-    reload(create_contract)
+    from contracts_service import create_contract_function
+    reload(create_contract_function)
     create_ddb_table_contracts(dynamodb)
 
     context = LambdaContext()
     with pytest.raises(ClientError):
-        ret = create_contract.lambda_handler(apigw_event, context)
+        ret = create_contract_function.lambda_handler(apigw_event, context)
