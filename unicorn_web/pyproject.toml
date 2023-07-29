@@ -10,20 +10,20 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-boto3 = "^1.26.153"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.16.2"}
-requests = "2.31.0"
-crhelper = "2.0.11"
+boto3 = "^1.28.15"
+aws-lambda-powertools = {extras = ["tracer"], version = "^2.22.0"}
 aws-xray-sdk = "^2.12.0"
+requests = "2.31.0"
+crhelper = "^2.0.11"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.1.2"
-pytest-mock = "^3.7.0"
-pytest-cov = "^3.0.0"
-coverage = "^6.4.2"
+pytest = "^7.4.0"
+pytest-mock = "^3.11.1"
+pytest-cov = "^4.1.0"
+coverage = "^7.2.7"
 requests = "^2.31.0"
-moto = "^3.1.17"
-importlib-metadata = "^4.12.0"
+moto = "^4.1.13"
+importlib-metadata = "^6.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
