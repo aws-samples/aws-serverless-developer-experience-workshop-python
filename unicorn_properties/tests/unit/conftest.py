@@ -33,4 +33,4 @@ def eventbridge(aws_credentials):
 @pytest.fixture(scope='function')
 def stepfunction(aws_credentials):
     with mock_stepfunctions():
-        yield boto3.client("stepfunctions")
+        yield boto3.client("stepfunctions", region_name='ap-southeast-2')
