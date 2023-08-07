@@ -4,6 +4,7 @@ import inspect
 
 
 TABLE_NAME = 'table1'
+EVENTBUS_NAME = 'test-eventbridge'
 
 
 def load_event(filename):
@@ -105,3 +106,7 @@ def create_ddb_table_property_web(dynamodb):
         'status': 'PENDING',
     })
     return table
+
+def create_test_eventbridge_bus(eventbridge):
+    bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
+    return bus

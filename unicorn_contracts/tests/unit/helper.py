@@ -6,6 +6,7 @@ import inspect
 import json 
 
 TABLE_NAME = 'table1'
+EVENTBUS_NAME = 'test-eventbridge'
 
 
 def load_event(filename):
@@ -99,3 +100,8 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     }
     table.put_item(Item=contract)
     return table
+
+
+def create_test_eventbridge_bus(eventbridge):
+    bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
+    return bus

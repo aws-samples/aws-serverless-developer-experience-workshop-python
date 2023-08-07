@@ -11,7 +11,7 @@ from unittest import mock
 
 # from contracts_service.exceptions import EventValidationException
 
-from .helper import return_env_vars_dict
+from .helper import return_env_vars_dict, create_test_eventbridge_bus
 from .lambda_context import LambdaContext
 
 
@@ -32,6 +32,8 @@ def test_push_event(dynamodb, eventbridge, mocker):
 
     from contracts_service import helper
     reload(helper)
+
+    create_test_eventbridge_bus(eventbridge)
 
     ret = helper.publish_event(contract, context.aws_request_id)
     assert ret['FailedEntryCount'] == 0

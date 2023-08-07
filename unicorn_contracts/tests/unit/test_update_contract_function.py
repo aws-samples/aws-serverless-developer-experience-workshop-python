@@ -13,7 +13,7 @@ from unittest import mock
 # from contracts_service.exceptions import EventValidationException
 
 from .lambda_context import LambdaContext
-from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts, create_ddb_table_contracts_with_entry
+from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts, create_ddb_table_contracts_with_entry, create_test_eventbridge_bus
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -24,6 +24,7 @@ def test_valid_event(dynamodb, eventbridge, mocker):
     reload(update_contract_function)
 
     create_ddb_table_contracts_with_entry(dynamodb)
+    create_test_eventbridge_bus(eventbridge)
 
     context = LambdaContext()
     ret = update_contract_function.lambda_handler(apigw_event, context)
