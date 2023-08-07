@@ -3,7 +3,8 @@
 
 import json
 
-TABLE_NAME = "table1"
+TABLE_NAME = 'table1'
+
 
 def load_event(filename):
     with open(filename) as f:
@@ -47,5 +48,5 @@ def create_ddb_table_properties(dynamodb):
             'WriteCapacityUnits':1,
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     return table

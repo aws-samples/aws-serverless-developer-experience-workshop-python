@@ -5,7 +5,7 @@ import os
 import inspect
 import json 
 
-TABLE_NAME = "table1"
+TABLE_NAME = 'table1'
 
 
 def load_event(filename):
@@ -58,7 +58,7 @@ def create_ddb_table_contracts(dynamodb):
                 'WriteCapacityUnits':1
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     return table
 
 
@@ -82,7 +82,7 @@ def create_ddb_table_contracts_with_entry(dynamodb):
                 'WriteCapacityUnits':1
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     contract = {
         "property_id": "usa/anytown/main-street/123",  # PK
         "contact_created": "01/08/2022 20:36:30",

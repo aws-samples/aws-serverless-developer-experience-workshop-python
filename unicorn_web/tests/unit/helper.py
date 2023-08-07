@@ -3,7 +3,7 @@ import json
 import inspect
 
 
-TABLE_NAME = "table1"
+TABLE_NAME = 'table1'
 
 
 def load_event(filename):
