@@ -19,7 +19,7 @@ from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts
 @mock_stepfunctions
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_handle_contract_exists_checker_function(dynamodb, mocker):
-    stepfunctions_event = load_event('tests/events/lambda/contract_status_checker.json')
+    stepfunctions_event = load_event('tests/events/lambda/contract_exists_checker.json')
 
     from properties_service import contract_exists_checker_function
     reload(contract_exists_checker_function)
