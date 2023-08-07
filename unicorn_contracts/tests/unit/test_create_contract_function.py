@@ -1,12 +1,12 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-import json
 import os
-import pytest
-from unittest import mock
+import json
 from importlib import reload
 
+import pytest
+from unittest import mock
 from botocore.exceptions import ClientError
 
 from .lambda_context import LambdaContext

@@ -8,7 +8,7 @@ import boto3
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.logging import Logger
 
-from contracts_service.exceptions import EventValidationException, EventValidationException
+from contracts_service.exceptions import EventValidationException
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:

@@ -1,9 +1,11 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-import pytest
-import boto3
 import os
+
+import boto3
+
+import pytest
 from moto import mock_dynamodb, mock_events
 
 

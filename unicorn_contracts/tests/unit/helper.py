@@ -1,4 +1,6 @@
-import os, inspect, json 
+import os
+import inspect
+import json 
 
 TABLE_NAME = "table1"
 
