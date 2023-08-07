@@ -1,0 +1,10 @@
+{
+    "imageModerations": [
+        {
+            "ModerationLabels": []
+        }
+    ],
+    "contentSentiment": {
+        "Sentiment": "POSITIVE"
+    }
+}
