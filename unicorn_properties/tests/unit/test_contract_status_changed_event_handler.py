@@ -26,3 +26,19 @@ def test_contract_status_changed_event_handler(dynamodb, mocker):
     ret = contract_status_changed_event_handler.lambda_handler(eventbridge_event, context)
 
     assert ret["statusCode"] == 200
+
+
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_missing_property_id(dynamodb, mocker):
+    eventbridge_event = {'detail': {}}
+
+    from properties_service import contract_status_changed_event_handler
+    # Reload is required to prevent function setup reuse from another test 
+    reload(contract_status_changed_event_handler)
+
+    create_ddb_table_properties(dynamodb)
+
+    with pytest.raises(ClientError) as e:
+        contract_status_changed_event_handler.lambda_handler(eventbridge_event, LambdaContext())
+
+    assert 'ValidationException' in str(e.value)
