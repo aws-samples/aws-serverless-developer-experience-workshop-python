@@ -22,8 +22,7 @@ def test_contract_status_changed_event_handler(dynamodb, mocker):
 
     create_ddb_table_properties(dynamodb)
 
-    context = LambdaContext()
-    ret = contract_status_changed_event_handler.lambda_handler(eventbridge_event, context)
+    ret = contract_status_changed_event_handler.lambda_handler(eventbridge_event, LambdaContext())
 
     assert ret["statusCode"] == 200
 
