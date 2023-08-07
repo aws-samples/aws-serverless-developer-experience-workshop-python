@@ -88,7 +88,7 @@ def test_wrong_event_data(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_ddb_env_var(dynamodb, eventbridge, mocker):
     del os.environ['DYNAMODB_TABLE']
-    apigw_event = load_event('events/update_valid_event.json')
+    load_event('events/update_valid_event.json')
     # Loading function here so that mocking works correctly
     from contracts_service import update_contract_function
     with pytest.raises(EnvironmentError):
@@ -98,7 +98,7 @@ def test_missing_ddb_env_var(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_eb_env_var(dynamodb, eventbridge, mocker):
     del os.environ['EVENT_BUS']
-    apigw_event = load_event('events/update_valid_event.json')
+    load_event('events/update_valid_event.json')
     # Loading function here so that mocking works correctly
     from contracts_service import helper
     with pytest.raises(EnvironmentError):
@@ -108,7 +108,7 @@ def test_missing_eb_env_var(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_sm_env_var(dynamodb, eventbridge, mocker):
     del os.environ['SERVICE_NAMESPACE']
-    apigw_event = load_event('events/update_valid_event.json')
+    load_event('events/update_valid_event.json')
     # Loading function here so that mocking works correctly
     from contracts_service import helper
     with pytest.raises(EnvironmentError):

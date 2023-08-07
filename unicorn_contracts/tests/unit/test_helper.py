@@ -69,7 +69,7 @@ def test_get_event_body_bad_json(dynamodb, eventbridge, mocker):
     reload(create_contract_function)
 
     with pytest.raises(json.decoder.JSONDecodeError):
-        ret = create_contract_function.get_event_body(event)
+        create_contract_function.get_event_body(event)
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -83,4 +83,4 @@ def test_get_event_body_bad_type(dynamodb, eventbridge, mocker):
     reload(create_contract_function)
 
     with pytest.raises(TypeError):
-        ret = create_contract_function.get_event_body(event)
+        create_contract_function.get_event_body(event)
