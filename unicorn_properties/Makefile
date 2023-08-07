@@ -3,7 +3,7 @@ stackName := uni-prop-local-properties
 build:
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
-	sam build -c
+	sam build -c $(DOCKER_OPTS)
 
 deps:
 	poetry install
