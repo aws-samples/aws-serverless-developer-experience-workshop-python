@@ -2,15 +2,11 @@
 # SPDX-License-Identifier: MIT-0
 
 import os
-# import json
 from importlib import reload
 
-# import pytest
+import pytest
 from unittest import mock
-# from moto import mock_dynamodb, mock_events
-
-# from aws_lambda_powertools.event_handler.exceptions import InternalServerError
-# from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError
 
 from .lambda_context import LambdaContext
 from .helper import load_event, return_env_vars_dict, create_ddb_table_properties
