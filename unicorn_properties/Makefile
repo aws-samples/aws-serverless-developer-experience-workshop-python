@@ -16,7 +16,7 @@ sync:
 
 test: unit-test
 
-unit-test: deps
+unit-test:
 	poetry run pytest tests/unit/
 
 logs:
