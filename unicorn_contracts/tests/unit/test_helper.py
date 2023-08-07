@@ -1,13 +1,15 @@
-import json
 import os
+import json
+from importlib import reload
+
 import pytest
 from unittest import mock
-from importlib import reload
-from moto import mock_dynamodb, mock_events
+# from moto import mock_dynamodb, mock_events
+
+# from contracts_service.exceptions import EventValidationException
 
 from .helper import return_env_vars_dict
 from .lambda_context import LambdaContext
-from contracts_service.exceptions import EventValidationException
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
