@@ -35,3 +35,6 @@ addopts = "-ra -vv -W ignore::UserWarning --cov=approvals_service --cov=search_s
 testpaths = [
     "./tests/unit",
 ]
+
+[tool.ruff]
+line-length = 150

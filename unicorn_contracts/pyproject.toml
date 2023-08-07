@@ -33,3 +33,6 @@ testpaths = [
     "./tests/unit",
     "./tests/integration",
 ]
+
+[tool.ruff]
+line-length = 150
