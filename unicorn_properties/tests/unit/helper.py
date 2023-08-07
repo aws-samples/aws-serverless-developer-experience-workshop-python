@@ -50,3 +50,42 @@ def create_ddb_table_properties(dynamodb):
     )
     table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     return table
+
+
+def create_ddb_table_contracts_with_entry(dynamodb):
+    table = dynamodb.create_table(
+        TableName=TABLE_NAME,
+        KeySchema= [
+            {
+               'AttributeName': 'property_id',
+               'KeyType': 'HASH'
+            }
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'property_id',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+                'ReadCapacityUnits':1,
+                'WriteCapacityUnits':1
+        }
+    )
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
+    contract = {
+        "property_id": "usa/anytown/main-street/123",  # PK
+        "contact_created": "01/08/2022 20:36:30",
+        "contract_last_modified_on": "01/08/2022 20:36:30",
+        "contract_id": "11111111",
+        "address": {
+            "country": "USA",
+            "city": "Anytown",
+            "street": "Main Street",
+            "number": 123
+        },
+        "seller_name": "John Smith",
+        "contract_status": "DRAFT",
+    }
+    table.put_item(Item=contract)
+    return table

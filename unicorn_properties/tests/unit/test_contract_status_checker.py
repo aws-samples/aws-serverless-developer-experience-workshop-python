@@ -13,14 +13,20 @@ from moto import mock_stepfunctions
 # from botocore.exceptions import ClientError
 
 from .lambda_context import LambdaContext
-from .helper import load_event, return_env_vars_dict, create_ddb_table_properties
+from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts_with_entry
 
 
-# @mock_stepfunctions
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_handle_contract_status_changed_event(dynamodb, mocker):
-#     eventbridge_event = load_event('tests/events/lambda/contract_status_checker.json')
-#     from properties_service import contract_status_checker
-#     create_ddb_table_properties(dynamodb)
-#     ret = contract_status_checker.lambda_handler(eventbridge_event, LambdaContext())
-#     # assert ret["statusCode"] == 200
+@mock_stepfunctions
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_handle_contract_exists_checker_function(dynamodb, mocker):
+    stepfunctions_event = load_event('tests/events/lambda/contract_status_checker.json')
+
+    from properties_service import contract_exists_checker_function
+    reload(contract_exists_checker_function)
+
+    create_ddb_table_contracts_with_entry(dynamodb)
+
+    ret = contract_exists_checker_function.lambda_handler(stepfunctions_event, LambdaContext())
+
+    assert ret['property_id'] == stepfunctions_event['Input']['property_id']
+    assert ret['address']['country'] == stepfunctions_event['Input']['country']
