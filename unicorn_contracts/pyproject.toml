@@ -3,8 +3,9 @@ name = "contracts_service"
 version = "0.2.0"
 description = "Unicorn Properties Contact Service"
 authors = ["Amazon Web Services"]
-exclude = ["src/events/"]
-packages = [{ include = "contracts_service", from = "src" }]
+packages = [
+    { include = "contracts_service", from = "src" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"

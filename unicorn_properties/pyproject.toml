@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "property_service"
+name = "properties_service"
 version = "0.1.0"
 description = "Unicorn Properties Property Service"
 authors = ["Amazon Web Services"]
 packages = [
     { include = "properties_service", from = "src" },
-    { include = "schema", from = "src" }
+    { include = "schema", from = "src" },
 ]
 
 [tool.poetry.dependencies]
