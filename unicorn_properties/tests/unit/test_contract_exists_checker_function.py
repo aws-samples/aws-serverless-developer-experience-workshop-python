@@ -24,3 +24,20 @@ def test_existing_contract_exists_checker_function(dynamodb, mocker):
 
     assert ret['property_id'] == stepfunctions_event['Input']['property_id']
     assert ret['address']['country'] == stepfunctions_event['Input']['country']
+
+
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_missing_contract_exists_checker_function(dynamodb, mocker):
+    stepfunctions_event = load_event('tests/events/lambda/contract_status_checker.json')
+    stepfunctions_event['Input']['property_id'] = 'NOT/a/valid/CONTRACT'
+
+    from properties_service import contract_exists_checker_function
+    from properties_service.exceptions import ContractStatusNotFoundException
+    reload(contract_exists_checker_function)
+
+    create_ddb_table_contracts_with_entry(dynamodb)
+
+    with pytest.raises(ContractStatusNotFoundException) as errinfo:
+        contract_exists_checker_function.lambda_handler(stepfunctions_event, LambdaContext())
+
+    assert errinfo.value.message == 'No contract found for specified Property ID'
