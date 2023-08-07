@@ -84,7 +84,7 @@ def lambda_handler(event, context):
 
     Parameters
     ----------
-    event : API Gateway Lambda Proxy Request
+    event : EventBridge event payload
         The event passed to the function.
     context : AWS Lambda Context
         The context for the Lambda function.

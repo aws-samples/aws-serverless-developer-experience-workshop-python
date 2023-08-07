@@ -31,6 +31,7 @@ def test_valid_event(dynamodb, eventbridge, mocker):
     assert 'result' in data.keys()
     assert 'Approval Requested' in data['result']
 
+
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_broken_input_event(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_approval_bad_input.json')
@@ -50,6 +51,7 @@ def test_broken_input_event(dynamodb, eventbridge, mocker):
     assert ret['statusCode'] == 400
     assert 'message' in data.keys()
     assert 'unable' in data['message'].lower()
+
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_invalid_property_id(dynamodb, eventbridge, mocker):
@@ -71,6 +73,7 @@ def test_invalid_property_id(dynamodb, eventbridge, mocker):
     assert 'message' in data.keys()
     assert 'invalid' in data['message'].lower()
 
+
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_already_approved(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/request_already_approved.json')
@@ -90,6 +93,7 @@ def test_already_approved(dynamodb, eventbridge, mocker):
     assert ret['statusCode'] == 200
     assert 'result' in data.keys()
     assert 'already' in data['result'].lower()
+
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_property_does_not_exist(dynamodb, eventbridge, mocker):
