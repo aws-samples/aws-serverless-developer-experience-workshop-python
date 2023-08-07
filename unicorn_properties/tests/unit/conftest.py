@@ -6,7 +6,7 @@ import os
 import boto3
 
 import pytest
-from moto import mock_dynamodb, mock_events
+from moto import mock_dynamodb, mock_events, mock_stepfunctions
 
 
 @pytest.fixture(scope='function')
@@ -28,3 +28,9 @@ def dynamodb(aws_credentials):
 def eventbridge(aws_credentials):
     with mock_events():
         yield boto3.client('events', region_name='ap-southeast-2')
+
+
+@pytest.fixture(scope='function')
+def stepfunction(aws_credentials):
+    with mock_stepfunctions():
+        yield boto3.client("stepfunctions")
