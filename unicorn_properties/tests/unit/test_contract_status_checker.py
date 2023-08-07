@@ -1,15 +1,16 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-# import json
 import os
+# import json
+from importlib import reload
+
 # import pytest
 from unittest import mock
-from importlib import reload
-from moto import mock_dynamodb, mock_events, mock_stepfunctions
+from moto import mock_stepfunctions
 
-from aws_lambda_powertools.event_handler.exceptions import InternalServerError
-from botocore.exceptions import ClientError
+# from aws_lambda_powertools.event_handler.exceptions import InternalServerError
+# from botocore.exceptions import ClientError
 
 from .lambda_context import LambdaContext
 from .helper import load_event, return_env_vars_dict, create_ddb_table_properties
