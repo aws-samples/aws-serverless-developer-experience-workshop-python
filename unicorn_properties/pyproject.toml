@@ -1,26 +1,27 @@
 [tool.poetry]
-name = "property_service"
+name = "properties_service"
 version = "0.1.0"
 description = "Unicorn Properties Property Service"
 authors = ["Amazon Web Services"]
 packages = [
     { include = "properties_service", from = "src" },
-    { include = "schema", from = "src" }
+    { include = "schema", from = "src" },
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-boto3 = "^1.26.153"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.16.2"}
+python = "^3.11"
+boto3 = "^1.28.15"
+aws-lambda-powertools = {extras = ["tracer"], version = "^2.22.0"}
 aws-xray-sdk = "^2.12.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.1.2"
-pytest-mock = "^3.7.0"
-pytest-cov = "^3.0.0"
-coverage = "^6.4.2"
+pytest = "^7.4.0"
+pytest-mock = "^3.11.1"
+pytest-cov = "^4.1.0"
+coverage = "^7.2.7"
 requests = "^2.31.0"
-moto = "^3.1.17"
+moto = "^4.1.13"
+importlib-metadata = "^6.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -28,7 +29,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -vv -W ignore::UserWarning --cov=properties --cov-config=.coveragerc --cov-report term --cov-report html"
+addopts = "-ra -vv -W ignore::UserWarning --cov=properties_service --cov-config=.coveragerc --cov-report term --cov-report html"
 testpaths = [
     "./tests/unit",
 ]
+
+[tool.ruff]
+line-length = 150

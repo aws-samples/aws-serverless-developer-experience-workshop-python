@@ -5,7 +5,7 @@ build:
 	# cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export -f requirements.txt --without-hashes --output src/approvals_service/requirements.txt
 	poetry export -f requirements.txt --without-hashes --output src/search_service/requirements.txt
-	sam build -c
+	sam build -c $(DOCKER_OPTS)
 
 deploy: build
 	sam deploy --no-confirm-changeset

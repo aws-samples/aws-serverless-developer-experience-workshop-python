@@ -1,5 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+
 import os
 import json
 from datetime import datetime
@@ -8,7 +9,7 @@ import boto3
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.logging import Logger
 
-from contracts_service.exceptions import EventValidationException, EventValidationException
+from contracts_service.exceptions import EventValidationException
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
@@ -76,16 +77,16 @@ def get_event_body(event):
     try:
         event_json = json.loads(event_body)
     except json.decoder.JSONDecodeError as e:
-        logger.fatal("This event input is not a valid JSON")
+        logger.critical("This event input is not a valid JSON")
         raise e
     except TypeError as e:
-        logger.fatal("This event input is not a valid JSON")
+        logger.critical("This event input is not a valid JSON")
         raise e
 
     # Check if event body contains data, otherwise log & raise exception
     if not event_json:
         msg = "This event input did not contain body payload."
-        logger.fatal(msg)
+        logger.critical(msg)
         raise EventValidationException(msg)
 
     return event_json

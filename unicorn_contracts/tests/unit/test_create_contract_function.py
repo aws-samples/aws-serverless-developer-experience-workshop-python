@@ -1,16 +1,16 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-import json
 import os
-import pytest
-from unittest import mock
+import json
 from importlib import reload
 
+import pytest
+from unittest import mock
 from botocore.exceptions import ClientError
 
 from .lambda_context import LambdaContext
-from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts
+from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts, create_test_eventbridge_bus
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -24,6 +24,7 @@ def test_valid_event(dynamodb, eventbridge, mocker):
     reload(create_contract_function)
 
     create_ddb_table_contracts(dynamodb)
+    create_test_eventbridge_bus(eventbridge)
 
     context = LambdaContext()
     ret = create_contract_function.lambda_handler(apigw_event, context)
@@ -87,7 +88,6 @@ def test_wrong_event_data(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_ddb_env_var(dynamodb, eventbridge, mocker):
     del os.environ['DYNAMODB_TABLE']
-    apigw_event = load_event('events/create_valid_event.json')
     # Loading function here so that mocking works correctly
     from contracts_service import create_contract_function
     with pytest.raises(EnvironmentError):
@@ -97,7 +97,6 @@ def test_missing_ddb_env_var(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_eb_env_var(dynamodb, eventbridge, mocker):
     del os.environ['EVENT_BUS']
-    apigw_event = load_event('events/create_valid_event.json')
     # Loading function here so that mocking works correctly
     from contracts_service import helper
     with pytest.raises(EnvironmentError):
@@ -107,7 +106,6 @@ def test_missing_eb_env_var(dynamodb, eventbridge, mocker):
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_sm_env_var(dynamodb, eventbridge, mocker):
     del os.environ['SERVICE_NAMESPACE']
-    apigw_event = load_event('events/create_valid_event.json')
     # Loading function here so that mocking works correctly
     from contracts_service import helper
     with pytest.raises(EnvironmentError):
@@ -123,4 +121,4 @@ def test_wrong_dynamodb_table(dynamodb, eventbridge, mocker):
 
     context = LambdaContext()
     with pytest.raises(ClientError):
-        ret = create_contract_function.lambda_handler(apigw_event, context)
+        create_contract_function.lambda_handler(apigw_event, context)

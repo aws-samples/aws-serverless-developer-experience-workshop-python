@@ -1,13 +1,18 @@
-import json
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
 import os
+import json
+from importlib import reload
+
 import pytest
 from unittest import mock
-from importlib import reload
-from moto import mock_dynamodb, mock_events
+# from moto import mock_dynamodb, mock_events
 
-from .helper import return_env_vars_dict
+# from contracts_service.exceptions import EventValidationException
+
+from .helper import return_env_vars_dict, create_test_eventbridge_bus
 from .lambda_context import LambdaContext
-from contracts_service.exceptions import EventValidationException
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -27,6 +32,8 @@ def test_push_event(dynamodb, eventbridge, mocker):
 
     from contracts_service import helper
     reload(helper)
+
+    create_test_eventbridge_bus(eventbridge)
 
     ret = helper.publish_event(contract, context.aws_request_id)
     assert ret['FailedEntryCount'] == 0
@@ -62,7 +69,7 @@ def test_get_event_body_bad_json(dynamodb, eventbridge, mocker):
     reload(create_contract_function)
 
     with pytest.raises(json.decoder.JSONDecodeError):
-        ret = create_contract_function.get_event_body(event)
+        create_contract_function.get_event_body(event)
 
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
@@ -76,4 +83,4 @@ def test_get_event_body_bad_type(dynamodb, eventbridge, mocker):
     reload(create_contract_function)
 
     with pytest.raises(TypeError):
-        ret = create_contract_function.get_event_body(event)
+        create_contract_function.get_event_body(event)

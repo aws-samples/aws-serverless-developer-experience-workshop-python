@@ -1,6 +1,12 @@
-import os, inspect, json 
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 
-TABLE_NAME = "table1"
+import os
+import inspect
+import json 
+
+TABLE_NAME = 'table1'
+EVENTBUS_NAME = 'test-eventbridge'
 
 
 def load_event(filename):
@@ -53,7 +59,7 @@ def create_ddb_table_contracts(dynamodb):
                 'WriteCapacityUnits':1
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     return table
 
 
@@ -77,7 +83,7 @@ def create_ddb_table_contracts_with_entry(dynamodb):
                 'WriteCapacityUnits':1
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     contract = {
         "property_id": "usa/anytown/main-street/123",  # PK
         "contact_created": "01/08/2022 20:36:30",
@@ -94,3 +100,8 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     }
     table.put_item(Item=contract)
     return table
+
+
+def create_test_eventbridge_bus(eventbridge):
+    bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
+    return bus

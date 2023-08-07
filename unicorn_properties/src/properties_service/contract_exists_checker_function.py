@@ -1,5 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+
 import os
 
 import boto3
@@ -10,6 +11,7 @@ from aws_lambda_powertools.event_handler.exceptions import InternalServerError
 from botocore.exceptions import ClientError
 
 from properties_service.exceptions import ContractStatusNotFoundException
+
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:

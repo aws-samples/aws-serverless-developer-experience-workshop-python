@@ -1,5 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+
 import os
 from datetime import datetime
 
@@ -8,8 +9,7 @@ from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.metrics import Metrics
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.event_handler.exceptions import InternalServerError
-from schema.unicorn_contracts.contractstatuschanged import (
-    AWSEvent, ContractStatusChanged, Marshaller)
+from schema.unicorn_contracts.contractstatuschanged import AWSEvent, ContractStatusChanged, Marshaller
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
