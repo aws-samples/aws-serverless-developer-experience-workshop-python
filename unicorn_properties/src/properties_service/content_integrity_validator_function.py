@@ -7,6 +7,7 @@ from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.metrics import Metrics
 from aws_lambda_powertools.tracing import Tracer
 
+
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
     raise EnvironmentError("SERVICE_NAMESPACE environment variable is undefined")

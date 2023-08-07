@@ -12,6 +12,7 @@ from botocore.exceptions import ClientError
 
 from properties_service.exceptions import ContractStatusNotFoundException
 
+
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
     raise InternalServerError("SERVICE_NAMESPACE environment variable is undefined")
