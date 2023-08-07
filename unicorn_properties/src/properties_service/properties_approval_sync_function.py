@@ -72,8 +72,8 @@ def lambda_handler(event, context):
         logger.info({"Contract status for property is APPROVED":
             property_contract_status["property_id"]})
 
-        task_successful(property_contract_status["sfn_wait_approved_task_token"],
-            property_contract_status)
+        result = task_successful(property_contract_status["sfn_wait_approved_task_token"], property_contract_status)
+        return result
 
 
 
@@ -89,7 +89,7 @@ def task_successful(task_token: str, contract_status: dict):
         Contract Status object to return to statemachine.
     """
     output = {'Payload': contract_status}
-    sfn.send_task_success(taskToken=task_token, output=json.dumps(output))
+    return sfn.send_task_success(taskToken=task_token, output=json.dumps(output))
 
 
 def ddb_deserialize(dynamo_image: dict) -> dict:
