@@ -76,16 +76,16 @@ def get_event_body(event):
     try:
         event_json = json.loads(event_body)
     except json.decoder.JSONDecodeError as e:
-        logger.fatal("This event input is not a valid JSON")
+        logger.critical("This event input is not a valid JSON")
         raise e
     except TypeError as e:
-        logger.fatal("This event input is not a valid JSON")
+        logger.critical("This event input is not a valid JSON")
         raise e
 
     # Check if event body contains data, otherwise log & raise exception
     if not event_json:
         msg = "This event input did not contain body payload."
-        logger.fatal(msg)
+        logger.critical(msg)
         raise EventValidationException(msg)
 
     return event_json
