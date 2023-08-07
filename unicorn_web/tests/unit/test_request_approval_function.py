@@ -17,7 +17,6 @@ def test_valid_event(dynamodb, eventbridge, mocker):
 
     # Loading function here so that mocking works correctly.
     import approvals_service.request_approval_function as app
-
     # Reload is required to prevent function setup reuse from another test 
     reload(app)
 

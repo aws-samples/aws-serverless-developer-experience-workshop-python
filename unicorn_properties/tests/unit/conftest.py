@@ -17,10 +17,12 @@ def aws_credentials():
     os.environ['AWS_SECURITY_TOKEN'] = 'testing'
     os.environ['AWS_SESSION_TOKEN'] = 'testing'
 
+
 @pytest.fixture(scope='function')
 def dynamodb(aws_credentials):
     with mock_dynamodb():
         yield boto3.resource('dynamodb', region_name='ap-southeast-2')
+
 
 @pytest.fixture(scope='function')
 def eventbridge(aws_credentials):

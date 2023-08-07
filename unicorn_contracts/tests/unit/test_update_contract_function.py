@@ -22,6 +22,7 @@ def test_valid_event(dynamodb, eventbridge, mocker):
     # Loading function here so that mocking works correctly
     from contracts_service import update_contract_function
     reload(update_contract_function)
+
     create_ddb_table_contracts_with_entry(dynamodb)
 
     context = LambdaContext()

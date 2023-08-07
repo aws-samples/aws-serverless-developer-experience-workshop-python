@@ -1,12 +1,16 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+
 import os
 import boto3
+
 from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.metrics import Metrics, MetricUnit
 from aws_lambda_powertools.event_handler.exceptions import InternalServerError
+
 from schema.unicorn_properties.publicationevaluationcompleted import (AWSEvent, Marshaller, PublicationEvaluationCompleted)
+
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get('SERVICE_NAMESPACE')) is None:
