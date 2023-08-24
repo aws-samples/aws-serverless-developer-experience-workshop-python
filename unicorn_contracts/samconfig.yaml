@@ -1,0 +1,33 @@
+version: "0.1"
+default:
+  global:
+    parameters:
+      stack_name: "uni-prop-local-contract"
+      s3_prefix: "uni-prop-local-contract"
+      resolve_s3: true
+      resolve_image_repositories: true
+  build:
+    parameters:
+      cached: true
+      parallel: true
+  deploy:
+    parameters:
+      disable_rollback: true
+      confirm_changeset: false
+      capabilities: "CAPABILITY_IAM"
+      parameter_overrides:
+        - "Stage=Local"
+  package:
+    parameters: {}
+  validate:
+    parameters:
+      lint: true
+  sync:
+    parameters:
+      watch: true
+  local_start_api:
+    parameters:
+      warm_containers: "EAGER"
+  local_start_lambda:
+    parameters:
+      warm_containers: "EAGER"
