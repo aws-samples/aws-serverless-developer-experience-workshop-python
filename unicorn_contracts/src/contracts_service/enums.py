@@ -3,6 +3,7 @@
 
 from enum import Enum
 
+
 class ContractStatus(Enum):
     """Contract status Enum
  
@@ -21,4 +22,4 @@ class ContractStatus(Enum):
     CANCELLED = 2
     CLOSED = 3
     DRAFT = 4
-    EXPIRED= 5
+    EXPIRED = 5

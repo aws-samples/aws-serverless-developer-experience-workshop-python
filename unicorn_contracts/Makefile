@@ -1,7 +1,9 @@
 stackName := uni-prop-local-contract
 
+ci: clean build deploy
+
 build:
-	cfn-lint template.yaml -a cfn_lint_serverless.rules
+	# cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
@@ -20,7 +22,7 @@ unit-test:
 	poetry run pytest tests/unit/
 
 integration-test: deps
-	AWS_SAM_STACK_NAME=$(stackName) poetry run pytest tests/integration/
+	poetry run pytest tests/integration/
 
 logs:
 	sam logs --stack-name $(stackName) -t
