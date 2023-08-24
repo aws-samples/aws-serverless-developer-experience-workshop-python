@@ -2,15 +2,20 @@
 # SPDX-License-Identifier: MIT-0
 
 import os
+import uuid
+from datetime import datetime
 
 import boto3
+from boto3.dynamodb.conditions import Attr, Not
+from botocore.exceptions import ClientError
+
 from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.metrics import Metrics
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.data_classes import event_source, SQSEvent
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-# from contracts_service.enums import ContractStatus
+from contracts_service.enums import ContractStatus
 
 
 # Initialise Environment variables
@@ -46,7 +51,7 @@ def lambda_handler(event: SQSEvent, context: LambdaContext):
 
 
 @tracer.capture_method
-def create_contract(contract: dict) -> None:
+def create_contract(event: dict) -> None:
     """Create contract inside DynamoDB table
 
     Parameters
@@ -58,8 +63,6 @@ def create_contract(contract: dict) -> None:
     dict
         DynamoDB put Item response
     """
-    logger.info(contract)
-
     # if contract id exists:
     #   if constract status is APPROVED | DRAFT:
     #     log message
@@ -67,7 +70,41 @@ def create_contract(contract: dict) -> None:
     # create with status = DRAFT
     # return
 
-    # return table.put_item(Item=contract,)
+    logger.info(msg={"Creating contract": event})
+    current_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    contract = {
+        "property_id":                  event["property_id"],  # PK
+        "address":                      event["address"],
+        "seller_name":                  event["seller_name"],
+        "contact_created":              current_date,
+        "contract_last_modified_on":    current_date,
+        "contract_id":                  str(uuid.uuid4()),
+        "contract_status":              ContractStatus.DRAFT.name,
+    }
+
+    try:
+        response = table.put_item(
+            Item=contract,
+            ConditionExpression=
+                Attr('property_id').not_exists() 
+              | Attr('contract_status').is_in([
+                  ContractStatus.CANCELLED.name,
+                  ContractStatus.CLOSED.name,
+                  ContractStatus.EXPIRED.name,
+                ]))
+        
+        logger.info('var:response', response)
+        
+        # Annotate trace with contract status
+        tracer.put_annotation(key="ContractStatus", value=contract["contract_status"])
+
+    except ClientError as e:
+        match e.response["Error"]["Code"]:
+            case 'ConditionalCheckFailedException':
+                logger.exception(f"Unable to update contract Id {contract['property_id']}. Status is not in status DRAFT")
+        
+        raise e
 
 
 @tracer.capture_method
@@ -83,8 +120,6 @@ def update_contract(contract: dict) -> None:
     dict
         DynamoDB put Item response
     """
-    logger.info(contract)
-
     # if contract doesnt exist
     #   lod message
     #   return
@@ -93,4 +128,32 @@ def update_contract(contract: dict) -> None:
     #   return
     # update contract status to APPROVED
 
-    # return table.put_item(Item=contract,)
+    logger.info(msg={"Updating contract": contract})
+
+    try:
+        contract["contract_status"] = ContractStatus.APPROVED.name
+        current_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        response = table.update_item(
+            Key={
+                'property_id': contract['property_id'],
+            },
+            UpdateExpression="set contract_status=:t, modified_date=:m",
+            ConditionExpression=Attr('contract_status').eq(ContractStatus.DRAFT.name),
+            ExpressionAttributeValues={
+                ':t': contract['contract_status'],
+                ':m': current_date,
+            },
+            ReturnValues="UPDATED_NEW")
+        logger.info('var:response', response)
+        
+        # Annotate trace with contract status
+        tracer.put_annotation(key="ContractStatus", value=contract["contract_status"])
+
+    except ClientError as e:
+        match e.response["Error"]["Code"]:
+            case 'ConditionalCheckFailedException':
+                logger.exception(f"Unable to update contract Id {contract['property_id']}. Status is not in status DRAFT")
+            case 'ResourceNotFoundException':
+                logger.exception(f"Unable to update contract Id {contract['property_id']}. Not Found")
+        raise e

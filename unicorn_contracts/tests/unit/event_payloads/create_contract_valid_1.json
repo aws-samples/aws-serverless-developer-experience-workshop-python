@@ -1,0 +1,10 @@
+{
+    "address": {
+        "country": "USA",
+        "city": "Anytown",
+        "street": "Main Street",
+        "number": 123
+    },
+    "seller_name": "John Smith",
+    "property_id": "usa/anytown/main-street/123"
+}
