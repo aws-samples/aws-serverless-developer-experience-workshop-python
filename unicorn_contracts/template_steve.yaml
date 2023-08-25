@@ -51,9 +51,9 @@ Globals:
   Api:
     OpenApiVersion: 3.0.1
   Function:
-    Runtime: python3.11
-    MemorySize: 128
-    Timeout: 3
+    Runtime: dotnet6
+    MemorySize: 512
+    Timeout: 10
     Tracing: Active
     Architectures:
       - x86_64
@@ -65,11 +65,7 @@ Globals:
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !FindInMap [
-            Constants,
-            ServiceNamespace,
-            Value,
-          ] # Metric Namespace
+        POWERTOOLS_METRICS_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value] # Metric Namespace
         LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
@@ -106,8 +102,8 @@ Resources:
   ContractEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: contracts_service.contract_event_handler.lambda_handler
+      CodeUri: ./ContractsService
+      Handler: Unicorn.Contracts.ContractService::Unicorn.Contracts.ContractService.ContractEventHandler::FunctionHandler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractsTable
@@ -260,10 +256,10 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       AttributeDefinitions:
-        - AttributeName: property_id
+        - AttributeName: PropertyId
           AttributeType: S
       KeySchema:
-        - AttributeName: property_id
+        - AttributeName: PropertyId
           KeyType: HASH
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
@@ -418,10 +414,10 @@ Resources:
           Source: !FindInMap [Constants, ServiceNamespace, Value]
           DetailType: ContractStatusChanged
         InputTemplate: !ToJsonString
-          property_id: "<$.dynamodb.NewImage.property_id.S>"
-          contract_id: "<$.dynamodb.NewImage.contract_id.S>"
-          contract_status: "<$.dynamodb.NewImage.contract_status.S>"
-          contract_last_modified_on: "<$.dynamodb.NewImage.contract_last_modified_on.S>"
+          PropertyId: "<$.dynamodb.NewImage.PropertyId.S>"
+          ContractId: "<$.dynamodb.NewImage.ContractId.S>"
+          ContractStatus: "<$.dynamodb.NewImage.ContractStatus.S>"
+          ContractLastModifiedOn: "<$.dynamodb.NewImage.ContractLastModifiedOn.S>"
 
   # IAM Role for Event Bridge Pipe
   DdbStreamToEventPipeRole:

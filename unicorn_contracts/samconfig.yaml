@@ -12,7 +12,7 @@ default:
       parallel: true
   deploy:
     parameters:
-      disable_rollback: true
+      disable_rollback: false
       confirm_changeset: false
       fail_on_empty_changeset: false
       capabilities: "CAPABILITY_IAM"

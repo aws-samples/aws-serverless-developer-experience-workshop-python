@@ -22,15 +22,15 @@ paths:
       x-amazon-apigateway-request-validator: "Validate body"
       x-amazon-apigateway-integration:
         credentials: 
-          Fn::GetAtt: [ContractsApiIntegrationRole, Arn]
+          Fn::GetAtt: [ ContractsApiIntegrationRole, Arn ]
         httpMethod: "POST"
         uri:
-          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${ContractServiceIngestQueue.QueueName}"
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornContractsIngestQueue.QueueName}"
         responses:
           default:
             statusCode: "200"
             responseTemplates:
-              application/json: "{\"message\":\"OK\"}"
+              application/json: '{"message":"OK"}'
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
@@ -84,15 +84,15 @@ paths:
       x-amazon-apigateway-request-validator: "Validate body"
       x-amazon-apigateway-integration:
         credentials: 
-          Fn::GetAtt: [ContractsApiIntegrationRole, Arn]
+          Fn::GetAtt: [ ContractsApiIntegrationRole, Arn ]
         httpMethod: "POST"
         uri:
-          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${ContractServiceIngestQueue.QueueName}"
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornContractsIngestQueue.QueueName}"
         responses:
           default:
             statusCode: "200"
             responseTemplates:
-              application/json: "{\"message\":\"OK\"}"
+              application/json: '{"message":"OK"}'
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
