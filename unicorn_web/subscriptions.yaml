@@ -1,0 +1,78 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Defines EventBus subscriptions for UnicornWeb service
+
+Parameters:
+  Stage:
+    Type: String
+    Default: Local
+    AllowedValues:
+      - Local
+      - Dev
+      - Prod
+
+Resources:
+  PublicationApprovedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: web.publicationapproved-properties.pubevalcompleted
+      Description: Publication evaluation completed subscription
+      EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
+      EventPattern:
+        source:
+          - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespaceParam}}"
+        detail-type:
+          - PublicationEvaluationCompleted
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBusArn}}"
+          RoleArn: !GetAtt UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
+
+  # This IAM role allows EventBridge to assume the permissions necessary to send events
+  # from the Unicorn Properties event bus to the Unicorn Web event bus.
+  # If the Unicorn Web wants receive events from other services, then add another policy
+  # the arn of the which includes the event bus arn where Unicorn Web is creating the
+  # subscription (rule)
+  UnicornPropertiesEventBusToUnicornWebEventBusRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: PutEventsOnUnicornWebEventBus
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: "events:PutEvents"
+                Resource: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBusArn}}"
+
+  # SQS resource policy required to allow target on devops bus to send failed messages to target DLQ
+  # BlueServiceEventBusDlqPolicy:
+  #   Type: AWS::SQS::QueuePolicy
+  #   Properties:
+  #     Queues:
+  #       - !Ref BlueServiceEventBusDlqUrl
+  #     PolicyDocument:
+  #       Statement:
+  #         - Action:
+  #             - "SQS:SendMessage"
+  #           Effect: "Allow"
+  #           Resource: !Ref BlueServiceEventBusDlqArn
+  #           Principal:
+  #             Service: "events.amazonaws.com"
+  #           Condition:
+  #             ArnEquals:
+  #               "aws:SourceArn": !GetAtt BlueServiceE2SubscriptionRule.Arn
+
+Outputs:
+  BlueE2Subscription:
+    Description: Rule ARN for blue service event 2 subscription
+    Value: !GetAtt PublicationApprovedSubscriptionRule.Arn

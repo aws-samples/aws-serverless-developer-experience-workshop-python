@@ -10,8 +10,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-boto3 = "^1.28.15"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.22.0"}
+boto3 = "^1.28.32"
+aws-lambda-powertools = {extras = ["tracer"], version = "^2.23.0"}
 aws-xray-sdk = "^2.12.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -22,6 +22,7 @@ coverage = "^7.2.7"
 requests = "^2.31.0"
 moto = "^4.1.13"
 importlib-metadata = "^6.8.0"
+pyyaml = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

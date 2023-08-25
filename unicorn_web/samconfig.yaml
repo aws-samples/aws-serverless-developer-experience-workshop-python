@@ -1,0 +1,43 @@
+version: 0.1
+default:
+  global:
+    parameters:
+      stack_name: "uni-prop-local-web"
+      s3_prefix: "uni-prop-local-web"
+      resolve_s3: true
+      resolve_image_repositories: true
+  build:
+    parameters:
+      cached: true
+      parallel: true
+  deploy:
+    parameters:
+      confirm_changeset: false
+      capabilities: CAPABILITY_IAM
+      disable_rollback: true
+      parameter_overrides: Stage="Local"
+      image_repositories: []
+  validate:
+      parameters:
+        lint: true
+  sync:
+    parameters:
+      watch: true
+  local_start_api:
+    parameters:
+      warm_containers: "EAGER"
+  local_start_lambda:
+    parameters:
+      warm_containers: "EAGER"
+
+subscriptions:
+  global:
+    parameters: 
+      stack_name: uni-prop-local-web-subscriptions
+  deploy:
+    parameters:
+      parameter_overrides: Stage="Local"
+      capabilities: CAPABILITY_IAM
+      template_file: "subscriptions.yaml"
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK

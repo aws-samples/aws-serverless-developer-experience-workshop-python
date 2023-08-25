@@ -302,36 +302,6 @@ Resources:
             events:source:
               - !FindInMap [Constants, ServiceNamespace, Value]
 
-  # Event bus policy to restrict who can create rules on the event bus to subscribe to events published by the Contracts Service.
-  # Update this policy as you get new subscribers by adding their namespace to events:source
-  # PropertiesServiceRulePolicy:
-  #   Type: "AWS::Events::EventBusPolicy"
-  #   Properties:
-  #     EventBusName: !Ref UnicornContractsEventBus
-  #     StatementId: !Sub CreateRulePolicy-${Stage}
-  #     Statement:
-  #       Effect: Allow
-  #       Principal:
-  #         AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
-  #       Action:
-  #         - events:PutRule
-  #         - events:DeleteRule
-  #         - events:DescribeRule
-  #         - events:DisableRule
-  #         - events:EnableRule
-  #         - events:PutTargets
-  #         - events:RemoveTargets
-  #       Resource:
-  #         - !Sub "arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/${UnicornContractsEventBus.Name}/*"
-  #       Condition:
-  #         StringEqualsIfExists:
-  #           "events:creatorAccount": "${aws:PrincipalAccount}"
-  #         StringEquals:
-  #           "events:source":
-  #             - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
-  #         "Null":
-  #           "events:source": "false"
-
   # Catchall rule used for development purposes.
   UnicornContractsCatchAllRule:
     Type: AWS::Events::Rule
@@ -364,7 +334,7 @@ Resources:
   EventBridgeCloudWatchLogGroupPolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
-      PolicyName: !Sub EventBridgeToCWLogsPolicy-${Stage}
+      PolicyName: !Sub UnicornContracts-EventBridgeToCWLogsPolicy-${Stage}
       # Note: PolicyDocument has to be established this way. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-resourcepolicy.html#cfn-logs-resourcepolicy-policydocument
       PolicyDocument: !Sub |
         {

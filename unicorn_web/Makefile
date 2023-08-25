@@ -2,7 +2,7 @@ deps:
 	poetry install
 
 build:
-	# cfn-lint template.yaml -a cfn_lint_serverless.rules
+	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export -f requirements.txt --without-hashes --output src/approvals_service/requirements.txt
 	poetry export -f requirements.txt --without-hashes --output src/search_service/requirements.txt
 	sam build -c $(DOCKER_OPTS)
