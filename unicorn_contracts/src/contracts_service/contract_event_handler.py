@@ -81,7 +81,7 @@ def create_contract(event: dict) -> None:
         "property_id":                  event["property_id"],  # PK
         "address":                      event["address"],
         "seller_name":                  event["seller_name"],
-        "contact_created":              current_date,
+        "contract_created":              current_date,
         "contract_last_modified_on":    current_date,
         "contract_id":                  str(uuid.uuid4()),
         "contract_status":              ContractStatus.DRAFT.name,

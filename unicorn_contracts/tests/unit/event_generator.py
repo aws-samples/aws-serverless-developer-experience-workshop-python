@@ -122,6 +122,15 @@ def sqs_event(messages: List[dict],
         md5ofbody = hashlib.md5(body.encode('utf-8')).hexdigest()
         rcv_timestamp = int(time.time() + (random.randint(0, 500)/1000))    # Random delay of 0-500ms
         
+        msg_attributes = dict()
+        for attr, val in message.get('attributes', dict()).items():
+            msg_attributes[attr] = {
+                "dataType": "String",
+                "stringValue": val,
+                "stringListValues": [],
+                "binaryListValues": [],
+            }
+
         records.append({
             "messageId": str(uuid.uuid4()),
             "receiptHandle": "MessageReceiptHandle",
@@ -131,8 +140,9 @@ def sqs_event(messages: List[dict],
                 "SentTimestamp": f"{int(time.time())}",
                 "SenderId": f"{account_id}",
                 "ApproximateFirstReceiveTimestamp": str(rcv_timestamp),
+                "AWSTraceHeader": "Root=1-64ed8007-277749e74aefce547c22fb79;Parent=11d035ab3958d16e;Sampled=1",
             },
-            "messageAttributes": message.get('attributes', dict()),
+            "messageAttributes": msg_attributes,
             "md5OfBody": md5ofbody,
             "eventSource": "aws:sqs",
             "eventSourceARN": f"arn:aws:sqs:{aws_region}:{account_id}:{queue_name}",
@@ -143,48 +153,23 @@ def sqs_event(messages: List[dict],
 
 
 
-# def sqs_event(messages: List[dict],
-#               queue_name: str = 'MyQueue',
-#               account_id: int = 0,
-#               aws_region: str = 'us-east-1'
-#               ) -> dict:
-#     try:
-#         return {
-#             "Records": [
-#                 sqs_record(m.get('body'), m.get('attributes', dict()),
-#                         queue_name=queue_name,
-#                         account_id=account_id,
-#                         aws_region=aws_region)
-#                 for m in messages
-#             ]
-#         }
-#     except KeyError as e:
-#         raise Exception(f'Each message should contain at least a `body` key: {messages}') from e
 
-
-# def sqs_record(body: Any,
-#                attributes: dict[str,Any] = dict(),
-#                queue_name: str = 'MyQueue',
-#                account_id: int = 0,
-#                aws_region: str = 'us-east-1'
-#                ) -> dict:
-#     body = json.dumps(body)
-#     if account_id == 0:
-#         account_id = random.randint(100000000000,999999999999)
-    
-#     return {
-#         "messageId": str(uuid.uuid4()),
-#         "receiptHandle": "MessageReceiptHandle",
-#         "body": body,
-#         "attributes": {
-#             "ApproximateReceiveCount": "1",
-#             "SentTimestamp": int(time.time()),
-#             "SenderId": f"{account_id}",
-#             "ApproximateFirstReceiveTimestamp": str(int(time.time() + (random.randint(0, 500)/1000))),  # Random delay of 0-500ms
+# {
+#     "Records": [
+#       {
+#         "messageAttributes": {
+#           "HttpMethod": {
+#             "stringValue": "PUT",
+#             "stringListValues": [],
+#             "binaryListValues": [],
+#             "dataType": "String"
+#           }
 #         },
-#         "messageAttributes": attributes,
-#         "md5OfBody": hashlib.md5(body).hexdigest(),
+#         "md5OfMessageAttributes": "39c36267fdf9c8d354b1069e44662d24",
+#         "md5OfBody": "4bc398b7ae8e52d7f7eaed3cb76c12ef",
 #         "eventSource": "aws:sqs",
-#         "eventSourceARN": f"arn:aws:sqs:{aws_region}:{account_id}:{queue_name}",
-#         "awsRegion": aws_region,
-#     }
+#         "eventSourceARN": "arn:aws:sqs:ap-southeast-2:718758479978:uni-prop-local-contract-UnicornContractsIngestQueue-p5zisiK0Xbxn",
+#         "awsRegion": "ap-southeast-2"
+#       }
+#     ]
+#   }

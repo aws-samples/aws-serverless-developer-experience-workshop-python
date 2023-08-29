@@ -9,6 +9,6 @@
         street:  .address.M.street.S,
     },
     contract_status: .contract_status.S,
-    contact_created: .contact_created.S,
+    contract_created: .contract_created.S,
     contract_last_modified_on: .contract_last_modified_on.S
 } | del(..|nulls)

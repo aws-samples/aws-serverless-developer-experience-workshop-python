@@ -28,7 +28,7 @@
         "seller_name": {
             "S": "John Smith"
         },
-        "contact_created": {
+        "contract_created": {
             "S": "25/08/2023 02:14:20"
         },
         "contract_id": {

@@ -113,15 +113,15 @@ Resources:
             TableName: !Ref ContractsTable
         - DynamoDBReadPolicy:
             TableName: !Ref ContractsTable
-      Events:
-        IngestQueue:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt UnicornContractsIngestQueue.Arn
-            BatchSize: 1
-            Enabled: true
-            ScalingConfig:
-              MaximumConcurrency: 5
+      # Events:
+      #   IngestQueue:
+      #     Type: SQS
+      #     Properties:
+      #       Queue: !GetAtt UnicornContractsIngestQueue.Arn
+      #       BatchSize: 1
+      #       Enabled: true
+      #       ScalingConfig:
+      #         MaximumConcurrency: 5
 
   ContractEventHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup

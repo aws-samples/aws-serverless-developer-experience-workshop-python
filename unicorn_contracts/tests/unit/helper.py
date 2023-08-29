@@ -7,7 +7,7 @@ from pathlib import Path
 TABLE_NAME = 'table1'
 EVENTBUS_NAME = 'test-eventbridge'
 SQS_QUEUE_NAME = 'test_sqs'
-EVENTS_DIR = Path(__file__).parent / 'event_payloads'
+EVENTS_DIR = Path(__file__).parent / 'events'
 
 
 def load_event(filename):
@@ -83,7 +83,7 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     contract = {
         "property_id": "usa/anytown/main-street/123",  # PK
-        "contact_created": "01/08/2022 20:36:30",
+        "contract_created": "01/08/2022 20:36:30",
         "contract_last_modified_on": "01/08/2022 20:36:30",
         "contract_id": "11111111",
         "address": {
