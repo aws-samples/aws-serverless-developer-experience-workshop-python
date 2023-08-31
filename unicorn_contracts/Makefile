@@ -11,7 +11,7 @@ ddbPropertyId 	= $(call get_ddb_key,create_contract_valid_payload_1)
 ci: clean build deploy
 
 build:
-	# sam validate --lint
+	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
@@ -30,7 +30,7 @@ ci_init:
 
 
 #### Tests
-test: unit-test
+test: unit-test integration-test curl-test
 
 unit-test:
 	poetry run pytest tests/unit/
@@ -56,10 +56,6 @@ curl-test: clean-tests
 
 	@echo "[DONE]"
 
-x:
-	@echo "apiUrl:        $(apiUrl)"
-	@echo "ddbPropertyId: $(ddbPropertyId)"
-	@echo "$(call get_ddb_key,create_contract_valid_payload_1)"
 
 clean-tests:
 	$(call ddb_delete,$(ddbPropertyId)) || true

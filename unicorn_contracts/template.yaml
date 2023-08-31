@@ -12,8 +12,8 @@ Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - I3042
-        - ES1007
+        - ES4000
+        - ES6000
         - ES1001
         - WS2001
 
@@ -61,6 +61,7 @@ Globals:
       Variables:
         DYNAMODB_TABLE: !Ref ContractsTable
         SERVICE_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value]
+        POWERTOOLS_LOGGER_CASE: PascalCase
         POWERTOOLS_SERVICE_NAME: !FindInMap [Constants, ServiceNamespace, Value]
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
@@ -113,15 +114,15 @@ Resources:
             TableName: !Ref ContractsTable
         - DynamoDBReadPolicy:
             TableName: !Ref ContractsTable
-      # Events:
-      #   IngestQueue:
-      #     Type: SQS
-      #     Properties:
-      #       Queue: !GetAtt UnicornContractsIngestQueue.Arn
-      #       BatchSize: 1
-      #       Enabled: true
-      #       ScalingConfig:
-      #         MaximumConcurrency: 5
+      Events:
+        IngestQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt UnicornContractsIngestQueue.Arn
+            BatchSize: 1
+            Enabled: true
+            ScalingConfig:
+              MaximumConcurrency: 5
 
   ContractEventHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
@@ -206,10 +207,9 @@ Resources:
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
-            Principal:
-              Service:
-                - apigateway.amazonaws.com
             Action: sts:AssumeRole
+            Principal:
+              Service: apigateway.amazonaws.com
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
 
@@ -221,6 +221,7 @@ Resources:
     Properties:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      QueueName: !Sub UnicornContractsIngestQueue-${Stage}
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt UnicornContractsIngestDLQ.Arn
         maxReceiveCount: 1
@@ -237,14 +238,10 @@ Resources:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
-    Metadata:
-      cfn-lint:
-        config:
-          ignore_checks:
-            - ES6000
     Properties:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      QueueName: !Sub UnicornContractsIngestDLQ-${Stage}
       Tags:
         - Key: stage
           Value: !Ref Stage
@@ -269,12 +266,12 @@ Resources:
         StreamViewType: NEW_AND_OLD_IMAGES
       BillingMode: PAY_PER_REQUEST
       Tags:
+        - Key: stage
+          Value: !Ref Stage
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !FindInMap [Constants, ServiceNamespace, Value]
-        - Key: stage
-          Value: !Ref Stage
 
   #### EVENT BUS
   # Event bus for Contract Service used to publish and consume events
@@ -294,8 +291,7 @@ Resources:
         Principal:
           AWS:
             - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
-        Action:
-          - events:PutEvents
+        Action: events:PutEvents
         Resource: !GetAtt UnicornContractsEventBus.Arn
         Condition:
           StringEquals:
@@ -305,11 +301,6 @@ Resources:
   # Catchall rule used for development purposes.
   UnicornContractsCatchAllRule:
     Type: AWS::Events::Rule
-    Metadata:
-      cfn-lint:
-        config:
-          ignore_checks:
-            - ES4000
     Properties:
       Name: contracts.catchall
       Description: Catch all events published by the contracts service.
@@ -439,9 +430,12 @@ Outputs:
     Description: DynamoDB table storing contract information
     Value: !Ref ContractsTable
 
-  ContractEventHandlerFunctionArn:
+  ContractEventHandlerFunction:
     Description: Create Contract function ARN
     Value: !GetAtt ContractEventHandlerFunction.Arn
+
+  UnicornContractsCatchAllLogGroupArn:
+    Value: !GetAtt UnicornContractsCatchAllLogGroup.Arn
 
   IsProd:
     Description: Is Production?
