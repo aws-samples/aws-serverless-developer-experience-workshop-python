@@ -35,7 +35,7 @@ table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
 
 @metrics.log_metrics(capture_cold_start_metric=True) # type: ignore
-@logger.inject_lambda_context()
+@logger.inject_lambda_context
 @tracer.capture_method
 @event_source(data_class=SQSEvent)
 def lambda_handler(event: SQSEvent, context: LambdaContext):
