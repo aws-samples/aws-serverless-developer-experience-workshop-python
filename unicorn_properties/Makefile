@@ -1,4 +1,5 @@
-stackName := uni-prop-local-properties
+#### Global Variables
+stackName		:= $(shell yq -oy '.default.global.parameters.stack_name' samconfig.yaml)
 
 build:
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
