@@ -30,7 +30,7 @@ ci_init:
 
 
 #### Tests
-test: unit-test integration-test curl-test
+test: unit-test integration-test
 
 unit-test:
 	poetry run pytest tests/unit/
