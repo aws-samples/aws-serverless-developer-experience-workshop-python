@@ -35,6 +35,11 @@ Mappings:
       Days: 3
     Prod:
       Days: 14
+  Constants:
+    ServiceNamespace:
+      Value: "unicorn.properties"
+    ProjectName:
+      Value: "AWS Serverless Developer Experience"
 
 #### CONDITIONS
 Conditions:
@@ -52,18 +57,18 @@ Globals:
     Environment:
       Variables:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
-        EVENT_BUS: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
-        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
-        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
-        POWERTOOLS_TRACE_DISABLED: "false"                                                                # Explicitly disables tracing, default
-        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"]                                        # Logs incoming event, default
-        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]                                           # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
-        LOG_LEVEL: INFO                                                                                   # Log level for Logger (INFO, DEBUG, etc.), default
+        EVENT_BUS: !Ref UnicornPropertiesEventBus
+        SERVICE_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value]
+        POWERTOOLS_SERVICE_NAME: !FindInMap [Constants, ServiceNamespace, Value]
+        POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
+        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
+        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
+        POWERTOOLS_METRICS_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value]
+        LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
-      project: AWS Serverless Developer Experience
-      service: Unicorn Properties Service
+      project: !FindInMap [Constants, ProjectName, Value]
+      namespace: !FindInMap [Constants, ServiceNamespace, Value]
 
 #### RESOURCES
 Resources:
@@ -83,7 +88,7 @@ Resources:
           Type: EventBridgeRule
           Properties:
             RuleName: properties.contstatuschangedhdr-contracts.contstatuschanged
-            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
                 - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
@@ -170,9 +175,9 @@ Resources:
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
-          Value: AWS Serverless Developer Experience
-        - Key: service
-          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
           Value: !Ref Stage
 
@@ -185,9 +190,9 @@ Resources:
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
-          Value: AWS Serverless Developer Experience
-        - Key: service
-          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
           Value: !Ref Stage
 
@@ -213,7 +218,7 @@ Resources:
         - ComprehendBasicAccessPolicy: {}
         - RekognitionDetectOnlyPolicy: {}
         - EventBridgePutEventsPolicy:
-            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
         - Statement:
             - Effect: Allow
               Action:
@@ -238,7 +243,7 @@ Resources:
           Type: EventBridgeRule
           Properties:
             RuleName: properties.pubapprovalwf-web.pubapprovalrequested
-            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
+            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
                 - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
@@ -255,9 +260,8 @@ Resources:
         WaitForContractApproval: !GetAtt WaitForContractApprovalFunction.Arn
         ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
         ImageUploadBucketName: !Sub "{{resolve:ssm:/UniProp/${Stage}/ImagesBucket}}"
-        EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
-        ServiceName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
-
+        EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+        ServiceName: !FindInMap [Constants, ServiceNamespace, Value]
 
   #### CLOUDWATCH LOG GROUPS
   ContractStatusChangedHandlerFunctionLogGroup:
@@ -325,14 +329,99 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       Tags:
         - Key: project
-          Value: AWS Serverless Developer Experience
-        - Key: service
-          Value: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
           Value: !Ref Stage
 
+  #### EVENT BUS
+  UnicornPropertiesEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: !Sub UnicornPropertiesBus-${Stage}
+
+  # Event bus policy to restrict who can publish events (should only be services from ServiceNamespace)
+  UnicornPropertiesEventsBusPublishPolicy:
+    Type: AWS::Events::EventBusPolicy
+    Properties:
+      EventBusName: !Ref UnicornPropertiesEventBus
+      StatementId: !Sub PropertiesPublishEventsPolicy-${Stage}
+      Statement:
+        Effect: Allow
+        Principal:
+          AWS:
+            - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+        Action: events:PutEvents
+        Resource: !GetAtt UnicornPropertiesEventBus.Arn
+        Condition:
+          StringEquals:
+            events:source:
+              - !FindInMap [Constants, ServiceNamespace, Value]
+
+  # Catchall rule used for development purposes.
+  UnicornPropertiesCatchAllRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: contracts.catchall
+      Description: Catch all events published by the contracts service.
+      EventBusName: !Ref UnicornPropertiesEventBus
+      EventPattern:
+        account:
+          - !Ref AWS::AccountId
+        source:
+          - !FindInMap [Constants, ServiceNamespace, Value]
+      State: ENABLED #You may want to disable this rule in production
+      Targets:
+        - Arn: !GetAtt UnicornPropertiesCatchAllLogGroup.Arn
+          Id: !Sub UnicornPropertiesCatchAllLogGroupTarget-${Stage}
+
+  # CloudWatch log group used to catch all events
+  UnicornPropertiesCatchAllLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub
+        - "/aws/events/${Stage}/${NS}-catchall"
+        - Stage: !Ref Stage
+          NS: !FindInMap [Constants, ServiceNamespace, Value]
+      RetentionInDays: 3
+
+  # Permissions to allow EventBridge to send logs to CloudWatch
+  EventBridgeCloudWatchLogGroupPolicy:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyName: !Sub EvBToCWLogs-${AWS::StackName}
+      # Note: PolicyDocument has to be established this way. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-resourcepolicy.html#cfn-logs-resourcepolicy-policydocument
+      PolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "delivery.logs.amazonaws.com",
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${UnicornPropertiesCatchAllLogGroup.Arn}"
+              ]
+            }
+          ]
+        }
+
 ##### OUTPUTS
 Outputs:
+  UnicornPropertiesEventBusName:
+    Value: !GetAtt UnicornPropertiesEventBus.Name
+
   ContractStatusTableName:
     Value: !Ref ContractStatusTable
 
