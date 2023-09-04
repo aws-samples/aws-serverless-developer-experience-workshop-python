@@ -31,3 +31,35 @@ default:
   local_start_lambda:
     parameters:
       warm_containers: EAGER
+
+subscribers:
+  global:
+    parameters:
+      stack_name: uni-prop-local-properties-subscribers
+      s3_prefix: uni-prop-local-properties-subscribers
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: subscriber-policies.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=Local"
+
+subscriptions:
+  global:
+    parameters:
+      stack_name: uni-prop-local-properties-subscriptions
+      s3_prefix: uni-prop-local-properties-subscriptions
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: subscriptions.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=Local"
