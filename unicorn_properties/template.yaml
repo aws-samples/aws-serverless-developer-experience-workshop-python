@@ -11,11 +11,10 @@ Metadata:
   cfn-lint:
     config:
       ignore_checks:
+        - ES4000
         - ES6000
-        - ES2003
-        - I3042
-        - I3011   # Required to ignore retention policy of inline-created SQS queue for ApprovalStateMachine's EventBridge Rule
-        - I3013   # Required to ignore retention policy of inline-created SQS queue for ApprovalStateMachine's EventBridge Rule
+        - I3011
+        - I3013
 
 #### PARAMETERS
 Parameters:
