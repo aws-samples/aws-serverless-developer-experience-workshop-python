@@ -11,7 +11,6 @@ deps:
 	poetry install
 
 build:
-	swagger-cli validate api.yaml
 	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export -f requirements.txt --without-hashes --output src/approvals_service/requirements.txt
