@@ -38,9 +38,7 @@ Mappings:
 
 #### CONDITIONS
 Conditions:
-  IsProd: !Equals
-    - !Ref Stage
-    - Prod
+  IsProd: !Equals [!Ref Stage, Prod]
 
 #### GLOBALS
 Globals:
@@ -110,11 +108,8 @@ Resources:
       Policies:
         - DynamoDBStreamReadPolicy:
             TableName: !Ref ContractStatusTable
-            StreamName: !Select
-              - 3
-              - !Split
-                - /
-                - !GetAtt ContractStatusTable.StreamArn
+            StreamName:
+              !Select [3, !Split ["/", !GetAtt ContractStatusTable.StreamArn]]
         - SQSSendMessagePolicy:
             QueueName: !GetAtt PropertiesServiceDLQ.QueueName
         - Statement:
@@ -271,10 +266,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/lambda/${ContractStatusChangedHandlerFunction}"
-      RetentionInDays: !FindInMap
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   PropertiesApprovalSyncFunctionLogGroup:
     Type: AWS::Logs::LogGroup
@@ -282,10 +274,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/lambda/${PropertiesApprovalSyncFunction}"
-      RetentionInDays: !FindInMap
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   ContractExistsCheckerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
@@ -293,10 +282,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/lambda/${ContractExistsCheckerFunction}"
-      RetentionInDays: !FindInMap
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   ContentIntegrityValidatorFunctionLogGroup:
     Type: AWS::Logs::LogGroup
@@ -304,10 +290,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/lambda/${ContentIntegrityValidatorFunction}"
-      RetentionInDays: !FindInMap
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   WaitForContractApprovalFunctionLogGroup:
     Type: AWS::Logs::LogGroup
@@ -315,10 +298,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/lambda/${WaitForContractApprovalFunction}"
-      RetentionInDays: !FindInMap
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   ApprovalStateMachineLogGroup:
     Type: AWS::Logs::LogGroup
@@ -326,10 +306,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/states/${AWS::StackName}-ApprovalStateMachine"
-      RetentionInDays: !FindInMap
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### DYNAMODB TABLE
   ContractStatusTable:
