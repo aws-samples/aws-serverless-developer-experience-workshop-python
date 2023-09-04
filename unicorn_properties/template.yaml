@@ -105,8 +105,8 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractStatusTable
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt PropertiesServiceDLQ.QueueName
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractStatusTable
       Events:
         StatusChanged:
           Type: EventBridgeRule
@@ -135,6 +135,8 @@ Resources:
       CodeUri: src/
       Handler: properties_service.properties_approval_sync_function.lambda_handler
       Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractStatusTable
         - DynamoDBStreamReadPolicy:
             TableName: !Ref ContractStatusTable
             StreamName:
