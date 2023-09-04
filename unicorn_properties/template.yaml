@@ -6,9 +6,7 @@ Description: >
   Unicorn Properties Service - events synchronization with Contract Service +
   Property Approval Workflow
 
-######################################
-# METADATA
-######################################
+#### METADATA
 Metadata:
   cfn-lint:
     config:
@@ -19,9 +17,7 @@ Metadata:
         - I3011   # Required to ignore retention policy of inline-created SQS queue for ApprovalStateMachine's EventBridge Rule
         - I3013   # Required to ignore retention policy of inline-created SQS queue for ApprovalStateMachine's EventBridge Rule
 
-######################################
-# PARAMETERS
-######################################
+#### PARAMETERS
 Parameters:
   Stage:
     Type: String
@@ -31,9 +27,7 @@ Parameters:
       - Dev
       - Prod
 
-######################################
-# MAPPINGS
-######################################
+#### MAPPINGS
 Mappings:
   LogsRetentionPeriodMap:
     Local:
@@ -43,18 +37,13 @@ Mappings:
     Prod:
       Days: 14
 
-######################################
-# CONDITIONS
-######################################
+#### CONDITIONS
 Conditions:
   IsProd: !Equals
     - !Ref Stage
     - Prod
 
-######################################
-# GLOBALS
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-######################################
+#### GLOBALS
 Globals:
   Function:
     Runtime: python3.11
@@ -79,13 +68,9 @@ Globals:
       project: AWS Serverless Developer Experience
       service: Unicorn Properties Service
 
-######################################
-# RESOURCES
-######################################
+#### RESOURCES
 Resources:
-  ######################################
-  # LAMBDA FUNCTIONS
-  ######################################
+  #### SSM PARAMETERS
   ContractStatusChangedHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -180,9 +165,8 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
-  ######################################
-  # DLQs
-  ######################################
+
+  #### DLQs
   PropertiesEventBusRuleDLQ:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
@@ -213,9 +197,8 @@ Resources:
         - Key: stage
           Value: !Ref Stage
 
-  ######################################
-  # STATE MACHINE
-  ######################################
+
+  #### STATE MACHINE
   ApprovalStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
@@ -281,9 +264,8 @@ Resources:
         EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
         ServiceName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
 
-  ######################################
-  # CLOUDWATCH LOG GROUPS
-  ######################################
+
+  #### CLOUDWATCH LOG GROUPS
   ContractStatusChangedHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -350,9 +332,7 @@ Resources:
         - !Ref Stage
         - Days
 
-  ######################################
-  # DYNAMODB TABLE
-  ######################################
+  #### DYNAMODB TABLE
   ContractStatusTable:
     Type: AWS::DynamoDB::Table
     UpdateReplacePolicy: Delete
@@ -375,9 +355,7 @@ Resources:
         - Key: stage
           Value: !Ref Stage
 
-######################################
-# OUTPUTS
-######################################
+##### OUTPUTS
 Outputs:
   ContractStatusTableName:
     Value: !Ref ContractStatusTable
