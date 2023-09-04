@@ -108,7 +108,7 @@ Resources:
         - DynamoDBReadPolicy:
             TableName: !Ref ContractStatusTable
       Events:
-        StatusChanged:
+        StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
             RuleName: properties.contstatuschangedhdr-contracts.contstatuschanged
@@ -190,13 +190,12 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
-
   #### DLQs
   PropertiesEventBusRuleDLQ:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
-    Properties: 
+    Properties:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
@@ -221,7 +220,6 @@ Resources:
           Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
           Value: !Ref Stage
-
 
   #### STATE MACHINE
   ApprovalStateMachine:
@@ -248,15 +246,15 @@ Resources:
         - Statement:
             - Effect: Allow
               Action:
-                - "logs:CreateLogDelivery"
-                - "logs:GetLogDelivery"
-                - "logs:UpdateLogDelivery"
-                - "logs:DeleteLogDelivery"
-                - "logs:ListLogDeliveries"
-                - "logs:PutResourcePolicy"
-                - "logs:DescribeResourcePolicies"
-                - "logs:DescribeLogGroups"
-                - "cloudwatch:PutMetricData"
+                - logs:CreateLogDelivery
+                - logs:GetLogDelivery
+                - logs:UpdateLogDelivery
+                - logs:DeleteLogDelivery
+                - logs:ListLogDeliveries
+                - logs:PutResourcePolicy
+                - logs:DescribeResourcePolicies
+                - logs:DescribeLogGroups
+                - cloudwatch:PutMetricData
               Resource: "*"
       Logging:
         Destinations:
