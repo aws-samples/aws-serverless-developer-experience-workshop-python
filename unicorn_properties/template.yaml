@@ -73,6 +73,30 @@ Globals:
 #### RESOURCES
 Resources:
   #### SSM PARAMETERS
+  # Services own and share their namespace
+  UnicornPropertiesNamespaceParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /UniProp/${Stage}/UnicornPropertiesNamespace
+      Value: !FindInMap [Constants, ServiceNamespace, Value]
+
+  # Services share their event bus name and arn
+  UnicornPropertiesEventBusNameParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /UniProp/${Stage}/UnicornPropertiesEventBus
+      Value: !GetAtt UnicornPropertiesEventBus.Name
+
+  UnicornPropertiesEventBusArnParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /UniProp/${Stage}/UnicornPropertiesEventBusArn
+      Value: !GetAtt UnicornPropertiesEventBus.Arn
+
+  #### LAMBDA FUNCTIONS
   ContractStatusChangedHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
