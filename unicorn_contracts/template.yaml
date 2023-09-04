@@ -306,8 +306,10 @@ Resources:
       Description: Catch all events published by the contracts service.
       EventBusName: !Ref UnicornContractsEventBus
       EventPattern:
+        account:
+          - !Ref AWS::AccountId
         source:
-          - prefix: ""
+          - !FindInMap [Constants, ServiceNamespace, Value]
       State: ENABLED #You may want to disable this rule in production
       Targets:
         - Arn: !GetAtt UnicornContractsCatchAllLogGroup.Arn
@@ -319,6 +321,10 @@ Resources:
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Properties:
+      LogGroupName: !Sub
+        - "/aws/events/${Stage}/${NS}-catchall"
+        - Stage: !Ref Stage
+          NS: !FindInMap [Constants, ServiceNamespace, Value]
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Permissions to allow EventBridge to send logs to CloudWatch

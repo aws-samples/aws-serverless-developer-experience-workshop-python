@@ -376,18 +376,15 @@ Resources:
   # Catchall rule used for development purposes.
   UnicornWebCatchAllRule:
     Type: AWS::Events::Rule
-    Metadata:
-      cfn-lint:
-        config:
-          ignore_checks:
-            - ES4000
     Properties:
       Name: contracts.catchall
       Description: Catch all events published by the web service.
       EventBusName: !Ref UnicornWebEventBus
       EventPattern:
+        account:
+          - !Ref AWS::AccountId
         source:
-          - prefix: ""
+          - !FindInMap [Constants, ServiceNamespace, Value]
       State: ENABLED #You may want to disable this rule in production
       Targets:
         - Arn: !GetAtt UnicornWebCatchAllLogGroup.Arn
@@ -399,7 +396,11 @@ Resources:
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Properties:
-      RetentionInDays: 3
+      LogGroupName: !Sub
+        - "/aws/events/${Stage}/${NS}-catchall"
+        - Stage: !Ref Stage
+          NS: !FindInMap [Constants, ServiceNamespace, Value]
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Permissions to allow EventBridge to send logs to CloudWatch
   EventBridgeCloudWatchLogGroupPolicy:
