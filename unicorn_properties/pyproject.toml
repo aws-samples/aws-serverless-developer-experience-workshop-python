@@ -31,9 +31,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -vv -W ignore::UserWarning --cov=properties_service --cov-config=.coveragerc --cov-report term --cov-report html"
+addopts = "-ra -vv -W ignore::UserWarning"
 testpaths = [
-    "./tests/unit",
+    "tests/unit",
+    "tests/integration",
 ]
 
 [tool.ruff]
