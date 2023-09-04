@@ -1,6 +1,8 @@
 #### Global Variables
 stackName		:= $(shell yq -oy '.default.global.parameters.stack_name' samconfig.yaml)
 
+
+#### Build/Deploy Tasks
 build:
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
@@ -12,13 +14,16 @@ deps:
 deploy: build
 	sam deploy --no-confirm-changeset
 
-sync:
-	sam sync --stack-name $(stackName) --watch
 
+#### Tests
 test: unit-test
 
 unit-test:
 	poetry run pytest tests/unit/
+
+#### Utilities
+sync:
+	sam sync --stack-name $(stackName) --watch
 
 logs:
 	sam logs --stack-name $(stackName) -t
