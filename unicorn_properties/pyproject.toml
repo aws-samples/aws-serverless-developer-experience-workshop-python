@@ -23,6 +23,7 @@ requests = "^2.31.0"
 moto = "^4.1.13"
 importlib-metadata = "^6.8.0"
 pyyaml = "^6.0.1"
+arnparse = "^0.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
