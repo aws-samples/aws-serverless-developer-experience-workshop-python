@@ -16,10 +16,13 @@ deploy: build
 
 
 #### Tests
-test: unit-test
+test: unit-test integration-test
 
 unit-test:
 	poetry run pytest tests/unit/
+
+integration-test: deps
+	poetry run pytest tests/integration/
 
 #### Utilities
 sync:
