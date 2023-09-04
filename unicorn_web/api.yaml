@@ -14,16 +14,12 @@ paths:
         required: true
       responses:
         "200":
-          description: "200 response"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Empty"
+          $ref: '#/components/responses/Empty'
       x-amazon-apigateway-request-validator: "Validate body"
       x-amazon-apigateway-integration:
         credentials:
           Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
-        httpMethod: "POST"
+        httpMethod: POST
         uri:
           "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornWebIngestQueue.QueueName}"
         responses:
@@ -35,149 +31,107 @@ paths:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
           application/json: "Action=SendMessage&MessageBody=$input.body&MessageAttribute.1.Name=HttpMethod&MessageAttribute.1.Value.StringValue=$context.httpMethod&MessageAttribute.1.Value.DataType=String"
-        passthroughBehavior: "never"
-        type: "aws"
-    options:
-      responses:
-        "200":
-          description: "200 response"
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: "string"
-            Access-Control-Allow-Methods:
-              schema:
-                type: "string"
-            Access-Control-Allow-Headers:
-              schema:
-                type: "string"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Empty"
-      x-amazon-apigateway-integration:
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        passthroughBehavior: "when_no_match"
-        type: "mock"
+        passthroughBehavior: never
+        type: aws
   /search/{country}/{city}:
     get:
       parameters:
-        - name: "country"
-          in: "path"
+        - name: country
+          in: path
           required: true
           schema:
-            type: "string"
-        - name: "city"
-          in: "path"
+            type: string
+        - name: city
+          in: path
           required: true
           schema:
-            type: "string"
+            type: string
+      responses:
+        "200":
+          $ref: '#/components/responses/ListPropertiesResponseBody'
       x-amazon-apigateway-integration:
         credentials:
           Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
-        httpMethod: "POST"
+        httpMethod: POST
         uri:
           "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchFunction.Arn}/invocations"
         responses:
           default:
             statusCode: "200"
-        passthroughBehavior: "when_no_match"
-        contentHandling: "CONVERT_TO_TEXT"
-        type: "aws_proxy"
-    options:
-      responses:
-        "200":
-          description: "200 response"
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: "string"
-            Access-Control-Allow-Methods:
-              schema:
-                type: "string"
-            Access-Control-Allow-Headers:
-              schema:
-                type: "string"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Empty"
-      x-amazon-apigateway-integration:
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        passthroughBehavior: "when_no_match"
-        type: "mock"
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
   /search/{country}/{city}/{street}:
     get:
       parameters:
-        - name: "street"
-          in: "path"
+        - name: country
+          in: path
           required: true
           schema:
-            type: "string"
-        - name: "country"
-          in: "path"
+            type: string
+        - name: city
+          in: path
           required: true
           schema:
-            type: "string"
-        - name: "city"
-          in: "path"
+            type: string
+        - name: street
+          in: path
           required: true
           schema:
-            type: "string"
+            type: string
+      responses:
+        "200":
+          $ref: '#/components/responses/ListPropertiesResponseBody'
       x-amazon-apigateway-integration:
         credentials:
           Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
-        httpMethod: "POST"
+        httpMethod: POST
         uri:
           "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchFunction.Arn}/invocations"
-        passthroughBehavior: "when_no_match"
-        type: "aws_proxy"
-    options:
-      responses:
-        "200":
-          description: "200 response"
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: "string"
-            Access-Control-Allow-Methods:
-              schema:
-                type: "string"
-            Access-Control-Allow-Headers:
-              schema:
-                type: "string"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Empty"
-      x-amazon-apigateway-integration:
         responses:
           default:
             statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        passthroughBehavior: "when_no_match"
-        type: "mock"
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+  /properties/{country}/{city}/{street}/{number}:
+    get:
+      parameters:
+        - name: country
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: street
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: '#/components/responses/PropertyDetailsResponseBody'
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
+        httpMethod: POST
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchFunction.Arn}/invocations"
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
 components:
   schemas:
     PublicationEvaluationRequestModel:
@@ -186,14 +140,91 @@ components:
       type: "object"
       properties:
         property_id:
-          type: "string"
+          type: string
     PublicationEvaluationResponseModel:
       required:
         - "result"
       type: "object"
       properties:
         result:
-          type: "string"
+          type: string
+    PropertyAddress:
+      type: object
+      required:
+        - country
+        - city
+        - street
+        - number
+      properties:
+        country:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        number:
+          type: string
+    PropertyDetails:
+      type: object
+      required:
+        - description
+        - images
+        - status
+      properties:
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+    PropertyOffer:
+      type: object
+      required:
+        - currency
+        - listprice
+        - contract
+        - status
+      properties:
+        contract:
+          type: string
+        listprice:
+          type: string
+        currency:
+          type: string
+    Property:
+      allOf:
+        - $ref: "#/components/schemas/PropertyAddress"
+        - $ref: "#/components/schemas/PropertyDetails"
+        - $ref: "#/components/schemas/PropertyOffer"
+        - type: object
+          properties:
+            status:
+              type: string
+  responses:
+    ListPropertiesResponseBody:
+      description: 'OK'
+      content:
+        application/json:
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              allOf:
+                - $ref: "#/components/schemas/PropertyAddress"
+                - $ref: "#/components/schemas/PropertyOffer"
+    PropertyDetailsResponseBody:
+      description: 'OK'
+      content:
+        application/json:
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/Property'
     Empty:
-      title: "Empty Schema"
-      type: "object"
+      description: 'OK'
+      content:
+        application/json:
+          schema:
+            title: "Empty Schema"
+            type: "object"

@@ -1,6 +1,5 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-
 import os
 import re
 import json
@@ -8,25 +7,24 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-# import aws_lambda_powertools.event_handler.exceptions
-from aws_lambda_powertools.logging import Logger, correlation_paths
+from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.metrics import Metrics, MetricUnit
-from aws_lambda_powertools.event_handler import content_types
-from aws_lambda_powertools.event_handler.api_gateway import ApiGatewayResolver, Response
-from aws_lambda_powertools.event_handler.exceptions import NotFoundError, InternalServerError, BadRequestError
+from aws_lambda_powertools.utilities.data_classes import event_source, SQSEvent
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get('SERVICE_NAMESPACE')) is None:
-    raise InternalServerError('SERVICE_NAMESPACE environment variable is undefined')
+    raise EnvironmentError('SERVICE_NAMESPACE environment variable is undefined')
 if (DYNAMODB_TABLE := os.environ.get('DYNAMODB_TABLE')) is None:
-    raise InternalServerError('DYNAMODB_TABLE environment variable is undefined')
+    raise EnvironmentError('DYNAMODB_TABLE environment variable is undefined')
 if (EVENT_BUS := os.environ.get('EVENT_BUS')) is None:
-    raise InternalServerError('EVENT_BUS environment variable is undefined')
+    raise EnvironmentError('EVENT_BUS environment variable is undefined')
 
 EXPRESSION = r"[a-z-]+\/[a-z-]+\/[a-z][a-z0-9-]*\/[0-9-]+"
 TARGET_STATE = 'PENDING'
+
 
 # Initialise PowerTools
 logger: Logger = Logger()
@@ -38,58 +36,86 @@ event_bridge = boto3.client('events')
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
-app = ApiGatewayResolver()
 
-
-@app.post('/request_approval')
 @tracer.capture_method
-def request_approval():
-    """Emits event that user requested a property approval
-
-    Returns
-    -------
-    Confirmation that the event was emitted successfully
-    """
-    logger.info('Call to request_approval')
-
+def send_eb_event(detail_type, resources, detail):
     try:
-        raw_data = app.current_event.json_body
-    except json.JSONDecodeError as e:
-        error_msg = f"Unable to parse event input as JSON: {e}"
+        entry = {'EventBusName': EVENT_BUS,
+                 'Source': SERVICE_NAMESPACE,
+                 'DetailType': detail_type,
+                 'Resources': resources,
+                 'Detail': json.dumps(detail)}
+
+        response = event_bridge.put_events(Entries=[entry])
+    except ClientError as e:
+        error_msg = f"Unable to send event to Event Bus: {e}"
         logger.error(error_msg)
-        raise BadRequestError(error_msg)
+        raise Exception(error_msg)
 
-    property_id = raw_data['property_id']
+    failed_count = response['FailedEntryCount']
 
-    if not re.fullmatch(EXPRESSION, property_id):
-        error_msg = f"Input invalid; must conform to regular expression: {EXPRESSION}"
+    if failed_count > 0:
+        error_msg = f"Error sending requests to Event Bus; {failed_count} message(s) failed"
         logger.error(error_msg)
-        raise BadRequestError(error_msg)
+        raise Exception(error_msg)
 
-    country, city, street, number = property_id.split('/')
+    entry_count = len(response['Entries'])
+    logger.info(f"Sent event to EventBridge; {failed_count} records failed; {entry_count} entries received")
+    return response
 
-    pk_details = f"{country}#{city}".replace(' ', '-').lower()
-    pk = f"PROPERTY#{pk_details}"
-    sk = f"{street}#{str(number)}".replace(' ', '-').lower()
 
+@tracer.capture_method
+def get_property_from_ddb(pk: str, sk: str) -> dict:
     response = table.get_item(
-        Key={
-            'PK': pk,
-            'SK': sk
-        },
-        AttributesToGet=['currency', 'status', 'listprice', 'contract', 'country', 'city', 'number', 'images',
+        Key={ 'PK': pk, 'SK': sk },
+        AttributesToGet=['currency', 'status', 'listprice', 'contract', 
+                         'country', 'city', 'number', 'images',
                          'description', 'street']
     )
     if 'Item' not in response:
         logger.info(f"No item found in table {DYNAMODB_TABLE} with PK {pk} and SK {sk}")
-        raise NotFoundError(f"No property found in database with the requested property id")
+        return dict()
 
-    item = response['Item']
+    return response['Item']
 
-    status = item.pop('status')
 
-    if status in [ 'APPROVED', 'DECLINED', 'PENDING' ]:
-        return {'result': f"Property is already {status}; no action taken" }
+@tracer.capture_method
+def update_property_status(pk: str, sk: str, state: str) -> bool:
+    logger.info(f"Updating status of property {pk},{sk} in DynamoDB to {state}")
+    response = table.update_item(
+        Key={ 'PK': pk, 'SK': sk },
+        AttributeUpdates={
+            'status': {
+                'Value': state,
+                'Action': 'PUT',
+            }
+        },
+    )
+    return response['ResponseMetadata']['HTTPStatusCode'] == 22
+
+
+@tracer.capture_method
+def request_approval(raw_data: dict):
+    property_id = raw_data['property_id']
+
+    # Validate Property ID
+    if not re.fullmatch(EXPRESSION, property_id):
+        error_msg = f"Invalid property id '{property_id}'; must conform to regular expression: {EXPRESSION}"
+        logger.error(error_msg)
+        return
+
+    country, city, street, number = property_id.split('/')
+
+    # Construct DDB PK & SK keys for this property
+    pk_details = f"{country}#{city}".replace(' ', '-').lower()
+    pk = f"PROPERTY#{pk_details}"
+    sk = f"{street}#{str(number)}".replace(' ', '-').lower()
+
+    item = get_property_from_ddb(pk=pk, sk=sk)
+
+    if (status := item.pop('status')) in [ 'APPROVED', 'DECLINED', 'PENDING' ]:
+        logger.info(f"Property '{property_id}' is already {status}; no action taken")
+        return
 
     item['property_id'] = property_id
     item['address'] = {
@@ -101,93 +127,23 @@ def request_approval():
     item['status'] = TARGET_STATE
     item['listprice'] = int(item['listprice'])
 
-    try:
-        event_bridge_response = event_bridge.put_events(
-            Entries=[
-                {
-                    'Source': SERVICE_NAMESPACE,
-                    'DetailType': 'PublicationApprovalRequested',
-                    'Resources': [property_id],
-                    'Detail': json.dumps(item),
-                    'EventBusName': EVENT_BUS,
-                },
-            ]
-        )
-    except ClientError as e:
-        error_msg = f"Unable to send event to Event Bus: {e}"
-        logger.error(error_msg)
-        raise InternalServerError(error_msg)
-
-    failed_count = event_bridge_response['FailedEntryCount']
-
-    if failed_count > 0:
-        error_msg = f"Error sending requests to Event Bus; {failed_count} message(s) failed"
-        logger.error(error_msg)
-        raise InternalServerError(error_msg)
-
-    entry_count = len(event_bridge_response['Entries'])
-    logger.info(f"Sent event to EventBridge; {failed_count} records failed; {entry_count} entries received")
+    send_eb_event(detail_type='PublicationApprovalRequested',
+                  resources=[property_id], detail=item)
 
     metrics.add_metric(name='ApprovalsRequested', unit=MetricUnit.Count, value=1)
-    logger.info(f"Storing new property in DynamoDB with PK {pk} and SK {sk}")
-    dynamodb_response = table.update_item(
-        Key={
-            'PK': pk,
-            'SK': sk,
-        },
-        AttributeUpdates={
-            'status': {
-                'Value': TARGET_STATE,
-                'Action': 'PUT',
-            }
-        },
-    )
-    http_status_code = dynamodb_response['ResponseMetadata']['HTTPStatusCode']
-    logger.info(f"Stored item in DynamoDB; responded with status code {http_status_code}")
-
-    return {'result': 'Approval Requested'}
+    update_property_status(pk=pk, sk=sk, state=TARGET_STATE)
 
 
-@app.exception_handler(ClientError)
-def handle_service_error(ex: ClientError):
-    """Handles any error coming from a remote service request made through Boto3 (ClientError)
+@metrics.log_metrics(capture_cold_start_metric=True) # type: ignore
+@logger.inject_lambda_context
+@tracer.capture_method
+@event_source(data_class=SQSEvent)
+def lambda_handler(event: SQSEvent, context: LambdaContext):
+    # Multiple records can be delivered in a single event
+    for record in event.records:
+        http_method = record.message_attributes.get('HttpMethod', {}).get('stringValue')
 
-    Parameters
-    ----------
-    ex : Boto3 error occuring during an AWS API call anywhere in this Lambda function
-
-    Returns
-    -------
-    Specific HTTP error code to be returned to the client as well as a friendly error message
-    """
-    error_code = ex.response['Error']['Code']
-    http_status_code = ex.response['ResponseMetadata']['HTTPStatusCode']
-    error_message = ex.response['Error']['Message']
-    logger.exception(f"EXCEPTION {error_code} ({http_status_code}): {error_message}")
-    return Response(
-        status_code=http_status_code,
-        content_type=content_types.TEXT_PLAIN,
-        body=error_code
-    )
-
-
-@logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)  # type: ignore
-@tracer.capture_lambda_handler  # type: ignore
-@metrics.log_metrics
-def lambda_handler(event, context):
-    """Main entry point for PropertyWeb lambda function
-
-    Parameters
-    ----------
-    event : API Gateway Lambda Proxy Request
-        The event passed to the function.
-    context : AWS Lambda Context
-        The context for the Lambda function.
-
-    Returns
-    -------
-    API Gateway Lambda Proxy Response
-        HTTP response object with Contract and Property ID
-    """
-    logger.info(event)
-    return app.resolve(event, context)
+        if http_method == 'POST':
+            request_approval(record.json_body)
+        else:
+            raise Exception(f'Unable to handle HttpMethod {http_method}')

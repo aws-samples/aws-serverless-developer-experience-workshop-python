@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: "2010-09-09"
-Description: Defines EventBus subscriptions for UnicornWeb service
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Defines the subscriptions for 
 
 Parameters:
   Stage:
@@ -13,15 +13,15 @@ Parameters:
       - Prod
 
 Resources:
-  PublicationApprovedSubscriptionRule:
+  PublicationEvaluationCompletedSubscriptionRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: web.publicationapproved-properties.pubevalcompleted
-      Description: Publication evaluation completed subscription
+      Name: web.pubapprovalwf-properties.pubapprovalrequested
+      Description: Constract Status Changed subscription
       EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespaceParam}}"
+          - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
         detail-type:
           - PublicationEvaluationCompleted
       State: ENABLED
@@ -30,10 +30,10 @@ Resources:
           Arn: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBusArn}}"
           RoleArn: !GetAtt UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
 
-  # This IAM role allows EventBridge to assume the permissions necessary to send events
-  # from the Unicorn Properties event bus to the Unicorn Web event bus.
-  # If the Unicorn Web wants receive events from other services, then add another policy
-  # the arn of the which includes the event bus arn where Unicorn Web is creating the
+  # This IAM role allows EventBridge to assume the permissions necessary to send events 
+  # from the Unicorn Contracts event bus to the Unicorn Properties event bus.
+  # If the Unicorn Properties service wants receive events from other services, then add another policy 
+  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
   # subscription (rule)
   UnicornPropertiesEventBusToUnicornWebEventBusRole:
     Type: AWS::IAM::Role
@@ -41,38 +41,18 @@ Resources:
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
+            Action: sts:AssumeRole
             Principal:
-              Service:
-                - events.amazonaws.com
-            Action:
-              - sts:AssumeRole
+              Service: events.amazonaws.com
       Policies:
         - PolicyName: PutEventsOnUnicornWebEventBus
           PolicyDocument:
             Statement:
               - Effect: Allow
-                Action: "events:PutEvents"
+                Action: events:PutEvents
                 Resource: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBusArn}}"
 
-  # SQS resource policy required to allow target on devops bus to send failed messages to target DLQ
-  # BlueServiceEventBusDlqPolicy:
-  #   Type: AWS::SQS::QueuePolicy
-  #   Properties:
-  #     Queues:
-  #       - !Ref BlueServiceEventBusDlqUrl
-  #     PolicyDocument:
-  #       Statement:
-  #         - Action:
-  #             - "SQS:SendMessage"
-  #           Effect: "Allow"
-  #           Resource: !Ref BlueServiceEventBusDlqArn
-  #           Principal:
-  #             Service: "events.amazonaws.com"
-  #           Condition:
-  #             ArnEquals:
-  #               "aws:SourceArn": !GetAtt BlueServiceE2SubscriptionRule.Arn
-
 Outputs:
-  BlueE2Subscription:
-    Description: Rule ARN for blue service event 2 subscription
-    Value: !GetAtt PublicationApprovedSubscriptionRule.Arn
+  PublicationEvaluationCompletedSubscription:
+    Description: Rule ARN for Property service event subscription
+    Value: !GetAtt PublicationEvaluationCompletedSubscriptionRule.Arn

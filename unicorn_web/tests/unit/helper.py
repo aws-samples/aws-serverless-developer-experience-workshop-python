@@ -1,34 +1,39 @@
-import os
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 import json
-import inspect
+from pathlib import Path
 
 
 TABLE_NAME = 'table1'
 EVENTBUS_NAME = 'test-eventbridge'
+SQS_QUEUE_NAME = 'test_sqs'
+EVENTS_DIR = Path(__file__).parent / 'events'
 
 
 def load_event(filename) -> dict:
-    file_dir = os.path.dirname(os.path.abspath((inspect.stack()[0])[1]))
-    print(file_dir)
-    with open(os.path.join(file_dir, filename), 'r') as f:
-        return json.load(f)
+    return json.load(open(EVENTS_DIR / f'{filename}.json', 'r'))
 
 
 def return_env_vars_dict(k={}):
-    d = {
+    if k is None:
+        k = {}
+
+    env_dict = {
+        "AWS_DEFAULT_REGION": "ap-southeast-2",
         "DYNAMODB_TABLE": TABLE_NAME,
         "EVENT_BUS": "test-eventbridge",
-        "AWS_DEFAULT_REGION": "ap-southeast-2",
-        "SERVICE_NAMESPACE":"unicorn.web",
-        "POWERTOOLS_SERVICE_NAME":"unicorn.web",
-        "POWERTOOLS_TRACE_DISABLED":"true",
+        "LOG_LEVEL":"INFO",
         "POWERTOOLS_LOGGER_LOG_EVENT":"true",
         "POWERTOOLS_LOGGER_SAMPLE_RATE":"0.1",
         "POWERTOOLS_METRICS_NAMESPACE":"unicorn.web",
-        "LOG_LEVEL":"INFO"
+        "POWERTOOLS_SERVICE_NAME":"unicorn.web",
+        "POWERTOOLS_TRACE_DISABLED":"true",
+        "SERVICE_NAMESPACE":"unicorn.web",
     }
-    d.update(k)
-    return d
+
+    env_dict |= k
+
+    return env_dict
 
 
 def create_ddb_table_property_web(dynamodb):
@@ -107,6 +112,22 @@ def create_ddb_table_property_web(dynamodb):
     })
     return table
 
+
 def create_test_eventbridge_bus(eventbridge):
     bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
     return bus
+
+
+def create_test_sqs_ingestion_queue(sqs):
+    queue = sqs.create_queue(QueueName=SQS_QUEUE_NAME)
+    return queue
+
+
+def prop_id_to_pk_sk(property_id: str) -> dict[str, str]:
+    country, city, street, number = property_id.split('/')
+    pk_details = f"{country}#{city}".replace(' ', '-').lower()
+
+    return {
+        'PK': f"PROPERTY#{pk_details}",
+        'SK': f"{street}#{str(number)}".replace(' ', '-').lower(),
+    }

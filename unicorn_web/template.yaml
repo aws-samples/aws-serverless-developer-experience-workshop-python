@@ -102,36 +102,14 @@ Resources:
       Value: !GetAtt UnicornWebEventBus.Arn
 
   ##### LAMBDA FUNCTIONS
-  SearchFunction:
+  SearchFunction:               #API
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: search_service.property_search_function.lambda_handler
+      CodeUri: src/search_service/
+      Handler: property_search_function.lambda_handler
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref WebTable
-      Events:
-        ListPropertiesByCity:
-          Type: Api
-          Properties:
-            Path: /search/{country}/{city}
-            Method: get
-            RestApiId:
-              Ref: UnicornWebApi
-        ListPropertiesByStreet:
-          Type: Api
-          Properties:
-            Path: /search/{country}/{city}/{street}
-            Method: get
-            RestApiId:
-              Ref: UnicornWebApi
-        PropertyDetails:
-          Type: Api
-          Properties:
-            Path: /properties/{country}/{city}/{street}/{number}
-            Method: get
-            RestApiId:
-              Ref: UnicornWebApi
 
   SearchFunctionLogGroup:
     Type: AWS::Logs::LogGroup
@@ -144,11 +122,11 @@ Resources:
         - !Ref Stage
         - Days
 
-  RequestApprovalFunction:
+  RequestApprovalFunction:      #SQS
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: approvals_service.request_approval_function.lambda_handler
+      CodeUri: src/approvals_service/
+      Handler: request_approval_function.lambda_handler
       Policies:
         - EventBridgePutEventsPolicy:
             EventBusName: !Ref UnicornWebEventBus
@@ -177,11 +155,11 @@ Resources:
         - !Ref Stage
         - Days
 
-  PublicationApprovedFunction:
+  PublicationApprovedFunction:  #EB
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: approvals_service.publication_approved_event_handler.lambda_handler
+      CodeUri: src/approvals_service/
+      Handler: publication_approved_event_handler.lambda_handler
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref WebTable
@@ -394,36 +372,6 @@ Resources:
           StringEquals:
             events:source:
               - !FindInMap [Constants, ServiceNamespace, Value]
-
-  # Event bus policy to restrict who can create rules on the event bus to subscribe to events published by the Contracts Service.
-  # Update this policy as you get new subscribers by adding their namespace to events:source
-  # PropertiesServiceRulePolicy:
-  #   Type: "AWS::Events::EventBusPolicy"
-  #   Properties:
-  #     EventBusName: !Ref UnicornWebEventBus
-  #     StatementId: !Sub CreateRulePolicy-${Stage}
-  #     Statement:
-  #       Effect: Allow
-  #       Principal:
-  #         AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
-  #       Action:
-  #         - "events:PutRule"
-  #         - "events:DeleteRule"
-  #         - "events:DescribeRule"
-  #         - "events:DisableRule"
-  #         - "events:EnableRule"
-  #         - "events:PutTargets"
-  #         - "events:RemoveTargets"
-  #       Resource:
-  #         - !Sub arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/${UnicornWebEventBus.Name}/*
-  #       Condition:
-  #         StringEqualsIfExists:
-  #           "events:creatorAccount": "${aws:PrincipalAccount}"
-  #         StringEquals:
-  #           "events:source":
-  #             - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesNamespace}}"
-  #         "Null":
-  #           "events:source": "false"
 
   # Catchall rule used for development purposes.
   UnicornWebCatchAllRule:
