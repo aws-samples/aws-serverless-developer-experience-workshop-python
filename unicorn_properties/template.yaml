@@ -220,7 +220,7 @@ Resources:
     Type: AWS::Serverless::StateMachine
     Properties:
       Name: !Sub "${AWS::StackName}-ApprovalStateMachine"
-      DefinitionUri: src/state_machine/property_approval.asl.yaml
+      DefinitionUri: state_machine/property_approval.asl.yaml
       Tracing:
         Enabled: true
       Policies:

@@ -20,7 +20,7 @@ States:
             - ContractStatusNotFoundException
           Next: NotFound
       Comment: >-
-        ContractExistsChecker checks to see if a contract for a psecified
+        ContractExistsChecker checks to see if a contract for a specified
         property  exists.
   
   NotFound:
