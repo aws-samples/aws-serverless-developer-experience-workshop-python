@@ -13,7 +13,7 @@ deps:
 	poetry install
 
 deploy: build
-	sam deploy --no-confirm-changeset
+	sam deploy
 
 
 #### Tests
