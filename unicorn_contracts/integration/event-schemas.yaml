@@ -52,7 +52,7 @@ Resources:
       RegistryName: !GetAtt EventRegistry.RegistryName
       SchemaName: !Sub '${EventRegistry.RegistryName}@ContractStatusChanged'
       Description: 'The schema for a request to publish a property'
-      Content: >
+      Content: !Sub |
         {
           "openapi": "3.0.0",
           "info": {
@@ -76,7 +76,7 @@ Resources:
                   "account"
                 ],
                 "x-amazon-events-detail-type": "ContractStatusChanged",
-                "x-amazon-events-source": "unicorn.contracts",
+                "x-amazon-events-source": "${EventRegistry.RegistryName}",
                 "properties": {
                   "detail": {
                     "$ref": "#/components/schemas/ContractStatusChanged"
