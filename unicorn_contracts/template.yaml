@@ -325,13 +325,16 @@ Resources:
         - "/aws/events/${Stage}/${NS}-catchall"
         - Stage: !Ref Stage
           NS: !FindInMap [Constants, ServiceNamespace, Value]
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
 
   # Permissions to allow EventBridge to send logs to CloudWatch
   EventBridgeCloudWatchLogGroupPolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
-      PolicyName: !Sub UnicornContracts-EventBridgeToCWLogsPolicy-${Stage}
+      PolicyName: !Sub EvBToCWLogs-${AWS::StackName}
       # Note: PolicyDocument has to be established this way. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-resourcepolicy.html#cfn-logs-resourcepolicy-policydocument
       PolicyDocument: !Sub |
         {

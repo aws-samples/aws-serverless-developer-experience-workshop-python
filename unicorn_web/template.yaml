@@ -67,8 +67,7 @@ Globals:
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE:
-          !FindInMap [Constants, ServiceNamespace, Value]
+        POWERTOOLS_METRICS_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value]
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
@@ -122,7 +121,7 @@ Resources:
         - !Ref Stage
         - Days
 
-  RequestApprovalFunction:      #SQS
+  RequestApprovalFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/approvals_service/
@@ -155,7 +154,7 @@ Resources:
         - !Ref Stage
         - Days
 
-  PublicationApprovedFunction:  #EB
+  PublicationApprovedFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/approvals_service/
@@ -376,8 +375,13 @@ Resources:
   # Catchall rule used for development purposes.
   UnicornWebCatchAllRule:
     Type: AWS::Events::Rule
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - ES4000
     Properties:
-      Name: contracts.catchall
+      Name: web.catchall
       Description: Catch all events published by the web service.
       EventBusName: !Ref UnicornWebEventBus
       EventPattern:
@@ -406,7 +410,7 @@ Resources:
   EventBridgeCloudWatchLogGroupPolicy:
     Type: AWS::Logs::ResourcePolicy
     Properties:
-      PolicyName: !Sub UnicornWeb-EventBridgeToCWLogsPolicy-${Stage}
+      PolicyName: !Sub EvBToCWLogs-${AWS::StackName}
       # Note: PolicyDocument has to be established this way. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-resourcepolicy.html#cfn-logs-resourcepolicy-policydocument
       PolicyDocument: !Sub |
         {
