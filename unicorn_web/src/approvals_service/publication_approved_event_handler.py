@@ -1,6 +1,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+from typing import Tuple
 import os
+import re
+
 import boto3
 
 from aws_lambda_powertools.logging import Logger
@@ -19,6 +22,9 @@ if (DYNAMODB_TABLE := os.environ.get('DYNAMODB_TABLE')) is None:
 if (EVENT_BUS := os.environ.get('EVENT_BUS')) is None:
     raise InternalServerError('EVENT_BUS environment variable is undefined')
 
+EXPRESSION = r"[a-z-]+\/[a-z-]+\/[a-z][a-z0-9-]*\/[0-9-]+"
+TARGET_STATE = 'PENDING'
+
 # Initialise PowerTools
 logger: Logger = Logger()
 tracer: Tracer = Tracer()
@@ -28,6 +34,24 @@ metrics: Metrics = Metrics()
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
+
+
+@tracer.capture_method
+def get_keys_for_property(property_id: str) -> Tuple[str, str]:
+    # Validate Property ID
+    if not re.fullmatch(EXPRESSION, property_id):
+        error_msg = f"Invalid property id '{property_id}'; must conform to regular expression: {EXPRESSION}"
+        logger.error(error_msg)
+        return '', ''
+
+    # Extract components from property_id
+    country, city, street, number = property_id.split('/')
+
+    # Construct DDB PK & SK keys for this property
+    pk_details = f"{country}#{city}".replace(' ', '-').lower()
+    pk = f"PROPERTY#{pk_details}"
+    sk = f"{street}#{str(number)}".replace(' ', '-').lower()
+    return pk, sk
 
 
 @tracer.capture_method

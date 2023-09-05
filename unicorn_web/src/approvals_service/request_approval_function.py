@@ -1,5 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+from typing import Tuple
 import os
 import re
 import json
@@ -38,7 +39,7 @@ table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
 
 @tracer.capture_method
-def send_eb_event(detail_type, resources, detail):
+def publish_event(detail_type, resources, detail):
     try:
         entry = {'EventBusName': EVENT_BUS,
                  'Source': SERVICE_NAMESPACE,
@@ -65,7 +66,7 @@ def send_eb_event(detail_type, resources, detail):
 
 
 @tracer.capture_method
-def get_property_from_ddb(pk: str, sk: str) -> dict:
+def get_property(pk: str, sk: str) -> dict:
     response = table.get_item(
         Key={ 'PK': pk, 'SK': sk },
         AttributesToGet=['currency', 'status', 'listprice', 'contract', 
@@ -102,16 +103,26 @@ def request_approval(raw_data: dict):
     if not re.fullmatch(EXPRESSION, property_id):
         error_msg = f"Invalid property id '{property_id}'; must conform to regular expression: {EXPRESSION}"
         logger.error(error_msg)
-        return
+        return '', ''
 
+    # Extract components from property_id
     country, city, street, number = property_id.split('/')
 
     # Construct DDB PK & SK keys for this property
     pk_details = f"{country}#{city}".replace(' ', '-').lower()
     pk = f"PROPERTY#{pk_details}"
     sk = f"{street}#{str(number)}".replace(' ', '-').lower()
+    return pk, sk
 
-    item = get_property_from_ddb(pk=pk, sk=sk)
+
+@tracer.capture_method
+def request_approval(raw_data: dict):
+    property_id = raw_data['property_id']
+
+    # Validate property_id, parse it and extract DynamoDB PK/SK values
+    pk, sk = get_keys_for_property(property_id=property_id)
+    # Get property details from database
+    item = get_property(pk=pk, sk=sk)
 
     if (status := item.pop('status')) in [ 'APPROVED', 'DECLINED', 'PENDING' ]:
         logger.info(f"Property '{property_id}' is already {status}; no action taken")
@@ -127,11 +138,9 @@ def request_approval(raw_data: dict):
     item['status'] = TARGET_STATE
     item['listprice'] = int(item['listprice'])
 
-    send_eb_event(detail_type='PublicationApprovalRequested',
-                  resources=[property_id], detail=item)
-
     metrics.add_metric(name='ApprovalsRequested', unit=MetricUnit.Count, value=1)
     update_property_status(pk=pk, sk=sk, state=TARGET_STATE)
+    publish_event(detail_type='PublicationApprovalRequested', resources=[property_id], detail=item)
 
 
 @metrics.log_metrics(capture_cold_start_metric=True) # type: ignore
