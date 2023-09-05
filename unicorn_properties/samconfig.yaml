@@ -32,6 +32,19 @@ default:
     parameters:
       warm_containers: EAGER
 
+schema:
+  deploy:
+    parameters:
+      stack_name: uni-prop-local-properties-schema
+      s3_prefix: uni-prop-local-properties-schema
+      template_file: integration/event-schemas.yaml
+      resolve_s3: true
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      parameter_overrides:
+        - "Stage=Local"
+
 subscribers:
   global:
     parameters:
