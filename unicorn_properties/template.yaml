@@ -3,15 +3,13 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Unicorn Properties Service - events synchronization with Contract Service +
-  Property Approval Workflow
+  Unicorn Properties Service resources
 
 #### METADATA
 Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - ES4000
         - ES6000
         - I3011
         - I3013
@@ -43,7 +41,9 @@ Mappings:
 
 #### CONDITIONS
 Conditions:
-  IsProd: !Equals [!Ref Stage, Prod]
+  IsProd: !Equals
+    - !Ref Stage
+    - Prod
 
 #### GLOBALS
 Globals:
@@ -67,20 +67,21 @@ Globals:
         LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
-      project: !FindInMap [Constants, ProjectName, Value]
+      project: !FindInMap [ Constants, ProjectName, Value ]
       namespace: !FindInMap [Constants, ServiceNamespace, Value]
 
 #### RESOURCES
 Resources:
+
   #### SSM PARAMETERS
   # Services own and share their namespace
-  UnicornPropertiesNamespaceParam:
+  UnicornPropertiesNamespaceParam: 
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /UniProp/${Stage}/UnicornPropertiesNamespace
       Value: !FindInMap [Constants, ServiceNamespace, Value]
-
+      
   # Services share their event bus name and arn
   UnicornPropertiesEventBusNameParam:
     Type: AWS::SSM::Parameter
@@ -88,13 +89,14 @@ Resources:
       Type: String
       Name: !Sub /UniProp/${Stage}/UnicornPropertiesEventBus
       Value: !GetAtt UnicornPropertiesEventBus.Name
-
+      
   UnicornPropertiesEventBusArnParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /UniProp/${Stage}/UnicornPropertiesEventBusArn
       Value: !GetAtt UnicornPropertiesEventBus.Arn
+
 
   #### LAMBDA FUNCTIONS
   ContractStatusChangedHandlerFunction:
@@ -200,7 +202,7 @@ Resources:
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
-          Value: !FindInMap [Constants, ProjectName, Value]
+          Value: !FindInMap [ Constants, ProjectName, Value ]
         - Key: namespace
           Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
@@ -215,7 +217,7 @@ Resources:
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
-          Value: !FindInMap [Constants, ProjectName, Value]
+          Value: !FindInMap [ Constants, ProjectName, Value ]
         - Key: namespace
           Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
@@ -353,13 +355,16 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       Tags:
         - Key: project
-          Value: !FindInMap [Constants, ProjectName, Value]
+          Value: !FindInMap [ Constants, ProjectName, Value ]
         - Key: namespace
           Value: !FindInMap [Constants, ServiceNamespace, Value]
         - Key: stage
           Value: !Ref Stage
 
-  #### EVENT BUS
+
+#### EVENT BUS
+  
+  # Event bus for Contract Service used to publish and consume events
   UnicornPropertiesEventBus:
     Type: AWS::Events::EventBus
     Properties:
