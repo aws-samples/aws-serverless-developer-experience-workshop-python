@@ -131,8 +131,6 @@ Resources:
             EventBusName: !Ref UnicornWebEventBus
         - DynamoDBReadPolicy:
             TableName: !Ref WebTable
-        - DynamoDBWritePolicy:
-            TableName: !Ref WebTable
       Events:
         IngestQueue:
           Type: SQS
@@ -154,14 +152,12 @@ Resources:
         - !Ref Stage
         - Days
 
-  PublicationApprovedFunction:
+  PublicationApprovedEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/approvals_service/
       Handler: publication_approved_event_handler.lambda_handler
       Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref WebTable
         - DynamoDBWritePolicy:
             TableName: !Ref WebTable
       Events:
@@ -181,12 +177,12 @@ Resources:
             DeadLetterConfig:
               Arn: !GetAtt UnicornWebEventBusDLQ.Arn
 
-  PublicationApprovedFunctionLogGroup:
+  PublicationApprovedEventHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${PublicationApprovedFunction}"
+      LogGroupName: !Sub "/aws/lambda/${PublicationApprovedEventHandlerFunction}"
       RetentionInDays: !FindInMap
         - LogsRetentionPeriodMap
         - !Ref Stage
@@ -474,9 +470,9 @@ Outputs:
   RequestApprovalFunctionArn:
     Description: Approval function ARN
     Value: !GetAtt RequestApprovalFunction.Arn
-  PublicationApprovedFunctionArn:
+  PublicationApprovedEventHandleFunctionArn:
     Description: Publication evaluation event handler function ARN
-    Value: !GetAtt PublicationApprovedFunction.Arn
+    Value: !GetAtt PublicationApprovedEventHandlerFunction.Arn
 
   IsProd:
     Description: Is Production?

@@ -81,24 +81,7 @@ def get_property(pk: str, sk: str) -> dict:
 
 
 @tracer.capture_method
-def update_property_status(pk: str, sk: str, state: str) -> bool:
-    logger.info(f"Updating status of property {pk},{sk} in DynamoDB to {state}")
-    response = table.update_item(
-        Key={ 'PK': pk, 'SK': sk },
-        AttributeUpdates={
-            'status': {
-                'Value': state,
-                'Action': 'PUT',
-            }
-        },
-    )
-    return response['ResponseMetadata']['HTTPStatusCode'] == 22
-
-
-@tracer.capture_method
-def request_approval(raw_data: dict):
-    property_id = raw_data['property_id']
-
+def get_keys_for_property(property_id: str) -> Tuple[str, str]:
     # Validate Property ID
     if not re.fullmatch(EXPRESSION, property_id):
         error_msg = f"Invalid property id '{property_id}'; must conform to regular expression: {EXPRESSION}"
@@ -139,7 +122,6 @@ def request_approval(raw_data: dict):
     item['listprice'] = int(item['listprice'])
 
     metrics.add_metric(name='ApprovalsRequested', unit=MetricUnit.Count, value=1)
-    update_property_status(pk=pk, sk=sk, state=TARGET_STATE)
     publish_event(detail_type='PublicationApprovalRequested', resources=[property_id], detail=item)
 
 
