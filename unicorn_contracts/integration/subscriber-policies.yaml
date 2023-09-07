@@ -1,24 +1,25 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Defines the event bus policies that determine who can create rules on the event bus to
+AWSTemplateFormatVersion: "2010-09-09"
+Description:
+  Defines the event bus policies that determine who can create rules on the event bus to
   subscribe to events published by the Contracts Service.
 
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
+      - local
+      - dev
+      - prod
 
 Resources:
   # Update this policy as you get new subscribers by adding their namespace to events:source
   CrossServiceCreateRulePolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
-      EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBus}}"
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBus}}"
       StatementId: !Sub "${AWS::StackName}-CreateRulePolicy-${Stage}"
       Statement:
         Effect: Allow
@@ -35,12 +36,12 @@ Resources:
         Resource:
           - !Sub
               - arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/${eventBusName}/*
-              - eventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBus}}"
+              - eventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBus}}"
         Condition:
           StringEqualsIfExists:
             "events:creatorAccount": "${aws:PrincipalAccount}"
           StringEquals:
             "events:source":
-              - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
           "Null":
             "events:source": "false"

@@ -2,3 +2,4 @@
 .idea/*
 **/.aws-sam/
 .vscode/*
+.vscode/settings.json

@@ -14,7 +14,11 @@ paths:
         required: true
       responses:
         "200":
-          $ref: '#/components/responses/Empty'
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Empty'
       x-amazon-apigateway-request-validator: "Validate body"
       x-amazon-apigateway-integration:
         credentials:
@@ -30,7 +34,7 @@ paths:
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
-          application/json: "Action=SendMessage&MessageBody=$input.body&MessageAttribute.1.Name=HttpMethod&MessageAttribute.1.Value.StringValue=$context.httpMethod&MessageAttribute.1.Value.DataType=String"
+          application/json: "Action=SendMessage&MessageBody=$input.body"
         passthroughBehavior: never
         type: aws
   /search/{country}/{city}:

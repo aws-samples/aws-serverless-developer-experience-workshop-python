@@ -7,11 +7,11 @@ Description: 'Event Schemas for use by the Contracts Service'
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
+      - local
+      - dev
+      - prod
 
 #### RESOURCES
 Resources:
@@ -19,7 +19,7 @@ Resources:
     Type: AWS::EventSchemas::Registry
     Properties: 
       Description: 'Event schemas for Unicorn Contracts'
-      RegistryName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
   EventRegistryPolicy:
     Type: AWS::EventSchemas::RegistryPolicy

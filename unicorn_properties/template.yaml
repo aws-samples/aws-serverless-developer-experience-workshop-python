@@ -18,20 +18,20 @@ Metadata:
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
+      - local
+      - dev
+      - prod
 
 #### MAPPINGS
 Mappings:
   LogsRetentionPeriodMap:
-    Local:
+    local:
       Days: 3
-    Dev:
+    dev:
       Days: 3
-    Prod:
+    prod:
       Days: 14
   Constants:
     ServiceNamespace:
@@ -79,7 +79,7 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/UnicornPropertiesNamespace
+      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesNamespace
       Value: !FindInMap [Constants, ServiceNamespace, Value]
       
   # Services share their event bus name and arn
@@ -87,14 +87,14 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/UnicornPropertiesEventBus
+      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBus
       Value: !GetAtt UnicornPropertiesEventBus.Name
       
   UnicornPropertiesEventBusArnParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/UnicornPropertiesEventBusArn
+      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBusArn
       Value: !GetAtt UnicornPropertiesEventBus.Arn
 
 
@@ -117,7 +117,7 @@ Resources:
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
-                - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+                - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
               detail-type:
                 - ContractStatusChanged
             RetryPolicy:
@@ -240,7 +240,7 @@ Resources:
         - LambdaInvokePolicy:
             FunctionName: !Ref ContractExistsCheckerFunction
         - S3ReadPolicy:
-            BucketName: !Sub "{{resolve:ssm:/UniProp/${Stage}/ImagesBucket}}"
+            BucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         - ComprehendBasicAccessPolicy: {}
         - RekognitionDetectOnlyPolicy: {}
         - EventBridgePutEventsPolicy:
@@ -264,28 +264,28 @@ Resources:
               LogGroupArn: !GetAtt ApprovalStateMachineLogGroup.Arn
         Level: ALL
         IncludeExecutionData: true
-      Events:
-        PubApproReqEvent:
-          Type: EventBridgeRule
-          Properties:
-            RuleName: properties.pubapprovalwf-web.pubapprovalrequested
-            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
-            Pattern:
-              source:
-                - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
-              detail-type:
-                - PublicationApprovalRequested
-            RetryPolicy:
-              MaximumRetryAttempts: 5
-              MaximumEventAgeInSeconds: 900
-            DeadLetterConfig:
-              Type: SQS
-              Destination: !GetAtt PropertiesServiceDLQ.Arn
+      # Events:
+      #   PubApproReqEvent:
+      #     Type: EventBridgeRule
+      #     Properties:
+      #       RuleName: properties.pubapprovalwf-web.pubapprovalrequested
+      #       EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+      #       Pattern:
+      #         source:
+      #           - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+      #         detail-type:
+      #           - PublicationApprovalRequested
+      #       RetryPolicy:
+      #         MaximumRetryAttempts: 5
+      #         MaximumEventAgeInSeconds: 900
+      #       DeadLetterConfig:
+      #         Type: SQS
+      #         Destination: !GetAtt PropertiesServiceDLQ.Arn
       DefinitionSubstitutions:
         ContractExistsChecker: !GetAtt ContractExistsCheckerFunction.Arn
         WaitForContractApproval: !GetAtt WaitForContractApprovalFunction.Arn
         ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
-        ImageUploadBucketName: !Sub "{{resolve:ssm:/UniProp/${Stage}/ImagesBucket}}"
+        ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
         ServiceName: !FindInMap [Constants, ServiceNamespace, Value]
 

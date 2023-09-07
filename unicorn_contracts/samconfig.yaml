@@ -18,7 +18,7 @@ default:
       fail_on_empty_changeset: false
       capabilities: CAPABILITY_IAM
       parameter_overrides:
-        - "Stage=Local"
+        - "Stage=local"
   validate:
     parameters:
       lint: true
@@ -32,11 +32,11 @@ default:
     parameters:
       warm_containers: EAGER
 
-schema:
+schemas:
   global:
     parameters:
-      stack_name: uni-prop-local-contract-schema
-      s3_prefix: uni-prop-local-contract-schema
+      stack_name: uni-prop-local-contract-schemas
+      s3_prefix: uni-prop-local-contract-schemas
       resolve_s3: true
   deploy:
     parameters:
@@ -45,20 +45,20 @@ schema:
       fail_on_empty_changeset: false
       on_failure: ROLLBACK
       parameter_overrides:
-        - "Stage=Local"
+        - "Stage=local"
 
-subscribers:
+subscriber-policies:
   global:
     parameters:
-      stack_name: uni-prop-local-contract-subscribers
-      s3_prefix: uni-prop-local-contract-subscribers
+      stack_name: uni-prop-local-contract-subscriber-policies
+      s3_prefix: uni-prop-local-contract-subscriber-policies
       resolve_s3: true
   deploy:
     parameters:
-      template_file: subscriber-policies.yaml
+      template_file: ./integration/subscriber-policies.yaml
       confirm_changeset: false
       fail_on_empty_changeset: false
       on_failure: ROLLBACK
       capabilities: CAPABILITY_IAM
       parameter_overrides:
-        - "Stage=Local"
+        - "Stage=local"

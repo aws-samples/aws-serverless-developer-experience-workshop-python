@@ -21,20 +21,20 @@ Metadata:
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
+      - local
+      - dev
+      - prod
 
 #### MAPPINGS
 Mappings:
   LogsRetentionPeriodMap:
-    Local:
+    local:
       Days: 3
-    Dev:
+    dev:
       Days: 3
-    Prod:
+    prod:
       Days: 14
   Constants:
     ServiceNamespace:
@@ -79,13 +79,14 @@ Globals:
 
 #### RESOURCES
 Resources:
+
   #### SSM PARAMETERS
   # Services own and share their namespace
   UnicornContractsNamespaceParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/UnicornContractsNamespace
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsNamespace
       Value: !FindInMap [Constants, ServiceNamespace, Value]
 
   # Services share their event bus name and arn
@@ -93,14 +94,14 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/UnicornContractsEventBus
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBus
       Value: !GetAtt UnicornContractsEventBus.Name
 
   UnicornContractsEventBusArnParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/UnicornContractsEventBusArn
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusArn
       Value: !GetAtt UnicornContractsEventBus.Arn
 
   #### LAMBDA FUNCTIONS

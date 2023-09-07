@@ -6,11 +6,11 @@ Description: Defines the subscriptions for
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
+      - local
+      - dev
+      - prod
 
 Resources:
   ContractStatusChangedSubscriptionRule:
@@ -18,16 +18,16 @@ Resources:
     Properties:
       Name: properties.statuschanged-contract.pubevalcompleted
       Description: Constract Status Changed subscription
-      EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsEventBusArn}}"
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
         detail-type:
           - ContractStatusChanged
       State: ENABLED
       Targets:
         - Id: SendEventTo
-          Arn: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
           RoleArn: !GetAtt UnicornContractsEventBusToUnicornPropertiesEventBusRole.Arn
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
@@ -50,23 +50,23 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: events:PutEvents
-                Resource: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
+                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
 
   PublicationApprovalRequestedSubscriptionRule:
     Type: AWS::Events::Rule
     Properties:
       Name: properties.pubapprovalwf-web.pubapprovalrequested
       Description: Publication evaluation completed subscription
-      EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebEventBusArn}}"
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornWebNamespace}}"
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
         detail-type:
           - PublicationApprovalRequested
       State: ENABLED
       Targets:
         - Id: SendEventTo
-          Arn: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
           RoleArn: !GetAtt UnicornWebEventBusToUnicornPropertiesEventBusRole.Arn
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
@@ -89,7 +89,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: events:PutEvents
-                Resource: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornPropertiesEventBusArn}}"
+                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
 
 Outputs:
   ContractStatusChangedSubscription:
