@@ -3,8 +3,8 @@ version: 0.1
 default:
   global:
     parameters:
-      stack_name: uni-prop-local-contract
-      s3_prefix: uni-prop-local-contract
+      stack_name: uni-prop-local-contracts
+      s3_prefix: uni-prop-local-contracts
       resolve_s3: true
       resolve_image_repositories: true
   build:
@@ -35,8 +35,8 @@ default:
 schemas:
   global:
     parameters:
-      stack_name: uni-prop-local-contract-schemas
-      s3_prefix: uni-prop-local-contract-schemas
+      stack_name: uni-prop-local-contracts-schemas
+      s3_prefix: uni-prop-local-contracts-schemas
       resolve_s3: true
   deploy:
     parameters:
@@ -50,8 +50,8 @@ schemas:
 subscriber-policies:
   global:
     parameters:
-      stack_name: uni-prop-local-contract-subscriber-policies
-      s3_prefix: uni-prop-local-contract-subscriber-policies
+      stack_name: uni-prop-local-contracts-subscriber-policies
+      s3_prefix: uni-prop-local-contracts-subscriber-policies
       resolve_s3: true
   deploy:
     parameters:

@@ -35,8 +35,8 @@ default:
 schemas:
   deploy:
     parameters:
-      stack_name: uni-prop-local-properties-schema
-      s3_prefix: uni-prop-local-properties-schema
+      stack_name: uni-prop-local-properties-schemas
+      s3_prefix: uni-prop-local-properties-schemas
       template_file: integration/event-schemas.yaml
       resolve_s3: true
       confirm_changeset: false

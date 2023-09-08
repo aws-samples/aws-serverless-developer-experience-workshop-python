@@ -11,8 +11,7 @@ Metadata:
     config:
       ignore_checks:
         - ES6000
-        - I3011
-        - I3013
+        - ES4000
 
 #### PARAMETERS
 Parameters:
@@ -34,8 +33,6 @@ Mappings:
     prod:
       Days: 14
   Constants:
-    ServiceNamespace:
-      Value: "unicorn.properties"
     ProjectName:
       Value: "AWS Serverless Developer Experience"
 
@@ -58,30 +55,22 @@ Globals:
       Variables:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
         EVENT_BUS: !Ref UnicornPropertiesEventBus
-        SERVICE_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value]
-        POWERTOOLS_SERVICE_NAME: !FindInMap [Constants, ServiceNamespace, Value]
+        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !FindInMap [Constants, ServiceNamespace, Value]
+        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
       project: !FindInMap [ Constants, ProjectName, Value ]
-      namespace: !FindInMap [Constants, ServiceNamespace, Value]
+      namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
 #### RESOURCES
 Resources:
 
   #### SSM PARAMETERS
-  # Services own and share their namespace
-  UnicornPropertiesNamespaceParam: 
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesNamespace
-      Value: !FindInMap [Constants, ServiceNamespace, Value]
-      
   # Services share their event bus name and arn
   UnicornPropertiesEventBusNameParam:
     Type: AWS::SSM::Parameter
@@ -204,7 +193,7 @@ Resources:
         - Key: project
           Value: !FindInMap [ Constants, ProjectName, Value ]
         - Key: namespace
-          Value: !FindInMap [Constants, ServiceNamespace, Value]
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -219,7 +208,7 @@ Resources:
         - Key: project
           Value: !FindInMap [ Constants, ProjectName, Value ]
         - Key: namespace
-          Value: !FindInMap [Constants, ServiceNamespace, Value]
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -287,7 +276,7 @@ Resources:
         ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
         ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
-        ServiceName: !FindInMap [Constants, ServiceNamespace, Value]
+        ServiceName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
   #### CLOUDWATCH LOG GROUPS
   ContractStatusChangedHandlerFunctionLogGroup:
@@ -357,7 +346,7 @@ Resources:
         - Key: project
           Value: !FindInMap [ Constants, ProjectName, Value ]
         - Key: namespace
-          Value: !FindInMap [Constants, ServiceNamespace, Value]
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -386,7 +375,7 @@ Resources:
         Condition:
           StringEquals:
             events:source:
-              - !FindInMap [Constants, ServiceNamespace, Value]
+              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
   # Catchall rule used for development purposes.
   UnicornPropertiesCatchAllRule:
@@ -399,7 +388,7 @@ Resources:
         account:
           - !Ref AWS::AccountId
         source:
-          - !FindInMap [Constants, ServiceNamespace, Value]
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
         - Arn: !GetAtt UnicornPropertiesCatchAllLogGroup.Arn
@@ -414,7 +403,7 @@ Resources:
       LogGroupName: !Sub
         - "/aws/events/${Stage}/${NS}-catchall"
         - Stage: !Ref Stage
-          NS: !FindInMap [Constants, ServiceNamespace, Value]
+          NS: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Permissions to allow EventBridge to send logs to CloudWatch

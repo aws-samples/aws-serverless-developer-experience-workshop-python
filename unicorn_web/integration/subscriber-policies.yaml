@@ -1,8 +1,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Defines the event bus policies that determine who can create rules on the event bus to
-  subscribe to events published by the Contracts Service.
+Description: |
+  Defines the event bus policies that determine who can create rules on the event bus to
+  subscribe to events published by Unicorn Web Service.
 
 Parameters:
   Stage:
@@ -19,7 +20,7 @@ Resources:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
-      StatementId: !Sub "${AWS::StackName}-CreateRulePolicy-${Stage}"
+      StatementId: !Sub "${AWS::StackName}-CreateRule"
       Statement:
         Effect: Allow
         Principal:
@@ -41,6 +42,6 @@ Resources:
             "events:creatorAccount": "${aws:PrincipalAccount}"
           StringEquals:
             "events:source":
-              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
           "Null":
             "events:source": "false"

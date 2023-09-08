@@ -1,9 +1,8 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Event Schemas for use by the Properties Service'
+Description: Event Schemas for use by the Properties Service
 
-#### PARAMETERS
 Parameters:
   Stage:
     Type: String
@@ -13,7 +12,6 @@ Parameters:
       - dev
       - prod
 
-#### RESOURCES
 Resources:
   EventRegistry:
     Type: AWS::EventSchemas::Registry

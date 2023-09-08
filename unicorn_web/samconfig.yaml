@@ -35,8 +35,8 @@ default:
 schemas:
   global:
     parameters:
-      stack_name: uni-prop-local-web-schema
-      s3_prefix: uni-prop-local-web-schema
+      stack_name: uni-prop-local-web-schemas
+      s3_prefix: uni-prop-local-web-schemas
       resolve_s3: true
   deploy:
     parameters:
