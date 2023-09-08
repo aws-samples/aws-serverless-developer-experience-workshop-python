@@ -66,7 +66,7 @@ def create_ddb_table_property_web(dynamodb):
         'listprice': '200',
         'currency': 'USD',
         'images': [],
-        'status': 'NEW',
+        'status': 'PENDING',
     })
     table.put_item(Item={
         'PK': 'PROPERTY#usa#anytown',
