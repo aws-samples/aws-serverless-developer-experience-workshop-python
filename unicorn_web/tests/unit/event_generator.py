@@ -152,26 +152,3 @@ def sqs_event(messages: List[dict],
         })
 
     return SQSEvent({ "Records": records })
-
-
-
-
-# {
-#     "Records": [
-#       {
-#         "messageAttributes": {
-#           "HttpMethod": {
-#             "stringValue": "PUT",
-#             "stringListValues": [],
-#             "binaryListValues": [],
-#             "dataType": "String"
-#           }
-#         },
-#         "md5OfMessageAttributes": "39c36267fdf9c8d354b1069e44662d24",
-#         "md5OfBody": "4bc398b7ae8e52d7f7eaed3cb76c12ef",
-#         "eventSource": "aws:sqs",
-#         "eventSourceARN": "arn:aws:sqs:ap-southeast-2:718758479978:uni-prop-local-contract-UnicornContractsIngestQueue-p5zisiK0Xbxn",
-#         "awsRegion": "ap-southeast-2"
-#       }
-#     ]
-#   }
