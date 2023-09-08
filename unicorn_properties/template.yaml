@@ -223,23 +223,23 @@ Resources:
               LogGroupArn: !GetAtt ApprovalStateMachineLogGroup.Arn
         Level: ALL
         IncludeExecutionData: true
-      # Events:
-      #   PubApproReqEvent:
-      #     Type: EventBridgeRule
-      #     Properties:
-      #       RuleName: properties.pubapprovalwf-web.pubapprovalrequested
-      #       EventBusName: !GetAtt UnicornPropertiesEventBus.Name
-      #       Pattern:
-      #         source:
-      #           - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
-      #         detail-type:
-      #           - PublicationApprovalRequested
-      #       RetryPolicy:
-      #         MaximumRetryAttempts: 5
-      #         MaximumEventAgeInSeconds: 900
-      #       DeadLetterConfig:
-      #         Type: SQS
-      #         Destination: !GetAtt PropertiesServiceDLQ.Arn
+      Events:
+        PubApproReqEvent:
+          Type: EventBridgeRule
+          Properties:
+            RuleName: properties.pubapprovalwf-web.pubapprovalrequested
+            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+            Pattern:
+              source:
+                - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+              detail-type:
+                - PublicationApprovalRequested
+            RetryPolicy:
+              MaximumRetryAttempts: 5
+              MaximumEventAgeInSeconds: 900
+            DeadLetterConfig:
+              Type: SQS
+              Destination: !GetAtt PropertiesServiceDLQ.Arn
       DefinitionSubstitutions:
         ContractExistsChecker: !GetAtt ContractExistsCheckerFunction.Arn
         WaitForContractApproval: !GetAtt WaitForContractApprovalFunction.Arn
