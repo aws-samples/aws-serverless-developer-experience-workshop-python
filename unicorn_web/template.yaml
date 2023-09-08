@@ -360,6 +360,8 @@ Resources:
         account:
           - !Ref AWS::AccountId
         source:
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
           - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
