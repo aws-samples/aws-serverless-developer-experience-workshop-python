@@ -67,7 +67,6 @@ Globals:
       namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
 Resources:
-
   #### SSM PARAMETERS
   # Services share their event bus name and arn
   UnicornContractsEventBusNameParam:
@@ -255,13 +254,13 @@ Resources:
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
   #### EVENT BUS
-  # Event bus for Contract Service used to publish and consume events
+  # Event bus for Unicorn Contract Service used to publish and consume events
   UnicornContractsEventBus:
     Type: AWS::Events::EventBus
     Properties:
       Name: !Sub UnicornContractsBus-${Stage}
 
-  # Event bus policy to restrict who can publish events (should only be services from ServiceNamespace)
+  # Event bus policy to restrict who can publish events (should only be services from UnicornContractsNamespace)
   ContractEventsBusPublishPolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:

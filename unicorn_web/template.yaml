@@ -314,13 +314,13 @@ Resources:
           Value: !Ref Stage
 
   #### EVENT BUS
-  # Event bus for Properties Web used to publish and consume events
+  # Event bus for Unicorn Web Service used to publish and consume events
   UnicornWebEventBus:
     Type: AWS::Events::EventBus
     Properties:
       Name: !Sub UnicornWebBus-${Stage}
 
-  # Event bus policy to restrict who can publish events (should only be services from WebServiceNamespace)
+  # Event bus policy to restrict who can publish events (should only be services from UnicornWebNamespace)
   UnicornWebEventBusPublishPolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
