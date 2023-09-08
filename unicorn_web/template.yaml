@@ -140,6 +140,10 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref WebTable
+      EventInvokeConfig:
+        DestinationConfig:
+          OnFailure:
+            Type: SQS
       Events:
         ApprovalEvent:
           Type: EventBridgeRule
