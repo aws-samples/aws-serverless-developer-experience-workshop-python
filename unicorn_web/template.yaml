@@ -7,7 +7,6 @@ Transform:
 Description: >
   Unicorn Properties Services - web interface. Add, list and get details for Unicorn Properties.
 
-#### METADATA
 Metadata:
   cfn-lint:
     config:
@@ -19,7 +18,6 @@ Metadata:
         - ES1007
         # - I3042
 
-#### PARAMETERS
 Parameters:
   Stage:
     Type: String
@@ -29,7 +27,6 @@ Parameters:
       - dev
       - prod
 
-#### MAPPINGS
 Mappings:
   LogsRetentionPeriodMap:
     local:
@@ -42,11 +39,9 @@ Mappings:
     ProjectName:
       Value: "AWS Serverless Developer Experience"
 
-#### CONDITIONS
 Conditions:
   IsProd: !Equals [!Ref Stage, Prod]
 
-#### GLOBALS
 Globals:
   Api:
     OpenApiVersion: 3.0.1
@@ -73,7 +68,6 @@ Globals:
       project: !FindInMap [Constants, ProjectName, Value]
       namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
 
-##### RESOURCES
 Resources:
   #### SSM PARAMETERS
   # Services share their event bus name and arn
@@ -409,7 +403,6 @@ Resources:
           ]
         }
 
-#### OUTPUTS
 Outputs:
   BaseUrl:
     Description: Web service API endpoint

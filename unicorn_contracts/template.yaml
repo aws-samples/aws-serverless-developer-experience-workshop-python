@@ -7,7 +7,6 @@ Transform:
 Description: >
   Unicorn Contracts Service resources.
 
-#### METADATA
 Metadata:
   cfn-lint:
     config:
@@ -17,7 +16,6 @@ Metadata:
         - ES1001
         - WS2001
 
-#### PARAMETERS
 Parameters:
   Stage:
     Type: String
@@ -27,7 +25,6 @@ Parameters:
       - dev
       - prod
 
-#### MAPPINGS
 Mappings:
   LogsRetentionPeriodMap:
     local:
@@ -40,11 +37,9 @@ Mappings:
     ProjectName:
       Value: "AWS Serverless Developer Experience"
 
-#### CONDITIONS
 Conditions:
   IsProd: !Equals [!Ref Stage, Prod]
 
-#### GLOBALS
 Globals:
   Api:
     OpenApiVersion: 3.0.1
@@ -71,7 +66,6 @@ Globals:
       project: !FindInMap [Constants, ProjectName, Value]
       namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
-#### RESOURCES
 Resources:
 
   #### SSM PARAMETERS
@@ -411,7 +405,6 @@ Resources:
                   - events:PutEvents
                 Resource: !GetAtt UnicornContractsEventBus.Arn
 
-#### OUTPUTS
 Outputs:
   BaseUrl:
     Description: Web service API endpoint
