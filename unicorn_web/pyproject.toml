@@ -18,9 +18,7 @@ crhelper = "^2.0.11"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
-pytest-mock = "^3.11.1"
 pytest-cov = "^4.1.0"
-coverage = "^7.2.7"
 requests = "^2.31.0"
 moto = "^4.1.13"
 importlib-metadata = "^6.8.0"
@@ -32,7 +30,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -vv -W ignore::UserWarning --cov=approvals_service --cov=search_service --cov-config=.coveragerc --cov-report term --cov-report html"
+addopts = "-ra -vv -W ignore::UserWarning"
 testpaths = [
     "./tests/unit",
 ]
