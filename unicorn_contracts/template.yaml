@@ -106,13 +106,6 @@ Resources:
             ScalingConfig:
               MaximumConcurrency: 5
 
-  ContractEventHandlerFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${ContractEventHandlerFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### API GATEWAY REST API
   UnicornContractsApi:
@@ -175,14 +168,6 @@ Resources:
                   - sqs:GetQueueUrl
                 Resource: !GetAtt UnicornContractsIngestQueue.Arn
 
-  # API GW CloudWatch Logs Group, logs all requests from API Gateway
-  UnicornContractsApiLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
   UnicornContractsApiGwAccountConfigRole:
     Type: AWS::IAM::Role
     Properties:
@@ -235,6 +220,26 @@ Resources:
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+
+
+  #### CLOUDWATCH LOG GROUPS
+  # Logs all invocations of ContractEventHandler Function
+  ContractEventHandlerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContractEventHandlerFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
+  # API GW CloudWatch Logs Group, logs all requests from API Gateway
+  UnicornContractsApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
 
   #### DYNAMODB TABLE
   # Persist Contracts information in DynamoDB

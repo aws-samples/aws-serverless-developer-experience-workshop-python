@@ -181,36 +181,6 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
-  #### DLQs
-  PropertiesEventBusRuleDLQ:
-    Type: AWS::SQS::Queue
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      SqsManagedSseEnabled: true
-      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
-      Tags:
-        - Key: project
-          Value: !FindInMap [ Constants, ProjectName, Value ]
-        - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
-        - Key: stage
-          Value: !Ref Stage
-
-  PropertiesServiceDLQ:
-    Type: AWS::SQS::Queue
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      SqsManagedSseEnabled: true
-      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
-      Tags:
-        - Key: project
-          Value: !FindInMap [ Constants, ProjectName, Value ]
-        - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
-        - Key: stage
-          Value: !Ref Stage
 
   #### STATE MACHINE
   ApprovalStateMachine:
@@ -277,6 +247,41 @@ Resources:
         ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
         ServiceName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+
+
+  #### DEAD LETTER QUEUES
+  # Store EventBridge events that failed to be DELIVERED to ContractStatusChangedHandlerFunction
+  PropertiesEventBusRuleDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      Tags:
+        - Key: project
+          Value: !FindInMap [ Constants, ProjectName, Value ]
+        - Key: namespace
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        - Key: stage
+          Value: !Ref Stage
+
+  # Store failed INVOCATIONS to each Lambda function in Unicorn Properties Service
+  PropertiesServiceDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      Tags:
+        - Key: project
+          Value: !FindInMap [ Constants, ProjectName, Value ]
+        - Key: namespace
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        - Key: stage
+          Value: !Ref Stage
+
 
   #### CLOUDWATCH LOG GROUPS
   # Store Lambda execution logs for each Lambda function in Unicorn Properties Service

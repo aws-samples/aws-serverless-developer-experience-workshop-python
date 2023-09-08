@@ -414,6 +414,19 @@ Outputs:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
 
+  ApiSearchPropertiesByCity:
+    Description: "GET request to list all properties in a given city"
+    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}"
+  ApiSearchPropertiesByStreet:
+    Description: "GET request to list all properties in a given street"
+    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}/{street}"
+  ApiPropertyApproval:
+    Description: "POST request to add a property to the database"
+    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/request_approval"
+  ApiPropertyDetails:
+    Description: "GET request to get the full details of a single property"
+    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/properties/{country}/{city}/{street}/{number}"
+
   IngestQueueUrl:
     Description: URL for the Ingest SQS Queue
     Value: !GetAtt UnicornWebIngestQueue.QueueUrl
@@ -436,15 +449,3 @@ Outputs:
     Description: Is Production?
     Value: !If [IsProd, "true", "false"]
 
-  ApiSearchPropertiesByCity:
-    Description: "GET request to list all properties in a given city"
-    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}"
-  ApiSearchPropertiesByStreet:
-    Description: "GET request to list all properties in a given street"
-    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}/{street}"
-  ApiPropertyApproval:
-    Description: "POST request to add a property to the database"
-    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/request_approval"
-  ApiPropertyDetails:
-    Description: "GET request to get the full details of a single property"
-    Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/properties/{country}/{city}/{street}/{number}"
