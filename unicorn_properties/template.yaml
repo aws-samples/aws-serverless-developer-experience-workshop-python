@@ -192,6 +192,8 @@ Resources:
         Enabled: true
       Policies:
         - AWSXRayDaemonWriteAccess
+        - ComprehendBasicAccessPolicy
+        - RekognitionDetectOnlyPolicy
         - LambdaInvokePolicy:
             FunctionName: !Ref WaitForContractApprovalFunction
         - LambdaInvokePolicy:
@@ -200,8 +202,6 @@ Resources:
             FunctionName: !Ref ContractExistsCheckerFunction
         - S3ReadPolicy:
             BucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
-        - ComprehendBasicAccessPolicy: {}
-        - RekognitionDetectOnlyPolicy: {}
         - EventBridgePutEventsPolicy:
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
         - Statement:
