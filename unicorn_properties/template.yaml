@@ -475,3 +475,7 @@ Outputs:
     Value: !Ref WaitForContractApprovalFunction
   WaitForContractApprovalFunctionArn:
     Value: !GetAtt WaitForContractApprovalFunction.Arn
+
+  #### CLOUDWATCH LOGS OUTPUTS
+  UnicornPropertiesCatchAllLogGroupArn:
+    Value: !GetAtt UnicornPropertiesCatchAllLogGroup.Arn

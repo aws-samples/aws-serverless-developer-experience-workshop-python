@@ -445,3 +445,5 @@ Outputs:
     Description: Publication evaluation event handler function ARN
     Value: !GetAtt PublicationApprovedEventHandlerFunction.Arn
 
+  UnicornWebCatchAllLogGroupArn:
+    Value: !GetAtt UnicornWebCatchAllLogGroup.Arn
