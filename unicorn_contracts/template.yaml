@@ -445,7 +445,3 @@ Outputs:
   #### CLOUDWATCH LOGS OUTPUTS
   UnicornContractsCatchAllLogGroupArn:
     Value: !GetAtt UnicornContractsCatchAllLogGroup.Arn
-
-  IsProd:
-    Description: Is Production?
-    Value: !If [IsProd, "true", "false"]

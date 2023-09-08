@@ -445,9 +445,6 @@ Resources:
         }
 
 Outputs:
-  UnicornPropertiesEventBusName:
-    Value: !GetAtt UnicornPropertiesEventBus.Name
-
   #### DYNAMODB OUTPUTS
   ContractStatusTableName:
     Description: DynamoDB table storing contract status information

@@ -445,7 +445,3 @@ Outputs:
     Description: Publication evaluation event handler function ARN
     Value: !GetAtt PublicationApprovedEventHandlerFunction.Arn
 
-  IsProd:
-    Description: Is Production?
-    Value: !If [IsProd, "true", "false"]
-
