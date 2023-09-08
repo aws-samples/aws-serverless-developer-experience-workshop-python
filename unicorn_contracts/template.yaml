@@ -84,6 +84,7 @@ Resources:
       Value: !GetAtt UnicornContractsEventBus.Arn
 
   #### LAMBDA FUNCTIONS
+  # Processes customer API requests from SQS queue UnicornContractsIngestQueue
   ContractEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -173,7 +174,7 @@ Resources:
                   - sqs:GetQueueUrl
                 Resource: !GetAtt UnicornContractsIngestQueue.Arn
 
-  # API GW Cloudwatch Log Group
+  # API GW CloudWatch Logs Group, logs all requests from API Gateway
   UnicornContractsApiLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -194,6 +195,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
 
   #### INGEST QUEUES
+  # Queue API Gateway requests to be processed by ContractEventHandlerFunction
   UnicornContractsIngestQueue:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
@@ -213,7 +215,7 @@ Resources:
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-
+  # DeadLetterQueue for UnicornContractsIngestQueue. Contains messages that failed to be processed
   UnicornContractsIngestDLQ:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
@@ -231,6 +233,7 @@ Resources:
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
   #### DYNAMODB TABLE
+  # Persist Contracts information in DynamoDB
   ContractsTable:
     Type: AWS::DynamoDB::Table
     UpdateReplacePolicy: Delete
@@ -405,6 +408,7 @@ Resources:
                 Resource: !GetAtt UnicornContractsEventBus.Arn
 
 Outputs:
+  #### API GATEWAY OUTPUTS
   BaseUrl:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
@@ -412,18 +416,22 @@ Outputs:
     Description: Contract service API endpoint
     Value: !Sub "https://${UnicornContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
 
+  #### SQS OUTPUTS
   IngestQueueUrl:
     Description: URL for the Ingest SQS Queue
     Value: !GetAtt UnicornContractsIngestQueue.QueueUrl
 
+  #### DYNAMODB OUTPUTS
   ContractsTableName:
     Description: DynamoDB table storing contract information
     Value: !Ref ContractsTable
 
   ContractEventHandlerFunction:
     Description: Create Contract function ARN
+  #### LAMBDA FUNCTIONS OUTPUTS
     Value: !GetAtt ContractEventHandlerFunction.Arn
 
+  #### CLOUDWATCH LOGS OUTPUTS
   UnicornContractsCatchAllLogGroupArn:
     Value: !GetAtt UnicornContractsCatchAllLogGroup.Arn
 

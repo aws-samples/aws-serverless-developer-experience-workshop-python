@@ -432,9 +432,11 @@ Outputs:
   UnicornPropertiesEventBusName:
     Value: !GetAtt UnicornPropertiesEventBus.Name
 
+  #### DYNAMODB OUTPUTS
   ContractStatusTableName:
     Value: !Ref ContractStatusTable
 
+  #### LAMBDA FUNCTIONS OUTPUTS
   ContractStatusChangedHandlerFunctionName:
     Value: !Ref ContractStatusChangedHandlerFunction
   ContractStatusChangedHandlerFunctionArn:

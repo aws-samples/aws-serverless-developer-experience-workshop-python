@@ -86,6 +86,7 @@ Resources:
       Value: !GetAtt UnicornWebEventBus.Arn
 
   ##### LAMBDA FUNCTIONS
+  # Handle Search and Property details requests from API
   SearchFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -103,6 +104,7 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${SearchFunction}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
+  # Process queued API requests to approve properties from UnicornWebIngestQueue
   RequestApprovalFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -131,6 +133,7 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${RequestApprovalFunction}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
+  # Respond to PublicationEvaluationCompleted events from Unicorn Web EventBus
   PublicationApprovedEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -243,7 +246,7 @@ Resources:
                   - lambda:InvokeFunction
                 Resource: !GetAtt SearchFunction.Arn
 
-  # API GW Cloudwatch Log Group
+  # API GW CloudWatch Logs Group, logs all requests from API Gateway
   UnicornWebApiLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -252,6 +255,7 @@ Resources:
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### INGEST QUEUES
+  # Queue API Gateway requests to be processed by RequestApprovalFunction
   UnicornWebIngestQueue:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
@@ -271,7 +275,7 @@ Resources:
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
-
+  # DeadLetterQueue for UnicornWebIngestQueue. Contains messages that failed to be processed
   UnicornWebIngestDLQ:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
@@ -289,6 +293,7 @@ Resources:
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
 
   ##### DYNAMODB
+  # Persists Property details in DynamoDB
   WebTable:
     Type: AWS::DynamoDB::Table
     UpdateReplacePolicy: Delete
