@@ -1,0 +1,136 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform:
+  - AWS::LanguageExtensions
+  - AWS::Serverless-2016-10-31
+Description: >
+  Base infrastructure that will set up the central event bus and S3 image upload bucket.
+
+
+#### PARAMETERS
+Parameters:
+  Stage:
+    Type: String
+    Default: Local
+    AllowedValues:
+      - Local
+      - Dev
+      - Prod
+
+
+#### MAPPINGS - Should be removed when values change to lower case
+Mappings:
+  Stage:
+    Dev:
+      Value: dev
+    Prod:
+      Value: prod
+    Local:
+      Value: local
+
+
+#### GLOBALS
+Globals:
+  Function:
+    Timeout: 15
+    Runtime: python3.11
+    MemorySize: 128
+    Tracing: Active
+    Architectures:
+      - arm64
+    Tags:
+      stage: !Ref Stage
+      project: AWS Serverless Developer Experience
+      service: Unicorn Base Infrastructure
+
+
+#### RESOURCES
+Resources:
+  # S3 PROPERTY IMAGES BUCKET
+  UnicornPropertiesImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub
+        - uni-prop-${st}-images-${AWS::AccountId}
+        - st: !FindInMap [Stage, !Ref Stage, Value]
+
+  UnicornPropertiesImagesBucketParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /UniProp/${Stage}/ImagesBucket
+      Value: !Ref UnicornPropertiesImagesBucket
+
+  # IMAGE UPLOAD CUSTOM RESOURCE FUNCTION
+  ImageUploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.lambda_handler
+      Runtime: python3.9
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref UnicornPropertiesImagesBucket
+        - Statement:
+          - Sid: S3DeleteBucketPolicy
+            Effect: Allow
+            Action:
+            - s3:DeleteBucket
+            Resource: !GetAtt UnicornPropertiesImagesBucket.Arn
+      InlineCode: |
+        import os
+        import zipfile
+        from urllib.request import urlopen
+        import boto3
+        import cfnresponse
+
+        zip_file_name = 'property_images.zip'
+        url = f"https://aws-serverless-developer-experience-workshop-assets.s3.amazonaws.com/property_images/{zip_file_name}"
+        temp_zip_download_location = f"/tmp/{zip_file_name}"
+
+        s3 = boto3.resource('s3')
+
+        def create(event, context):
+          image_bucket_name = event['ResourceProperties']['DestinationBucket']
+          bucket = s3.Bucket(image_bucket_name)
+          print(f"downloading zip file from: {url} to: {temp_zip_download_location}")
+          r = urlopen(url).read()
+          with open(temp_zip_download_location, 'wb') as t:
+            t.write(r)
+            print('zip file downloaded')
+
+          print(f"unzipping file: {temp_zip_download_location}")
+          with zipfile.ZipFile(temp_zip_download_location,'r') as zip_ref:
+            zip_ref.extractall('/tmp')
+          
+          print('file unzipped')
+          
+          # upload to s3
+          for root,_,files in os.walk('/tmp/property_images'):
+            for file in files:
+              print(f"file: {os.path.join(root, file)}")
+              print(f"s3 bucket: {image_bucket_name}")
+              bucket.upload_file(os.path.join(root, file), file)
+        def delete(event, context):
+          image_bucket_name = event['ResourceProperties']['DestinationBucket']
+          img_bucket = s3.Bucket(image_bucket_name)
+          img_bucket.objects.delete()
+          img_bucket.delete()
+        def lambda_handler(event, context):
+          try:
+            if event['RequestType'] in ['Create', 'Update']:
+              create(event, context)
+            elif event['RequestType'] in ['Delete']:
+              delete(event, context)
+          except Exception as e:
+            print(e)
+          cfnresponse.send(event, context, cfnresponse.SUCCESS, dict())
+
+  ImageUpload:
+    Type: Custom::ImageUpload
+    Properties:
+      ServiceToken: !GetAtt ImageUploadFunction.Arn
+      DestinationBucket: !Ref UnicornPropertiesImagesBucket
+
+# OUTPUTS
+Outputs:
+  ImageUploadBucketName:
+    Value: !Ref UnicornPropertiesImagesBucket
