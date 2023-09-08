@@ -437,9 +437,12 @@ Outputs:
     Description: DynamoDB table storing contract information
     Value: !Ref ContractsTable
 
-  ContractEventHandlerFunction:
-    Description: Create Contract function ARN
   #### LAMBDA FUNCTIONS OUTPUTS
+  ContractEventHandlerFunctionName:
+    Description: ContractEventHandler function name
+    Value: !Ref ContractEventHandlerFunction
+  ContractEventHandlerFunctionArn:
+    Description: ContractEventHandler function ARN
     Value: !GetAtt ContractEventHandlerFunction.Arn
 
   #### CLOUDWATCH LOGS OUTPUTS
