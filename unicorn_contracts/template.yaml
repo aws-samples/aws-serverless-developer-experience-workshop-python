@@ -5,16 +5,16 @@ Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
-  Unicorn Contracts Service resources.
+  Unicorn Contracts Service. Manage contract information for property listings.
 
 Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - ES4000
-        - ES6000
-        - ES1001
-        - WS2001
+        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - WS2001      # Rule disabled because check does not support !ToJsonString transform
+        - ES1001      # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
 
 Parameters:
   Stage:
@@ -82,6 +82,7 @@ Resources:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusArn
       Value: !GetAtt UnicornContractsEventBus.Arn
+
 
   #### LAMBDA FUNCTIONS
   # Processes customer API requests from SQS queue UnicornContractsIngestQueue
@@ -194,6 +195,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
 
+
   #### INGEST QUEUES
   # Queue API Gateway requests to be processed by ContractEventHandlerFunction
   UnicornContractsIngestQueue:
@@ -215,6 +217,8 @@ Resources:
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+  
+  #### DEAD LETTER QUEUES
   # DeadLetterQueue for UnicornContractsIngestQueue. Contains messages that failed to be processed
   UnicornContractsIngestDLQ:
     Type: AWS::SQS::Queue
@@ -255,6 +259,7 @@ Resources:
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+
 
   #### EVENT BUS
   # Event bus for Unicorn Contract Service used to publish and consume events
@@ -343,6 +348,7 @@ Resources:
             }
           ]
         }
+
 
   #### EVENT BRIDGE PIPES
   # Pipe changed on DynamoDB Table to UnicornContractsEventBus

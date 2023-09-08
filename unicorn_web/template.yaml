@@ -5,18 +5,16 @@ Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
-  Unicorn Properties Services - web interface. Add, list and get details for Unicorn Properties.
+  Unicorn Web Service - web interface. Add, list and get details for Unicorn Properties.
 
 Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - WS2001
-        - ES6000
-        - ES4000
-        - ES1001
-        - ES1007
-        # - I3042
+        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - WS2001      # Rule disabled because check does not support !ToJsonString transform
+        - ES1001      # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
 
 Parameters:
   Stage:

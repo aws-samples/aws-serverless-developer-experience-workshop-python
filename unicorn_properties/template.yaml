@@ -1,16 +1,18 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
-Transform: AWS::Serverless-2016-10-31
+Transform:
+  - AWS::LanguageExtensions
+  - AWS::Serverless-2016-10-31
 Description: >
-  Unicorn Properties Service resources
+  Unicorn Properties Service. Validate the content, images and contract of property listings.
 
 Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - ES6000
-        - ES4000
+        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
 
 Parameters:
   Stage:
@@ -81,6 +83,7 @@ Resources:
 
 
   #### LAMBDA FUNCTIONS
+  # Listens to ContractStatusChanged events from EventBridge
   ContractStatusChangedHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -113,6 +116,7 @@ Resources:
             Type: SQS
             Destination: !GetAtt PropertiesServiceDLQ.Arn
 
+  # Listens to Contract status changes from ContractStatusTable to un-pause StepFunctions
   PropertiesApprovalSyncFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -150,6 +154,7 @@ Resources:
             Type: SQS
             Destination: !GetAtt PropertiesServiceDLQ.Arn
 
+  # Part of the ApprovalStateMachine, checks if a given Property has an existing Contract in ContractStatusTable
   ContractExistsCheckerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -159,12 +164,14 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
+  # Part of the ApprovalStateMachine, validates if all outputs of content checking steps are OK
   ContentIntegrityValidatorFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
       Handler: properties_service.content_integrity_validator_function.lambda_handler
 
+  # Part of the ApprovalStateMachine, pauses the workflow execution and stores token in ContractStatusTable until contract is approved
   WaitForContractApprovalFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -272,6 +279,7 @@ Resources:
         ServiceName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
   #### CLOUDWATCH LOG GROUPS
+  # Store Lambda execution logs for each Lambda function in Unicorn Properties Service
   ContractStatusChangedHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -312,6 +320,7 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${WaitForContractApprovalFunction}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
+  # Store ApprovalStateMachineLogGroup workflow execution logs
   ApprovalStateMachineLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -319,6 +328,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/states/${AWS::StackName}-ApprovalStateMachine"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
 
   #### DYNAMODB TABLE
   ContractStatusTable:
@@ -343,8 +353,9 @@ Resources:
         - Key: stage
           Value: !Ref Stage
 
+
   #### EVENT BUS
-  # Event bus for Unicorn Properties Service used to publish and consume events
+  # Event bus for Unicorn Properties Service, used to publish and consume events
   UnicornPropertiesEventBus:
     Type: AWS::Events::EventBus
     Properties:
@@ -368,7 +379,7 @@ Resources:
             events:source:
               - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
-  # Catchall rule used for development purposes.
+  # Catchall rule used for development purposes. Logs all events matching any of the services' to CloudWatch Logs
   UnicornPropertiesCatchAllRule:
     Type: AWS::Events::Rule
     Properties:
@@ -434,6 +445,7 @@ Outputs:
 
   #### DYNAMODB OUTPUTS
   ContractStatusTableName:
+    Description: DynamoDB table storing contract status information
     Value: !Ref ContractStatusTable
 
   #### LAMBDA FUNCTIONS OUTPUTS
