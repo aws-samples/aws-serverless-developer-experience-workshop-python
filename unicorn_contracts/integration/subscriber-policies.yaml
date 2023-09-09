@@ -15,12 +15,13 @@ Parameters:
       - prod
 
 Resources:
-  # Update this policy as you get new subscribers by adding their namespace to events:source
+  # This policy defines who can create rules on the event bus. Only principals subscribing to 
+  # Contracts Service events can create rule on the bus. No rules without a defined source.
   CrossServiceCreateRulePolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBus}}"
-      StatementId: !Sub "${AWS::StackName}-CreateRule"
+      StatementId: !Sub "OnlyRulesForContractServiceEvents-${Stage}"
       Statement:
         Effect: Allow
         Principal:
