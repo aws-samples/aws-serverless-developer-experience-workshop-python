@@ -1,0 +1,32 @@
+name: Run Unit Tests for Python services
+
+on:
+  workflow_call:
+    inputs:
+      service_directory:
+        type: string
+        required: true
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with: { python-version: 3.11.4 }
+
+      - uses: snok/install-poetry@v1
+        with:
+          version: 1.4.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Initialize and install dependencies
+        run: make ci_init
+        working-directory: ./${{ inputs.service_directory }}
+
+      - name: Run Unit tests
+        run: make unit-test
+        working-directory: ./${{ inputs.service_directory }}

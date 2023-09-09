@@ -16,7 +16,7 @@ def test_search_by_street(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/search_by_street_event.json')
 
     # Loading function here so that mocking works correctly.
-    import search_service.property_search as app
+    import search_service.property_search_function as app
 
     # Reload is required to prevent function setup reuse from another test 
     reload(app)
@@ -40,7 +40,7 @@ def test_search_by_city(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/search_by_city.json')
 
     # Loading function here so that mocking works correctly.
-    import search_service.property_search as app
+    import search_service.property_search_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -64,7 +64,7 @@ def test_search_full_address(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/search_by_full_address.json')
 
     # Loading function here so that mocking works correctly.
-    import search_service.property_search as app
+    import search_service.property_search_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -85,7 +85,7 @@ def test_search_full_address_declined(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/search_by_full_address_declined.json')
 
     # Loading function here so that mocking works correctly.
-    import search_service.property_search as app
+    import search_service.property_search_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -106,7 +106,7 @@ def test_search_full_address_new(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/search_by_full_address_new.json')
 
     # Loading function here so that mocking works correctly.
-    import search_service.property_search as app
+    import search_service.property_search_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)
@@ -127,7 +127,7 @@ def test_search_full_address_not_found(dynamodb, eventbridge, mocker):
     apigw_event = load_event('events/search_by_full_address_not_found.json')
 
     # Loading function here so that mocking works correctly.
-    import search_service.property_search as app
+    import search_service.property_search_function as app
 
     # Reload is required to prevent function setup reuse from another test
     reload(app)

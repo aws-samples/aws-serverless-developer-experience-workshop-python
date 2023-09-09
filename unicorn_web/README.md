@@ -1,34 +1,18 @@
-# Unicorn Properties: Properties Web
+# Developing Unicorn Web
 
-## Overview
+![Properties Web Architecture](https://static.us-east-1.prod.workshops.aws/public/fd291886-89c4-4336-b21b-5747484b495d/static/images/architecture-properties-web.png)
 
-TODO: add overview
+## Architecture Overview
 
-TODO: add architecture image
+Unicorn Web is primarily responsible for allowing customers to search and view property listings. It also supports ability for agents to request approval for specific property. Those approval requests are sent to Property service for validation, before Properties table is updated with approval evaluation results.
 
-## Testing with Postman
+A core component of Unicorn Web are the Lambda functions which are responsible with completing API Gateway requests to:
 
-TODO: add instructions
+- search approved property listings
+This function interacts with DynamoDB table to retrieve property listings marked as `APPROVED`. The API Gateway implementation and lambda code support multiple types of search patterns, and allow searching by city, street, or house number.
 
-## Testing with TODO: curl or httpie
+- request approval of property listing
+This function sends an event to EventBridge requesting an approval for a property listing specified in the payload sent from client
 
-Using Httpie as a starting point; will need to change to Postman next
-
-### Add
-
-```bash
-https https://rruhykpqtb.execute-api.ap-southeast-1.amazonaws.com/default/properties/add < postman/property01.json
-```
-
-### List property by city and by street
-
-```bash
-https https://rruhykpqtb.execute-api.ap-southeast-1.amazonaws.com/default/properties/list/usa/anytown
-https https://rruhykpqtb.execute-api.ap-southeast-1.amazonaws.com/default/properties/list/usa/anytown/main-street
-```
-
-### Property details
-
-```bash
-https https://rruhykpqtb.execute-api.ap-southeast-1.amazonaws.com/default/properties/usa/anytown/main-street/123
-```
+- publication approved function
+There is also a lambda function responsible for receiving any "Approval Evaluation Completed" events from EventBridge. This function writes the evaluation result to DynamoDB table.

@@ -1,0 +1,22 @@
+name: Record PR details
+
+on:
+  pull_request:
+    types: [opened, edited, closed]
+
+jobs:
+  record_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Extract PR details"
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('.github/scripts/save_pr_details.js')
+            await script({github, context, core})
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr
+          path: pr.txt

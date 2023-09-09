@@ -54,7 +54,7 @@ Globals:
   Api:
     OpenApiVersion: 3.0.1
   Function:
-    Runtime: python3.9
+    Runtime: python3.11
     MemorySize: 128
     Timeout: 3
     Tracing: Active
@@ -87,7 +87,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: contracts_service.create_contract.lambda_handler
+      Handler: contracts_service.create_contract_function.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractsTable
@@ -107,7 +107,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: contracts_service.update_contract.lambda_handler
+      Handler: contracts_service.update_contract_function.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractsTable

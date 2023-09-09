@@ -1,15 +1,27 @@
-import os, inspect, json 
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 
-TABLE_NAME = "table1"
+import os
+import inspect
+import json 
+
+TABLE_NAME = 'table1'
+EVENTBUS_NAME = 'test-eventbridge'
+
 
 def load_event(filename):
     file_dir = os.path.dirname(os.path.abspath((inspect.stack()[0])[1]))
     print(file_dir)
+
     with open(os.path.join(file_dir, filename), 'r') as f:
         return json.load(f)
 
-def return_env_vars_dict(k={}):
-    d = {
+
+def return_env_vars_dict(k=None):
+    if k is None:
+        k = {}
+
+    env_dict = {
         "AWS_DEFAULT_REGION": "ap-southeast-2",
         "DYNAMODB_TABLE": TABLE_NAME,
         "EVENT_BUS": "test-eventbridge",
@@ -21,8 +33,10 @@ def return_env_vars_dict(k={}):
         "POWERTOOLS_TRACE_DISABLED":"true",
         "SERVICE_NAMESPACE": "unicorn.contracts",
     }
-    d.update(k)
-    return d
+
+    env_dict |= k
+
+    return env_dict
 
 
 def create_ddb_table_contracts(dynamodb):
@@ -45,8 +59,9 @@ def create_ddb_table_contracts(dynamodb):
                 'WriteCapacityUnits':1
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     return table
+
 
 def create_ddb_table_contracts_with_entry(dynamodb):
     table = dynamodb.create_table(
@@ -68,7 +83,7 @@ def create_ddb_table_contracts_with_entry(dynamodb):
                 'WriteCapacityUnits':1
         }
     )
-    table.meta.client.get_waiter('table_exists').wait(TableName='table1')
+    table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
     contract = {
         "property_id": "usa/anytown/main-street/123",  # PK
         "contact_created": "01/08/2022 20:36:30",
@@ -85,3 +100,8 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     }
     table.put_item(Item=contract)
     return table
+
+
+def create_test_eventbridge_bus(eventbridge):
+    bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
+    return bus

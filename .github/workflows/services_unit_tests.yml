@@ -1,0 +1,29 @@
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'unicorn_contracts/**'
+      - 'unicorn_properties/**'
+      - 'unicorn_web/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'unicorn_contracts/**'
+      - 'unicorn_properties/**'
+      - 'unicorn_web/**'
+  
+jobs:
+  unicorn_contracts:
+    uses: ./.github/workflows/reusable_unit_tests.yml
+    with:
+      service_directory: unicorn_contracts
+
+  unicorn_properties:
+    uses: ./.github/workflows/reusable_unit_tests.yml
+    with:
+      service_directory: unicorn_properties
+
+  unicorn_web:
+    uses: ./.github/workflows/reusable_unit_tests.yml
+    with:
+      service_directory: unicorn_web

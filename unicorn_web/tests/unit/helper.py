@@ -3,10 +3,11 @@ import json
 import inspect
 
 
-TABLE_NAME = "table1"
+TABLE_NAME = 'table1'
+EVENTBUS_NAME = 'test-eventbridge'
 
 
-def load_event(filename):
+def load_event(filename) -> dict:
     file_dir = os.path.dirname(os.path.abspath((inspect.stack()[0])[1]))
     print(file_dir)
     with open(os.path.join(file_dir, filename), 'r') as f:
@@ -105,3 +106,7 @@ def create_ddb_table_property_web(dynamodb):
         'status': 'PENDING',
     })
     return table
+
+def create_test_eventbridge_bus(eventbridge):
+    bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
+    return bus

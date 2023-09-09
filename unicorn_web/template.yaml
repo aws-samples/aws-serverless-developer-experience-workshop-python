@@ -54,7 +54,7 @@ Mappings:
 ######################################
 Globals:
   Function:
-    Runtime: python3.9
+    Runtime: python3.11
     Tracing: Active
     Timeout: 15
     MemorySize: 128
@@ -87,7 +87,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: search_service.property_search.lambda_handler
+      Handler: search_service.property_search_function.lambda_handler
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref WebTable
@@ -115,7 +115,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.request_approval.lambda_handler
+      Handler: approvals_service.request_approval_function.lambda_handler
       Policies:
         - EventBridgePutEventsPolicy:
             EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
@@ -135,7 +135,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.publication_approved.lambda_handler
+      Handler: approvals_service.publication_approved_event_handler.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref WebTable
@@ -164,6 +164,7 @@ Resources:
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Properties:
+      SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project

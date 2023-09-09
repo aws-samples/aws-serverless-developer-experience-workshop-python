@@ -57,7 +57,7 @@ Conditions:
 ######################################
 Globals:
   Function:
-    Runtime: python3.9
+    Runtime: python3.11
     MemorySize: 128
     Timeout: 15
     Tracing: Active
@@ -90,7 +90,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: properties_service.contract_status_changed.lambda_handler
+      Handler: properties_service.contract_status_changed_event_handler.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractStatusTable
@@ -122,7 +122,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: properties_service.properties_approval_sync.lambda_handler
+      Handler: properties_service.properties_approval_sync_function.lambda_handler
       Policies:
         - DynamoDBStreamReadPolicy:
             TableName: !Ref ContractStatusTable
@@ -160,7 +160,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: properties_service.contract_exists_checker.lambda_handler
+      Handler: properties_service.contract_exists_checker_function.lambda_handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
@@ -169,13 +169,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: properties_service.contract_content_integrity_validator.lambda_handler
+      Handler: properties_service.content_integrity_validator_function.lambda_handler
 
   WaitForContractApprovalFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: properties_service.wait_for_contract_approval.lambda_handler
+      Handler: properties_service.wait_for_contract_approval_function.lambda_handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
@@ -187,7 +187,8 @@ Resources:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
-    Properties:
+    Properties: 
+      SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
@@ -202,6 +203,7 @@ Resources:
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Properties:
+      SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
