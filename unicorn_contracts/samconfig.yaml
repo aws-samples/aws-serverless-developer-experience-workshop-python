@@ -1,0 +1,64 @@
+version: 0.1
+
+default:
+  global:
+    parameters:
+      stack_name: uni-prop-local-contracts
+      s3_prefix: uni-prop-local-contracts
+      resolve_s3: true
+      resolve_image_repositories: true
+  build:
+    parameters:
+      cached: true
+      parallel: true
+  deploy:
+    parameters:
+      disable_rollback: true
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=local"
+  validate:
+    parameters:
+      lint: true
+  sync:
+    parameters:
+      watch: true
+  local_start_api:
+    parameters:
+      warm_containers: EAGER
+  local_start_lambda:
+    parameters:
+      warm_containers: EAGER
+
+schemas:
+  global:
+    parameters:
+      stack_name: uni-prop-local-contracts-schemas
+      s3_prefix: uni-prop-local-contracts-schemas
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: integration/event-schemas.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      parameter_overrides:
+        - "Stage=local"
+
+subscriber-policies:
+  global:
+    parameters:
+      stack_name: uni-prop-local-contracts-subscriber-policies
+      s3_prefix: uni-prop-local-contracts-subscriber-policies
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: ./integration/subscriber-policies.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=local"

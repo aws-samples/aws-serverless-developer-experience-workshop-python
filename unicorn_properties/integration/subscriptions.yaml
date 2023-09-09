@@ -1,0 +1,101 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Defines the cross-service subscriptions for Unicorn Properties
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+  ContractStatusChangedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: properties.statuschanged-contract.pubevalcompleted
+      Description: Constract Status Changed subscription
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
+      EventPattern:
+        source:
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        detail-type:
+          - ContractStatusChanged
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+          RoleArn: !GetAtt UnicornContractsEventBusToUnicornPropertiesEventBusRole.Arn
+
+  # This IAM role allows EventBridge to assume the permissions necessary to send events 
+  # from the Unicorn Contracts event bus to the Unicorn Properties event bus.
+  # If the Unicorn Properties service wants receive events from other services, then add another policy 
+  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
+  # subscription (rule)
+  UnicornContractsEventBusToUnicornPropertiesEventBusRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: events.amazonaws.com
+      Policies:
+        - PolicyName: PutEventsOnUnicornPropertiesEventBus
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: events:PutEvents
+                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+
+  PublicationApprovalRequestedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: properties.pubapprovalwf-web.pubapprovalrequested
+      Description: Publication Approval Requested Subscription
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+      EventPattern:
+        source:
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+        detail-type:
+          - PublicationApprovalRequested
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+          RoleArn: !GetAtt UnicornWebEventBusToUnicornPropertiesEventBusRole.Arn
+
+  # This IAM role allows EventBridge to assume the permissions necessary to send events 
+  # from the Unicorn Web event bus to the Unicorn Properties event bus.
+  # If the Unicorn Properties service wants receive events from other services, then add another policy 
+  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
+  # subscription (rule)
+  UnicornWebEventBusToUnicornPropertiesEventBusRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: events.amazonaws.com
+      Policies:
+        - PolicyName: PutEventsOnUnicornPropertiesEventBus
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: events:PutEvents
+                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+
+Outputs:
+  ContractStatusChangedSubscription:
+    Description: Rule ARN for Contract service event subscription
+    Value: !GetAtt ContractStatusChangedSubscriptionRule.Arn
+
+  PublicationApprovalRequestedSubscription:
+    Description: Rule ARN for Web service event subscription
+    Value: !GetAtt PublicationApprovalRequestedSubscriptionRule.Arn

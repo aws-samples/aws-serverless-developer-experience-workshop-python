@@ -1,0 +1,81 @@
+version: 0.1
+
+default:
+  global:
+    parameters:
+      stack_name: uni-prop-local-web
+      s3_prefix: uni-prop-local-web
+      resolve_s3: true
+      resolve_image_repositories: true
+  build:
+    parameters:
+      cached: true
+      parallel: true
+  deploy:
+    parameters:
+      disable_rollback: true
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=local"
+  validate:
+    parameters:
+      lint: true
+  sync:
+    parameters:
+      watch: true
+  local_start_api:
+    parameters:
+      warm_containers: EAGER
+  local_start_lambda:
+    parameters:
+      warm_containers: EAGER
+
+schemas:
+  global:
+    parameters:
+      stack_name: uni-prop-local-web-schemas
+      s3_prefix: uni-prop-local-web-schemas
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: integration/event-schemas.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      parameter_overrides:
+        - "Stage=local"
+
+subscriber-policies:
+  global:
+    parameters:
+      stack_name: uni-prop-local-web-subscriber-policies
+      s3_prefix: uni-prop-local-web-subscriber-policies
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: ./integration/subscriber-policies.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=local"
+
+subscriptions:
+  global:
+    parameters:
+      stack_name: uni-prop-local-web-subscriptions
+      s3_prefix: uni-prop-local-web-subscriptions
+      resolve_s3: true
+  deploy:
+    parameters:
+      template_file: ./integration/subscriptions.yaml
+      confirm_changeset: false
+      fail_on_empty_changeset: false
+      on_failure: ROLLBACK
+      capabilities: CAPABILITY_IAM
+      parameter_overrides:
+        - "Stage=local"
+        

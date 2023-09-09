@@ -16,7 +16,7 @@
           "prop1_interior2.jpg",
           "prop1_interior3.jpg"
       ],
-      "status": "NEW"
+      "status": "PENDING"
   },
   {
       "PK": "PROPERTY#usa#main-town",
@@ -35,7 +35,7 @@
           "prop2_interior1.jpg",
           "prop2_interior2.jpg"
       ],
-      "status": "NEW"
+      "status": "PENDING"
   },
   {
       "PK": "PROPERTY#usa#anytown",
@@ -54,6 +54,6 @@
           "prop3_interior2.jpg",
           "prop3_interior3.jpg"
       ],
-      "status": "NEW"
+      "status": "PENDING"
   }
 ]

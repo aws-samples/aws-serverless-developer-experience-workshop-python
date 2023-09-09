@@ -1,0 +1,58 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Defines the cross-service subscriptions for Unicorn Web
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+  PublicationEvaluationCompletedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: web.pubapprovalwf-properties.pubapprovalrequested
+      Description: Publication Evaluation Completed Subscription
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+      EventPattern:
+        source:
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+        detail-type:
+          - PublicationEvaluationCompleted
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+          RoleArn: !GetAtt UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
+
+  # This IAM role allows EventBridge to assume the permissions necessary to send events 
+  # from the Unicorn Contracts event bus to the Unicorn Properties event bus.
+  # If the Unicorn Properties service wants receive events from other services, then add another policy 
+  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
+  # subscription (rule)
+  UnicornPropertiesEventBusToUnicornWebEventBusRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: events.amazonaws.com
+      Policies:
+        - PolicyName: PutEventsOnUnicornWebEventBus
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: events:PutEvents
+                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+
+Outputs:
+  PublicationEvaluationCompletedSubscription:
+    Description: Rule ARN for Property service event subscription
+    Value: !GetAtt PublicationEvaluationCompletedSubscriptionRule.Arn

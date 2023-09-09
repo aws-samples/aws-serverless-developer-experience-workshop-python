@@ -1,0 +1,55 @@
+{
+    "eventID": "f596bdbb621c57e694189ae9f1c172c2",
+    "eventName": "INSERT",
+    "eventVersion": "1.1",
+    "eventSource": "aws:dynamodb",
+    "awsRegion": "ap-southeast-2",
+    "dynamodb": {
+        "ApproximateCreationDateTime": 1692929660,
+        "Keys": {
+            "property_id": {
+                "S": "usa/anytown/main-street/123"
+            }
+        },
+        "NewImage": {
+            "contract_last_modified_on": {
+                "S": "25/08/2023 02:14:20"
+            },
+            "address": {
+                "M": {
+                    "country": {
+                        "S": "USA"
+                    },
+                    "number": {
+                        "N": "123"
+                    },
+                    "city": {
+                        "S": "Anytown"
+                    },
+                    "street": {
+                        "S": "Main Street"
+                    }
+                }
+            },
+            "seller_name": {
+                "S": "John Smith"
+            },
+            "contract_created": {
+                "S": "25/08/2023 02:14:20"
+            },
+            "contract_id": {
+                "S": "5bb04023-74aa-41fc-b86b-447602759270"
+            },
+            "contract_status": {
+                "S": "DRAFT"
+            },
+            "property_id": {
+                "S": "usa/anytown/main-street/123"
+            }
+        },
+        "SequenceNumber": "4800600000000041815691506",
+        "SizeBytes": 303,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "eventSourceARN": "arn:aws:dynamodb:ap-southeast-2:718758479978:table/uni-prop-local-contract-ContractsTable-JKAROODQJH0P/stream/2023-08-24T00:35:44.603"
+}

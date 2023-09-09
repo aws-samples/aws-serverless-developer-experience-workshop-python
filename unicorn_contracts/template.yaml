@@ -1,55 +1,45 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
-Transform: AWS::Serverless-2016-10-31
+Transform:
+  - AWS::LanguageExtensions
+  - AWS::Serverless-2016-10-31
 Description: >
-  Unicorn Contracts Service resources.
+  Unicorn Contracts Service. Manage contract information for property listings.
 
-######################################
-# METADATA
-######################################
 Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - I3042
+        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - WS2001      # Rule disabled because check does not support !ToJsonString transform
+        - ES1001      # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
 
-######################################
-# PARAMETERS
-######################################
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
-    
-######################################
-# MAPPINGS
-######################################   
+      - local
+      - dev
+      - prod
+
 Mappings:
   LogsRetentionPeriodMap:
-    Local:
+    local:
       Days: 3
-    Dev:
+    dev:
       Days: 3
-    Prod:
+    prod:
       Days: 14
+  Constants:
+    ProjectName:
+      Value: "AWS Serverless Developer Experience"
 
-######################################
-# CONDITIONS
-######################################   
 Conditions:
-  IsProd: !Equals 
-    - !Ref Stage
-    - Prod
+  IsProd: !Equals [!Ref Stage, Prod]
 
-######################################
-# GLOBALS
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-######################################
 Globals:
   Api:
     OpenApiVersion: 3.0.1
@@ -63,214 +53,398 @@ Globals:
     Environment:
       Variables:
         DYNAMODB_TABLE: !Ref ContractsTable
-        EVENT_BUS: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
-        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
-        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"
-        POWERTOOLS_TRACE_DISABLED: "false"                                                                # Explicitly disables tracing, default
-        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"]                                        # Logs incoming event, default
-        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"]                                           # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/UniProp/${Stage}/UnicornContractsNamespace}}"  # Metric Namespace
-        LOG_LEVEL: INFO                                                                                   # Log level for Logger (INFO, DEBUG, etc.), default
+        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+        POWERTOOLS_LOGGER_CASE: PascalCase
+        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
+        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
+        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
+        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
-      project: AWS Serverless Developer Experience
-      service: Unicorn Contracts Service
+      project: !FindInMap [Constants, ProjectName, Value]
+      namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
-######################################
-# RESOURCES
-######################################
 Resources:
-  ######################################
-  # LAMBDA FUNCTIONS
-  ######################################
-  CreateContractFunction:
+  #### SSM PARAMETERS
+  # Services share their event bus name and arn
+  UnicornContractsEventBusNameParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBus
+      Value: !GetAtt UnicornContractsEventBus.Name
+
+  UnicornContractsEventBusArnParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsEventBusArn
+      Value: !GetAtt UnicornContractsEventBus.Arn
+
+
+  #### LAMBDA FUNCTIONS
+  # Processes customer API requests from SQS queue UnicornContractsIngestQueue
+  ContractEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: contracts_service.create_contract_function.lambda_handler
+      Handler: contracts_service.contract_event_handler.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractsTable
         - DynamoDBReadPolicy:
             TableName: !Ref ContractsTable
-        - EventBridgePutEventsPolicy:
-            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
       Events:
-        CreateContract:
-          Type: Api
+        IngestQueue:
+          Type: SQS
           Properties:
-            Path: /contracts
-            Method: post
-            RestApiId: !Ref ContractsApi
-  
-  UpdateContractFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/
-      Handler: contracts_service.update_contract_function.lambda_handler
-      Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref ContractsTable
-        - DynamoDBReadPolicy:
-            TableName: !Ref ContractsTable
-        - EventBridgePutEventsPolicy:
-            EventBusName: !Sub "{{resolve:ssm:/UniProp/${Stage}/EventBusName}}"
-      Events:
-        UpdateContract:
-          Type: Api
-          Properties:
-            Path: /contracts
-            Method: put
-            RestApiId: !Ref ContractsApi
-  
-  ######################################
-  # API GATEWAY REST API
-  ######################################
-  ContractsApi:
+            Queue: !GetAtt UnicornContractsIngestQueue.Arn
+            BatchSize: 1
+            Enabled: true
+            ScalingConfig:
+              MaximumConcurrency: 5
+
+
+  #### API GATEWAY REST API
+  UnicornContractsApi:
     Type: AWS::Serverless::Api
     DependsOn: ContractsApiGwAccountConfig
     Properties:
       StageName: !Ref Stage
-      EndpointConfiguration: 
+      EndpointConfiguration:
         Type: REGIONAL
       TracingEnabled: true
       MethodSettings:
         - MetricsEnabled: true
           ResourcePath: /*
           HttpMethod: "*"
-          LoggingLevel: !If 
-            - IsProd
-            - ERROR
-            - INFO
+          LoggingLevel: !If [IsProd, ERROR, INFO]
           ThrottlingBurstLimit: 10
           ThrottlingRateLimit: 100
       AccessLogSetting:
-        DestinationArn: !GetAtt ContractsApiLogGroup.Arn
-        Format: >
-          {"requestId":"$context.requestId",
-          "integration-error":"$context.integration.error",
-          "integration-status":"$context.integration.status",
-          "integration-latency":"$context.integration.latency",
-          "integration-requestId":"$context.integration.requestId",
-          "integration-integrationStatus":"$context.integration.integrationStatus",
-          "response-latency":"$context.responseLatency",
-          "status":"$context.status"}
+        DestinationArn: !GetAtt UnicornContractsApiLogGroup.Arn
+        Format: !ToJsonString
+          requestId: $context.requestId
+          integration-error: $context.integration.error
+          integration-status: $context.integration.status
+          integration-latency: $context.integration.latency
+          integration-requestId: $context.integration.requestId
+          integration-integrationStatus: $context.integration.integrationStatus
+          response-latency: $context.responseLatency
+          status: $context.status
+      DefinitionBody: !Transform
+        Name: "AWS::Include"
+        Parameters:
+          Location: "api.yaml"
       Tags:
         stage: !Ref Stage
-        project: AWS Serverless Developer Experience
-        service: Unicorn Contracts Service
-  
+        project: !FindInMap [Constants, ProjectName, Value]
+        namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+
   ContractsApiGwAccountConfig:
     Type: AWS::ApiGateway::Account
     Properties:
-      CloudWatchRoleArn: !GetAtt ContractsApiAccessLogsRole.Arn
+      CloudWatchRoleArn: !GetAtt UnicornContractsApiGwAccountConfigRole.Arn
 
-  ######################################
-  # CLOUDWATCH LOG GROUPS
-  ######################################
-  ContractsApiLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      RetentionInDays: !FindInMap 
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
-
-  CreateContractFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${CreateContractFunction}"
-      RetentionInDays: !FindInMap 
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
-  
-  UpdateContractFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${UpdateContractFunction}"
-      RetentionInDays: !FindInMap 
-        - LogsRetentionPeriodMap
-        - !Ref Stage
-        - Days
-
-  ######################################
-  # IAM ROLES
-  ######################################
-  ContractsApiAccessLogsRole:
+  # API GW IAM roles
+  ContractsApiIntegrationRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          Action: sts:AssumeRole
           Effect: Allow
-          Principal:
-            Service: apigateway.amazonaws.com
-      ManagedPolicyArns:
-        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
-
-  ApiInvokeLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
           Action: sts:AssumeRole
-          Effect: Allow
           Principal:
             Service: apigateway.amazonaws.com
       Policies:
-        - PolicyName: root
+        - PolicyName: AllowSqsIntegration
           PolicyDocument:
             Statement:
               - Effect: Allow
                 Action:
-                  - lambda:InvokeFunction
-                Resource:
-                  - !GetAtt CreateContractFunction.Arn
-                  - !GetAtt UpdateContractFunction.Arn
+                  - sqs:SendMessage
+                  - sqs:GetQueueUrl
+                Resource: !GetAtt UnicornContractsIngestQueue.Arn
 
-  ######################################
-  # DYNAMODB TABLE
-  ######################################
-  ContractsTable:
-    Type: AWS::Serverless::SimpleTable
+  UnicornContractsApiGwAccountConfigRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: apigateway.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+
+  #### INGEST QUEUES
+  # Queue API Gateway requests to be processed by ContractEventHandlerFunction
+  UnicornContractsIngestQueue:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      QueueName: !Sub UnicornContractsIngestQueue-${Stage}
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt UnicornContractsIngestDLQ.Arn
+        maxReceiveCount: 1
+      VisibilityTimeout: 20
+      Tags:
+        - Key: stage
+          Value: !Ref Stage
+        - Key: project
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+  
+  #### DEAD LETTER QUEUES
+  # DeadLetterQueue for UnicornContractsIngestQueue. Contains messages that failed to be processed
+  UnicornContractsIngestDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      QueueName: !Sub UnicornContractsIngestDLQ-${Stage}
+      Tags:
+        - Key: stage
+          Value: !Ref Stage
+        - Key: project
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+
+
+  #### CLOUDWATCH LOG GROUPS
+  # Logs all invocations of ContractEventHandler Function
+  ContractEventHandlerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      PrimaryKey:
-        Name: property_id
-        Type: String
+      LogGroupName: !Sub "/aws/lambda/${ContractEventHandlerFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
-######################################
-# OUTPUTS
-######################################
+  # API GW CloudWatch Logs Group, logs all requests from API Gateway
+  UnicornContractsApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
+
+  #### DYNAMODB TABLE
+  # Persist Contracts information in DynamoDB
+  ContractsTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: property_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: property_id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: stage
+          Value: !Ref Stage
+        - Key: project
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+
+
+  #### EVENT BUS
+  # Event bus for Unicorn Contract Service used to publish and consume events
+  UnicornContractsEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: !Sub UnicornContractsBus-${Stage}
+
+  # Event bus policy to restrict who can publish events (should only be services from UnicornContractsNamespace)
+  ContractEventsBusPublishPolicy:
+    Type: AWS::Events::EventBusPolicy
+    Properties:
+      EventBusName: !Ref UnicornContractsEventBus
+      StatementId: !Sub ContactsPublishEventsPolicy-${Stage}
+      Statement:
+        Effect: Allow
+        Principal:
+          AWS:
+            - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+        Action: events:PutEvents
+        Resource: !GetAtt UnicornContractsEventBus.Arn
+        Condition:
+          StringEquals:
+            events:source:
+              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+
+  # Catchall rule used for development purposes.
+  UnicornContractsCatchAllRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: contracts.catchall
+      Description: Catch all events published by the contracts service.
+      EventBusName: !Ref UnicornContractsEventBus
+      EventPattern:
+        account:
+          - !Ref AWS::AccountId
+        source:
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+      State: ENABLED #You may want to disable this rule in production
+      Targets:
+        - Arn: !GetAtt UnicornContractsCatchAllLogGroup.Arn
+          Id: !Sub UnicornContractsCatchAllLogGroupTarget-${Stage}
+
+  # CloudWatch log group used to catch all events
+  UnicornContractsCatchAllLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub
+        - "/aws/events/${Stage}/${NS}-catchall"
+        - Stage: !Ref Stage
+          NS: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  # Permissions to allow EventBridge to send logs to CloudWatch
+  EventBridgeCloudWatchLogGroupPolicy:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyName: !Sub EvBToCWLogs-${AWS::StackName}
+      # Note: PolicyDocument has to be established this way. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-resourcepolicy.html#cfn-logs-resourcepolicy-policydocument
+      PolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "delivery.logs.amazonaws.com",
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${UnicornContractsCatchAllLogGroup.Arn}"
+              ]
+            }
+          ]
+        }
+
+
+  #### EVENT BRIDGE PIPES
+  # Pipe changed on DynamoDB Table to UnicornContractsEventBus
+  DdbStreamToEventPipe:
+    Type: AWS::Pipes::Pipe
+    Properties:
+      RoleArn: !GetAtt DdbStreamToEventPipeRole.Arn
+      Source: !GetAtt ContractsTable.StreamArn
+      SourceParameters:
+        DynamoDBStreamParameters:
+          StartingPosition: LATEST
+          OnPartialBatchItemFailure: AUTOMATIC_BISECT
+          BatchSize: 1
+          # DeadLetterConfig:
+          #   Arn: String
+        FilterCriteria:
+          Filters:
+            - Pattern: !ToJsonString
+                eventName: [INSERT, MODIFY]
+                dynamodb:
+                  NewImage:
+                    contract_status:
+                      S: [DRAFT, APPROVED]
+      # Enrichment: arn:aws:execute-api:us-east-1:123456789123:53eo2i89p9/*/POST/pets
+      Target: !GetAtt UnicornContractsEventBus.Arn
+      TargetParameters:
+        EventBridgeEventBusParameters:
+          Source: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          DetailType: ContractStatusChanged
+        InputTemplate: !ToJsonString
+          property_id: "<$.dynamodb.NewImage.property_id.S>"
+          contract_id: "<$.dynamodb.NewImage.contract_id.S>"
+          contract_status: "<$.dynamodb.NewImage.contract_status.S>"
+          contract_last_modified_on: "<$.dynamodb.NewImage.contract_last_modified_on.S>"
+
+  # IAM Role for Event Bridge Pipe
+  DdbStreamToEventPipeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: pipes.amazonaws.com
+      Policies:
+        - PolicyName: AllowDdbStreamRead
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:ListStreams
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:DescribeStream
+                  - dynamodb:GetRecords
+                  - dynamodb:GetShardIterator
+                Resource: !GetAtt ContractsTable.StreamArn
+              - Effect: Allow
+                Action:
+                  - events:PutEvents
+                Resource: !GetAtt UnicornContractsEventBus.Arn
+
 Outputs:
-  ApiUrl:
-    Description: Contract service API endpoint
-    Value: !Sub "https://${ContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
-
-  ContractsTableName:
-    Value: !Ref ContractsTable
-
-  CreateContractFunction:
-    Value: !GetAtt CreateContractFunction.Arn
-
-  UpdateContractFunction:
-    Value: !GetAtt UpdateContractFunction.Arn
-
-  IsProd:
-    Description: Is Production?
-    Value: !If 
-      - IsProd
-      - 'true'
-      - 'false'
-
+  #### API GATEWAY OUTPUTS
   BaseUrl:
     Description: Web service API endpoint
-    Value: !Sub "https://${ContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
+    Value: !Sub "https://${UnicornContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
+  ApiUrl:
+    Description: Contract service API endpoint
+    Value: !Sub "https://${UnicornContractsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
+
+  #### SQS OUTPUTS
+  IngestQueueUrl:
+    Description: URL for the Ingest SQS Queue
+    Value: !GetAtt UnicornContractsIngestQueue.QueueUrl
+
+  #### DYNAMODB OUTPUTS
+  ContractsTableName:
+    Description: DynamoDB table storing contract information
+    Value: !Ref ContractsTable
+
+  #### LAMBDA FUNCTIONS OUTPUTS
+  ContractEventHandlerFunctionName:
+    Description: ContractEventHandler function name
+    Value: !Ref ContractEventHandlerFunction
+  ContractEventHandlerFunctionArn:
+    Description: ContractEventHandler function ARN
+    Value: !GetAtt ContractEventHandlerFunction.Arn
+
+  #### CLOUDWATCH LOGS OUTPUTS
+  UnicornContractsCatchAllLogGroupArn:
+    Value: !GetAtt UnicornContractsCatchAllLogGroup.Arn

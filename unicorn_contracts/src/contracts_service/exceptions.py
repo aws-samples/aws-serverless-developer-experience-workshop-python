@@ -3,6 +3,7 @@
 
 import json
 
+
 class ContractNotFoundException(Exception):
     """
     Custom exception for encapsulating exceptions for Lambda handler
@@ -15,23 +16,6 @@ class ContractNotFoundException(Exception):
         self.status_code = status_code or 400
         self.details = details or {}
         
-        self.apigw_return = {
-            "statusCode": self.status_code,
-            "body": json.dumps({"message": self.message})
-        }
-
-class EventValidationException(Exception):
-    """
-    Custom exception for events that have failed validation
-    """
-
-    def __init__(self, message=None, status_code=None, details=None):
-        super(EventValidationException, self).__init__()
-
-        self.message = message or "Event body not valid."
-        self.status_code = status_code or 400
-        self.details = details or {}
-
         self.apigw_return = {
             "statusCode": self.status_code,
             "body": json.dumps({"message": self.message})

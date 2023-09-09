@@ -1,0 +1,94 @@
+{
+    "eventID": "54e72fec04d65113c9bc5905a3e3a18c",
+    "eventName": "MODIFY",
+    "eventVersion": "1.1",
+    "eventSource": "aws:dynamodb",
+    "awsRegion": "ap-southeast-2",
+    "dynamodb": {
+        "ApproximateCreationDateTime": 1692929694,
+        "Keys": {
+            "property_id": {
+                "S": "usa/anytown/main-street/123"
+            }
+        },
+        "NewImage": {
+            "contract_last_modified_on": {
+                "S": "25/08/2023 02:14:20"
+            },
+            "address": {
+                "M": {
+                    "country": {
+                        "S": "USA"
+                    },
+                    "number": {
+                        "N": "123"
+                    },
+                    "city": {
+                        "S": "Anytown"
+                    },
+                    "street": {
+                        "S": "Main Street"
+                    }
+                }
+            },
+            "seller_name": {
+                "S": "John Smith"
+            },
+            "contract_created": {
+                "S": "25/08/2023 02:14:20"
+            },
+            "contract_id": {
+                "S": "5bb04023-74aa-41fc-b86b-447602759270"
+            },
+            "contract_status": {
+                "S": "APPROVED"
+            },
+            "modified_date": {
+                "S": "25/08/2023 02:14:54"
+            },
+            "property_id": {
+                "S": "usa/anytown/main-street/123"
+            }
+        },
+        "OldImage": {
+            "contract_last_modified_on": {
+                "S": "25/08/2023 02:14:20"
+            },
+            "address": {
+                "M": {
+                    "country": {
+                        "S": "USA"
+                    },
+                    "number": {
+                        "N": "123"
+                    },
+                    "city": {
+                        "S": "Anytown"
+                    },
+                    "street": {
+                        "S": "Main Street"
+                    }
+                }
+            },
+            "seller_name": {
+                "S": "John Smith"
+            },
+            "contract_created": {
+                "S": "25/08/2023 02:14:20"
+            },
+            "contract_id": {
+                "S": "5bb04023-74aa-41fc-b86b-447602759270"
+            },
+            "contract_status": {
+                "S": "DRAFT"
+            },
+            "property_id": {
+                "S": "usa/anytown/main-street/123"
+            }
+        },
+        "SequenceNumber": "4800700000000041815709335",
+        "SizeBytes": 603,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "eventSourceARN": "arn:aws:dynamodb:ap-southeast-2:718758479978:table/uni-prop-local-contract-ContractsTable-JKAROODQJH0P/stream/2023-08-24T00:35:44.603"
+}
