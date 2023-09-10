@@ -98,7 +98,7 @@ Resources:
         StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: properties.contstatuschangedhdr-contracts.contstatuschanged
+            RuleName: unicorn.properties-ContractStatusChanged
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
