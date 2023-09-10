@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Defines the cross-service subscriptions for Unicorn Properties
+Description: Defines the rule for the events (subscriptions) that Unicorn Properties wants to consume.
 
 Parameters:
   Stage:
@@ -13,11 +13,13 @@ Parameters:
       - prod
 
 Resources:
+
+  #### UNICORN CONTRACTS EVENT SUBSCRIPTIONS
   ContractStatusChangedSubscriptionRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: properties.statuschanged-contract.pubevalcompleted
-      Description: Constract Status Changed subscription
+      Name: unicorn.properties-ContractStatusChanged
+      Description: Contract Status Changed subscription
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
       EventPattern:
         source:
@@ -28,35 +30,14 @@ Resources:
       Targets:
         - Id: SendEventTo
           Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
-          RoleArn: !GetAtt UnicornContractsEventBusToUnicornPropertiesEventBusRole.Arn
+          RoleArn: !GetAtt UnicornPropertiesSubscriptionRole.Arn
 
-  # This IAM role allows EventBridge to assume the permissions necessary to send events 
-  # from the Unicorn Contracts event bus to the Unicorn Properties event bus.
-  # If the Unicorn Properties service wants receive events from other services, then add another policy 
-  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
-  # subscription (rule)
-  UnicornContractsEventBusToUnicornPropertiesEventBusRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Action: sts:AssumeRole
-            Principal:
-              Service: events.amazonaws.com
-      Policies:
-        - PolicyName: PutEventsOnUnicornPropertiesEventBus
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action: events:PutEvents
-                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
-
+  #### UNICORN WEB EVENT SUBSCRIPTIONS
   PublicationApprovalRequestedSubscriptionRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: properties.pubapprovalwf-web.pubapprovalrequested
-      Description: Publication Approval Requested Subscription
+      Name: unicorn.properties-PublicationApprovalRequested
+      Description: Publication evaluation completed subscription
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
       EventPattern:
         source:
@@ -67,14 +48,12 @@ Resources:
       Targets:
         - Id: SendEventTo
           Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
-          RoleArn: !GetAtt UnicornWebEventBusToUnicornPropertiesEventBusRole.Arn
+          RoleArn: !GetAtt UnicornPropertiesSubscriptionRole.Arn
+
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
-  # from the Unicorn Web event bus to the Unicorn Properties event bus.
-  # If the Unicorn Properties service wants receive events from other services, then add another policy 
-  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
-  # subscription (rule)
-  UnicornWebEventBusToUnicornPropertiesEventBusRole:
+  # from the publishing event bus, to the subscribing event bus (UnicornPropertiesEventBusArn)
+  UnicornPropertiesSubscriptionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:

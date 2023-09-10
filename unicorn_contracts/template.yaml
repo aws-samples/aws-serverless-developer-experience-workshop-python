@@ -273,7 +273,7 @@ Resources:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Ref UnicornContractsEventBus
-      StatementId: !Sub ContactsPublishEventsPolicy-${Stage}
+      StatementId: !Sub OnlyContactsServiceCanPublishToEventBus-${Stage}
       Statement:
         Effect: Allow
         Principal:

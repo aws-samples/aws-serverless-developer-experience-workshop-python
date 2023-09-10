@@ -20,7 +20,7 @@ Resources:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
-      StatementId: !Sub "${AWS::StackName}-CreateRule"
+      StatementId: !Sub "OnlyRulesForPropertiesServiceEvents-${Stage}"
       Statement:
         Effect: Allow
         Principal:

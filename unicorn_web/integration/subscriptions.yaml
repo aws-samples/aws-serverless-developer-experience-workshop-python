@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Defines the cross-service subscriptions for Unicorn Web
+Description: Defines the rule for the events (subscriptions) that Unicorn Properties wants to consume.
 
 Parameters:
   Stage:
@@ -16,8 +16,8 @@ Resources:
   PublicationEvaluationCompletedSubscriptionRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: web.pubapprovalwf-properties.pubapprovalrequested
-      Description: Publication Evaluation Completed Subscription
+      Name: unicorn.web-PublicationEvaluationCompleted
+      Description: PublicationEvaluationCompleted subscription
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
       EventPattern:
         source:
