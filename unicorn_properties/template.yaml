@@ -195,8 +195,8 @@ Resources:
   ContentIntegrityValidatorFunction:
     Type: AWS::Serverless::Function
     Properties:
-    	CodeUri: src/
-	Handler: properties_service.content_integrity_validator_function.lambda_handler
+      CodeUri: src/
+      Handler: properties_service.content_integrity_validator_function.lambda_handler
 
   # Log group for the ContentIntegrityValidatorFunction
   ContentIntegrityValidatorFunctionLogGroup:
@@ -271,7 +271,7 @@ Resources:
         PubApproReqEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: properties.pubapprovalwf-web.pubapprovalrequested
+            RuleName: unicorn.properties-PublicationApprovalRequested
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
