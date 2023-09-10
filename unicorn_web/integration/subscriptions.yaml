@@ -13,6 +13,7 @@ Parameters:
       - prod
 
 Resources:
+  #### UNICORN PROPERTIES EVENT SUBSCRIPTIONS
   PublicationEvaluationCompletedSubscriptionRule:
     Type: AWS::Events::Rule
     Properties:
@@ -31,10 +32,7 @@ Resources:
           RoleArn: !GetAtt UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
-  # from the Unicorn Contracts event bus to the Unicorn Properties event bus.
-  # If the Unicorn Properties service wants receive events from other services, then add another policy 
-  # the arn of the which includes the event bus arn where Unicorn Properties is creating the 
-  # subscription (rule)
+  # from the publishing event bus, to the subscribing event bus (UnicornWebEventBusArn)
   UnicornPropertiesEventBusToUnicornWebEventBusRole:
     Type: AWS::IAM::Role
     Properties:
