@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "unicorn_web"
-version = "0.1.0"
-description = "Unicorn Properties Web"
+version = "0.2.0"
+description = "Unicorn Properties Web Service"
 authors = ["Amazon Web Services"]
 packages = [
     { include = "approvals_service", from = "src" },
@@ -10,18 +10,18 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-boto3 = "^1.28.32"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.23.0"}
+boto3 = "^1.28"
+aws-lambda-powertools = { extras = ["aws-sdk"], version = "^2.23.0" }
 aws-xray-sdk = "^2.12.0"
 requests = "2.31.0"
 crhelper = "^2.0.11"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
-pytest-cov = "^4.1.0"
 requests = "^2.31.0"
 moto = "^4.1.13"
 importlib-metadata = "^6.8.0"
+pyyaml = "^6.0.1"
 arnparse = "^0.0.2"
 
 [build-system]
@@ -31,9 +31,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
-testpaths = [
-    "./tests/unit",
-]
+testpaths = ["tests/unit", "tests/integration"]
 
 [tool.ruff]
 line-length = 150
