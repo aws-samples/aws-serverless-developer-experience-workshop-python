@@ -13,13 +13,13 @@ files = [
 
 [[package]]
 name = "aws-lambda-powertools"
-version = "2.23.1"
+version = "2.24.0"
 description = "Powertools for AWS Lambda (Python) is a developer toolkit to implement Serverless best practices and increase developer velocity."
 optional = false
 python-versions = ">=3.7.4,<4.0.0"
 files = [
-    {file = "aws_lambda_powertools-2.23.1-py3-none-any.whl", hash = "sha256:daa42b1060bc42bf473c984257345bef17e5bded18ec1d6680ce97ca25c1dfbb"},
-    {file = "aws_lambda_powertools-2.23.1.tar.gz", hash = "sha256:1dc08eddd04520cb400085c13db162cf84020d4803192d88c0d2742d77ce3758"},
+    {file = "aws_lambda_powertools-2.24.0-py3-none-any.whl", hash = "sha256:68da8646b6d2c661615e99841200dd6fa62235c99a07b0e8b04c1ca9cb1de714"},
+    {file = "aws_lambda_powertools-2.24.0.tar.gz", hash = "sha256:365daef655d10346ff6c601676feef8399fed127686be3eef2b6282dd97fe88e"},
 ]
 
 [package.dependencies]
@@ -51,17 +51,17 @@ wrapt = "*"
 
 [[package]]
 name = "boto3"
-version = "1.28.43"
+version = "1.28.44"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.28.43-py3-none-any.whl", hash = "sha256:4cd3e96900fb50bddc9f48007176c80d15396d08c5248b25a41220f3570e014f"},
-    {file = "boto3-1.28.43.tar.gz", hash = "sha256:c0211a3e830432851c73fa1e136b14dbb6d02b5c9a5e1272c557e63538620b88"},
+    {file = "boto3-1.28.44-py3-none-any.whl", hash = "sha256:c53c92dfe22489ba31e918c2e7b59ff43e2e778bd3d3559e62351a739382bb5c"},
+    {file = "boto3-1.28.44.tar.gz", hash = "sha256:eea3b07e0f28c9f92bccab972af24a3b0dd951c69d93da75227b8ecd3e18f6c4"},
 ]
 
 [package.dependencies]
-botocore = ">=1.31.43,<1.32.0"
+botocore = ">=1.31.44,<1.32.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -70,13 +70,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.31.43"
+version = "1.31.44"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.31.43-py3-none-any.whl", hash = "sha256:d8b0c41c8c75d82f15fee57f7d54a852a99810faacbeb9d6f3f022558a2c330e"},
-    {file = "botocore-1.31.43.tar.gz", hash = "sha256:b4a3a1fcf75011351e2b0d3eb991f51f8d44a375d3e065f907dac67db232fc97"},
+    {file = "botocore-1.31.44-py3-none-any.whl", hash = "sha256:83d61c1ca781e6ede19fcc4d5dd73004eee3825a2b220f0d7727e32069209d98"},
+    {file = "botocore-1.31.44.tar.gz", hash = "sha256:84f90919fecb4a4f417fd10145c8a87ff2c4b14d6381cd34d9babf02110b3315"},
 ]
 
 [package.dependencies]
@@ -548,23 +548,6 @@ pluggy = ">=0.12,<2.0"
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
-name = "pytest-mock"
-version = "3.11.1"
-description = "Thin-wrapper around the mock package for easier use with pytest"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pytest-mock-3.11.1.tar.gz", hash = "sha256:7f6b125602ac6d743e523ae0bfa71e1a697a2f5534064528c6ff84c2f7c2fc7f"},
-    {file = "pytest_mock-3.11.1-py3-none-any.whl", hash = "sha256:21c279fff83d70763b05f8874cc9cfb3fcacd6d354247a976f9529d19f9acf39"},
-]
-
-[package.dependencies]
-pytest = ">=5.0"
-
-[package.extras]
-dev = ["pre-commit", "pytest-asyncio", "tox"]
-
-[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -874,4 +857,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d98f5abd0cb97c5ab987c900089d8161e28d85067d8e3f04ba17adb06b14d871"
+content-hash = "f8c69342f40c94c598c2daddf757266f294161628cb65e66646faee3acfc6be1"
