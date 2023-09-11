@@ -8,23 +8,23 @@ StartAt: VerifyContractExists
 
 States:
   VerifyContractExists:
-      Type: Task
-      Resource: arn:aws:states:::lambda:invoke
-      InputPath: $.detail
-      ResultPath: $.contract_exists_check
-      Parameters:
-        Payload:
-          Input.$: $
-        FunctionName: ${ContractExistsChecker}
-      Next: CheckImageIntegrity
-      Catch:
-        - ErrorEquals:
-            - ContractStatusNotFoundException
-          Next: NotFound
-      Comment: >-
-        ContractExistsChecker checks to see if a contract for a specified
-        property  exists.
-  
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    InputPath: $.detail
+    ResultPath: $.contract_exists_check
+    Parameters:
+      Payload:
+        Input.$: $
+      FunctionName: ${ContractExistsChecker}
+    Next: CheckImageIntegrity
+    Catch:
+      - ErrorEquals:
+          - ContractStatusNotFoundException
+        Next: NotFound
+    Comment: >-
+      ContractExistsChecker checks to see if a contract for a specified
+      property  exists.
+
   NotFound:
     Type: Fail
 
@@ -50,7 +50,7 @@ States:
       unsafe content.
     ItemsPath: "$.detail.images"
     ResultPath: "$.imageModerations"
-  
+
   CheckDescriptionSentiment:
     Type: Task
     Parameters:
@@ -64,27 +64,27 @@ States:
     Type: Task
     Resource: arn:aws:states:::lambda:invoke
     ResultPath: "$.validation_check"
-    ResultSelector :
+    ResultSelector:
       validation_result.$: "$.Payload.validation_result"
     Parameters:
       Payload.$: $
       FunctionName: ${ContentIntegrityValidator}
     Retry:
-    - ErrorEquals:
-      - Lambda.ServiceException
-      - Lambda.AWSLambdaException
-      - Lambda.SdkClientException
-      IntervalSeconds: 2
-      MaxAttempts: 6
-      BackoffRate: 2
+      - ErrorEquals:
+          - Lambda.ServiceException
+          - Lambda.AWSLambdaException
+          - Lambda.SdkClientException
+        IntervalSeconds: 2
+        MaxAttempts: 6
+        BackoffRate: 2
     Next: IsContentSafe
 
   IsContentSafe:
     Type: Choice
     Choices:
-    - Variable: $.validation_check.validation_result
-      StringEquals: PASS
-      Next: WaitForContractApproval
+      - Variable: $.validation_check.validation_result
+        StringEquals: PASS
+        Next: WaitForContractApproval
     Default: PublicationEvaluationCompletedDeclined
 
   PublicationEvaluationCompletedDeclined:
@@ -92,16 +92,16 @@ States:
     Resource: arn:aws:states:::events:putEvents
     Parameters:
       Entries:
-      - Detail:
-          property_id.$: "$.detail.property_id"
-          evaluation_result: "DECLINED"
-        DetailType: PublicationEvaluationCompleted
-        EventBusName: ${EventBusName}
-        Source: ${ServiceName}
+        - Detail:
+            property_id.$: "$.detail.property_id"
+            evaluation_result: "DECLINED"
+          DetailType: PublicationEvaluationCompleted
+          EventBusName: ${EventBusName}
+          Source: ${ServiceName}
     Next: Declined
   Declined:
     Type: Succeed
-  
+
   WaitForContractApproval:
     Type: Task
     Resource: arn:aws:states:::lambda:invoke.waitForTaskToken
@@ -113,13 +113,13 @@ States:
         TaskToken.$: $$.Task.Token
       FunctionName: ${WaitForContractApproval}
     Retry:
-    - ErrorEquals:
-      - Lambda.ServiceException
-      - Lambda.AWSLambdaException
-      - Lambda.SdkClientException
-      IntervalSeconds: 2
-      MaxAttempts: 6
-      BackoffRate: 2
+      - ErrorEquals:
+          - Lambda.ServiceException
+          - Lambda.AWSLambdaException
+          - Lambda.SdkClientException
+        IntervalSeconds: 2
+        MaxAttempts: 6
+        BackoffRate: 2
     Next: PublicationEvaluationCompletedApproved
     Comment: ContractStatusChecker
 
@@ -128,12 +128,12 @@ States:
     Resource: arn:aws:states:::events:putEvents
     Parameters:
       Entries:
-      - Detail:
-          property_id.$: "$.detail.property_id"
-          evaluation_result: "APPROVED"
-        DetailType: PublicationEvaluationCompleted
-        EventBusName: ${EventBusName}
-        Source: ${ServiceName}
+        - Detail:
+            property_id.$: "$.detail.property_id"
+            evaluation_result: "APPROVED"
+          DetailType: PublicationEvaluationCompleted
+          EventBusName: ${EventBusName}
+          Source: ${ServiceName}
     Next: Approved
   Approved:
     Type: Succeed
