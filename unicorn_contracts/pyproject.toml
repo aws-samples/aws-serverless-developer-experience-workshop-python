@@ -3,9 +3,7 @@ name = "contracts_service"
 version = "0.2.0"
 description = "Unicorn Properties Contact Service"
 authors = ["Amazon Web Services"]
-packages = [
-    { include = "contracts_service", from = "src" },
-]
+packages = [{ include = "contracts_service", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -29,10 +27,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
-testpaths = [
-    "./tests/unit",
-    "./tests/integration",
-]
+testpaths = ["tests/unit", "tests/integration"]
 
 [tool.ruff]
 line-length = 150

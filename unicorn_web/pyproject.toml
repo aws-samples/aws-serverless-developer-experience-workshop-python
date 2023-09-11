@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "unicorn_web"
 version = "0.1.0"
-description = "Unicorn Properties Web"
+description = "Unicorn Properties Web Service"
 authors = ["Amazon Web Services"]
 packages = [
     { include = "approvals_service", from = "src" },
@@ -31,9 +31,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
-testpaths = [
-    "./tests/unit",
-]
+testpaths = ["tests/unit", "tests/integration"]
 
 [tool.ruff]
 line-length = 150
