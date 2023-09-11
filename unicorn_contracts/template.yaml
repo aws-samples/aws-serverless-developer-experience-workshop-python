@@ -413,6 +413,22 @@ Resources:
                   - events:PutEvents
                 Resource: !GetAtt UnicornContractsEventBus.Arn
 
+  #### CLOUDFORMATION NESTED STACKS
+  EventSchemasStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: "integration/event-schemas.yaml"
+      Parameters:
+        Stage: !Ref Stage
+  SubscriberPoliciesStack:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - UnicornContractsEventBusNameParam
+    Properties:
+      Location: "integration/subscriber-policies.yaml"
+      Parameters:
+        Stage: !Ref Stage
+
 Outputs:
   #### API GATEWAY OUTPUTS
   BaseUrl:

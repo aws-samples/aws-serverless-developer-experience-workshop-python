@@ -443,6 +443,30 @@ Resources:
           ]
         }
 
+  #### CLOUDFORMATION NESTED STACKS
+  EventSchemasStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: "integration/event-schemas.yaml"
+      Parameters:
+        Stage: !Ref Stage
+  SubscriberPoliciesStack:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - UnicornPropertiesEventBusNameParam
+    Properties:
+      Location: "integration/subscriber-policies.yaml"
+      Parameters:
+        Stage: !Ref Stage
+  SubscriptionsStack:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - UnicornPropertiesEventBusArnParam
+    Properties:
+      Location: "integration/subscriptions.yaml"
+      Parameters:
+        Stage: !Ref Stage
+
 Outputs:
   #### DYNAMODB OUTPUTS
   ContractStatusTableName:

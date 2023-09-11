@@ -19,12 +19,15 @@ Resources:
   CrossServiceCreateRulePolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
-      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
-      StatementId: !Sub "OnlyRulesForPropertiesServiceEvents-${Stage}"
+      EventBusName:
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
+      StatementId:
+        Fn::Sub: "OnlyRulesForWebServiceEvents-${Stage}"
       Statement:
         Effect: Allow
         Principal:
-          AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+          AWS:
+            Fn::Sub: "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
         Action:
           - events:PutRule
           - events:DeleteRule
@@ -34,14 +37,15 @@ Resources:
           - events:PutTargets
           - events:RemoveTargets
         Resource:
-          - !Sub
+          - Fn::Sub:
               - arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/${eventBusName}/*
-              - eventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
+              - eventBusName:
+                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
         Condition:
           StringEqualsIfExists:
             "events:creatorAccount": "${aws:PrincipalAccount}"
           StringEquals:
             "events:source":
-              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+              - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
           "Null":
             "events:source": "false"
