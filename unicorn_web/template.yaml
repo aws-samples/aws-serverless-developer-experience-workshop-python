@@ -94,6 +94,7 @@ Resources:
         - DynamoDBReadPolicy:
             TableName: !Ref WebTable
 
+  # Log group for the SearchFunction
   SearchFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -123,6 +124,7 @@ Resources:
             ScalingConfig:
               MaximumConcurrency: 5
 
+  # Log group for the RequestApprovalFunction  
   RequestApprovalFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -148,7 +150,7 @@ Resources:
         ApprovalEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: web.publicationapproved-properties.pubevalcompleted
+            RuleName: unicorn.web-PublicationEvaluationCompleted
             EventBusName: !Ref UnicornWebEventBus
             Pattern:
               source:
@@ -156,6 +158,7 @@ Resources:
               detail-type:
                 - PublicationEvaluationCompleted
 
+  # Log group for the PublicationApprovedEventHandlerFunction
   PublicationApprovedEventHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -277,6 +280,7 @@ Resources:
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+
   # DeadLetterQueue for UnicornWebIngestQueue. Contains messages that failed to be processed
   UnicornWebIngestDLQ:
     Type: AWS::SQS::Queue

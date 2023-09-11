@@ -98,7 +98,7 @@ Resources:
         StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: properties.contstatuschangedhdr-contracts.contstatuschanged
+            RuleName: unicorn.properties-ContractStatusChanged
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
@@ -115,6 +115,15 @@ Resources:
           OnFailure:
             Type: SQS
             Destination: !GetAtt PropertiesServiceDLQ.Arn
+
+  # Log group for the ContractStatusChangedHandlerFunction
+  ContractStatusChangedHandlerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContractStatusChangedHandlerFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Listens to Contract status changes from ContractStatusTable to un-pause StepFunctions
   PropertiesApprovalSyncFunction:
@@ -154,6 +163,15 @@ Resources:
             Type: SQS
             Destination: !GetAtt PropertiesServiceDLQ.Arn
 
+  # Log group for the PropertiesApprovalSyncFunction
+  PropertiesApprovalSyncFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${PropertiesApprovalSyncFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
   # Part of the ApprovalStateMachine, checks if a given Property has an existing Contract in ContractStatusTable
   ContractExistsCheckerFunction:
     Type: AWS::Serverless::Function
@@ -164,12 +182,30 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
+  # Log group for the ContractExistsCheckerFunction       
+  ContractExistsCheckerFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContractExistsCheckerFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
   # Part of the ApprovalStateMachine, validates if all outputs of content checking steps are OK
   ContentIntegrityValidatorFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
       Handler: properties_service.content_integrity_validator_function.lambda_handler
+
+  # Log group for the ContentIntegrityValidatorFunction
+  ContentIntegrityValidatorFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ContentIntegrityValidatorFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Part of the ApprovalStateMachine, pauses the workflow execution and stores token in ContractStatusTable until contract is approved
   WaitForContractApprovalFunction:
@@ -181,6 +217,14 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
+  # Log group for the WaitForContractApprovalFunction
+  WaitForContractApprovalFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${WaitForContractApprovalFunction}"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### STATE MACHINE
   ApprovalStateMachine:
@@ -227,7 +271,7 @@ Resources:
         PubApproReqEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: properties.pubapprovalwf-web.pubapprovalrequested
+            RuleName: unicorn.properties-PublicationApprovalRequested
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
@@ -248,6 +292,14 @@ Resources:
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
         ServiceName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
+  # Store ApprovalStateMachineLogGroup workflow execution logs
+  ApprovalStateMachineLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/states/${AWS::StackName}-ApprovalStateMachine"
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### DEAD LETTER QUEUES
   # Store EventBridge events that failed to be DELIVERED to ContractStatusChangedHandlerFunction
@@ -281,59 +333,6 @@ Resources:
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
-
-
-  #### CLOUDWATCH LOG GROUPS
-  # Store Lambda execution logs for each Lambda function in Unicorn Properties Service
-  ContractStatusChangedHandlerFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${ContractStatusChangedHandlerFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
-  PropertiesApprovalSyncFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${PropertiesApprovalSyncFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
-  ContractExistsCheckerFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${ContractExistsCheckerFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
-  ContentIntegrityValidatorFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${ContentIntegrityValidatorFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
-  WaitForContractApprovalFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${WaitForContractApprovalFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
-  # Store ApprovalStateMachineLogGroup workflow execution logs
-  ApprovalStateMachineLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/states/${AWS::StackName}-ApprovalStateMachine"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
 
   #### DYNAMODB TABLE
   ContractStatusTable:
@@ -371,7 +370,7 @@ Resources:
     Type: AWS::Events::EventBusPolicy
     Properties:
       EventBusName: !Ref UnicornPropertiesEventBus
-      StatementId: !Sub PropertiesPublishEventsPolicy-${Stage}
+      StatementId: !Sub OnlyPropertiesServiceCanPublishToEventBus-${Stage}
       Statement:
         Effect: Allow
         Principal:
@@ -384,12 +383,12 @@ Resources:
             events:source:
               - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
-  # Catchall rule used for development purposes. Logs all events matching any of the services' to CloudWatch Logs
+  # Catchall rule used for development purposes. Logs all events matching any of the services to CloudWatch Logs
   UnicornPropertiesCatchAllRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: contracts.catchall
-      Description: Catch all events published by the contracts service.
+      Name: properties.catchall
+      Description: Catchall rule used for development purposes.
       EventBusName: !Ref UnicornPropertiesEventBus
       EventPattern:
         account:
