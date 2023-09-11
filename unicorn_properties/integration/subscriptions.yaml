@@ -20,17 +20,20 @@ Resources:
     Properties:
       Name: unicorn.properties-ContractStatusChanged
       Description: Contract Status Changed subscription
-      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
+      EventBusName:
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
         detail-type:
           - ContractStatusChanged
       State: ENABLED
       Targets:
         - Id: SendEventTo
-          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
-          RoleArn: !GetAtt UnicornPropertiesSubscriptionRole.Arn
+          Arn:
+            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+          RoleArn:
+            Fn::GetAtt: UnicornPropertiesSubscriptionRole.Arn
 
   #### UNICORN WEB EVENT SUBSCRIPTIONS
   PublicationApprovalRequestedSubscriptionRule:
@@ -38,17 +41,20 @@ Resources:
     Properties:
       Name: unicorn.properties-PublicationApprovalRequested
       Description: Publication evaluation completed subscription
-      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+      EventBusName:
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
         detail-type:
           - PublicationApprovalRequested
       State: ENABLED
       Targets:
         - Id: SendEventTo
-          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
-          RoleArn: !GetAtt UnicornPropertiesSubscriptionRole.Arn
+          Arn:
+            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+          RoleArn:
+            Fn::GetAtt: UnicornPropertiesSubscriptionRole.Arn
 
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
@@ -68,13 +74,16 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: events:PutEvents
-                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+                Resource:
+                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
 
 Outputs:
   ContractStatusChangedSubscription:
     Description: Rule ARN for Contract service event subscription
-    Value: !GetAtt ContractStatusChangedSubscriptionRule.Arn
+    Value:
+      Fn::GetAtt: ContractStatusChangedSubscriptionRule.Arn
 
   PublicationApprovalRequestedSubscription:
     Description: Rule ARN for Web service event subscription
-    Value: !GetAtt PublicationApprovalRequestedSubscriptionRule.Arn
+    Value:
+      Fn::GetAtt: PublicationApprovalRequestedSubscriptionRule.Arn
