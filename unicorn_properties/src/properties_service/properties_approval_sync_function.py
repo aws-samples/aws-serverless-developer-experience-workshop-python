@@ -89,9 +89,11 @@ def task_successful(task_token: str, contract_status: dict):
         Contract Status object to return to statemachine.
     """
     output = {'Payload': contract_status}
+    logger.info(output)
     return sfn.send_task_success(taskToken=task_token, output=json.dumps(output))
 
 
+@tracer.capture_method
 def ddb_deserialize(dynamo_image: dict) -> dict:
     """Converts the DynamoDB stream object to json dict
 
