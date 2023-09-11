@@ -440,6 +440,7 @@ Resources:
         Stage: !Ref Stage
 
 Outputs:
+  #### API GATEWAY OUTPUTS
   BaseUrl:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
@@ -447,6 +448,7 @@ Outputs:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
 
+  #### API ACTIONS OUTPUTS
   ApiSearchPropertiesByCity:
     Description: "GET request to list all properties in a given city"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}"
@@ -460,14 +462,17 @@ Outputs:
     Description: "GET request to get the full details of a single property"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/properties/{country}/{city}/{street}/{number}"
 
+  #### SQS OUTPUTS
   IngestQueueUrl:
     Description: URL for the Ingest SQS Queue
     Value: !GetAtt UnicornWebIngestQueue.QueueUrl
 
+  #### DYNAMODB OUTPUTS
   WebTableName:
     Description: Name of the DynamoDB Table for Unicorn Web
     Value: !Ref WebTable
 
+  #### LAMBDA FUNCTIONS OUTPUTS
   SearchFunctionArn:
     Description: Search function ARN
     Value: !GetAtt SearchFunction.Arn

@@ -508,6 +508,7 @@ Outputs:
 
   #### CLOUDWATCH LOGS OUTPUTS
   UnicornPropertiesCatchAllLogGroupArn:
+    Description: Log all events on the service's EventBridge Bus
     Value: !GetAtt UnicornPropertiesCatchAllLogGroup.Arn
 
   ApprovalStateMachineLogGroupName:

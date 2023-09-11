@@ -459,4 +459,5 @@ Outputs:
 
   #### CLOUDWATCH LOGS OUTPUTS
   UnicornContractsCatchAllLogGroupArn:
+    Description: Log all events on the service's EventBridge Bus
     Value: !GetAtt UnicornContractsCatchAllLogGroup.Arn
