@@ -20,15 +20,16 @@ def return_env_vars_dict(k=None):
 
     env_dict = {
         "AWS_DEFAULT_REGION": "ap-southeast-2",
+        "EVENT_BUS": EVENTBUS_NAME,
         "DYNAMODB_TABLE": TABLE_NAME,
-        "EVENT_BUS": "test-eventbridge",
-        "LOG_LEVEL":"INFO",
+        "SERVICE_NAMESPACE": "unicorn.contracts",
+        "POWERTOOLS_LOGGER_CASE": "PascalCase",
+        "POWERTOOLS_SERVICE_NAME":"unicorn.contracts",
+        "POWERTOOLS_TRACE_DISABLED":"true",
         "POWERTOOLS_LOGGER_LOG_EVENT":"true",
         "POWERTOOLS_LOGGER_SAMPLE_RATE":"0.1",
         "POWERTOOLS_METRICS_NAMESPACE":"unicorn.contracts",
-        "POWERTOOLS_SERVICE_NAME":"unicorn.contracts",
-        "POWERTOOLS_TRACE_DISABLED":"true",
-        "SERVICE_NAMESPACE": "unicorn.contracts",
+        "LOG_LEVEL":"INFO",
     }
 
     env_dict |= k

@@ -44,7 +44,7 @@ def test_valid_create_event(dynamodb, sqs, lambda_context):
 def test_valid_update_event(dynamodb, sqs, lambda_context):
     payload = load_event('update_contract_valid_1')
     event = sqs_event([{'body': payload, 'attributes': {'HttpMethod': 'PUT'}}])
-    
+
     # Loading function here so that mocking works correctly.
     from contracts_service import contract_event_handler  # noqa: F401
     # Reload is required to prevent function setup reuse from another test 

@@ -31,7 +31,7 @@ table = dynamodb.Table(CONTRACT_STATUS_TABLE)  # type: ignore
 
 
 @metrics.log_metrics(capture_cold_start_metric=True)  # type: ignore
-@logger.inject_lambda_context(log_event=True)  # type: ignore
+@logger.inject_lambda_context(log_event=True)
 @tracer.capture_method
 def lambda_handler(event, context):
     """Function checks to see whether the contract status exists and waits for APPROVAL
