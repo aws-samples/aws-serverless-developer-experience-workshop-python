@@ -1,34 +1,22 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: "2010-09-09"
 Transform:
-  - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
   Base infrastructure that will set up the central event bus and S3 image upload bucket.
 
 
-#### PARAMETERS
 Parameters:
   Stage:
     Type: String
-    Default: Local
+    Default: local
     AllowedValues:
-      - Local
-      - Dev
-      - Prod
+      - local
+      - dev
+      - prod
 
 
-#### MAPPINGS - Should be removed when values change to lower case
-Mappings:
-  Stage:
-    Dev:
-      Value: dev
-    Prod:
-      Value: prod
-    Local:
-      Value: local
-
-
-#### GLOBALS
 Globals:
   Function:
     Timeout: 15
@@ -43,29 +31,49 @@ Globals:
       service: Unicorn Base Infrastructure
 
 
-#### RESOURCES
 Resources:
-  # S3 PROPERTY IMAGES BUCKET
-  UnicornPropertiesImagesBucket:
-    Type: AWS::S3::Bucket
+  #### SSM PARAMETERS
+  # Service Namespaces
+  UnicornContractsNamespaceParam:
+    Type: AWS::SSM::Parameter
     Properties:
-      BucketName: !Sub
-        - uni-prop-${st}-images-${AWS::AccountId}
-        - st: !FindInMap [Stage, !Ref Stage, Value]
+      Type: String
+      Name: !Sub /uni-prop/${Stage}/UnicornContractsNamespace
+      Value: "unicorn.contracts"
+  UnicornPropertiesNamespaceParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesNamespace
+      Value: "unicorn.properties"
+  UnicornWebNamespaceParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: !Sub /uni-prop/${Stage}/UnicornWebNamespace
+      Value: "unicorn.web"
 
+  # Images S3 Bucket
   UnicornPropertiesImagesBucketParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /UniProp/${Stage}/ImagesBucket
+      Name: !Sub /uni-prop/${Stage}/ImagesBucket
       Value: !Ref UnicornPropertiesImagesBucket
 
-  # IMAGE UPLOAD CUSTOM RESOURCE FUNCTION
+
+  #### S3 PROPERTY IMAGES BUCKET
+  UnicornPropertiesImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub uni-prop-${Stage}-images-${AWS::AccountId}
+
+
+  #### IMAGE UPLOAD CUSTOM RESOURCE FUNCTION
   ImageUploadFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.lambda_handler
-      Runtime: python3.9
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref UnicornPropertiesImagesBucket

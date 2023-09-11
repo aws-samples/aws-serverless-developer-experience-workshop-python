@@ -8,7 +8,6 @@ default:
       resolve_s3: true
   deploy:
     parameters:
-      template_file: uni-prop-shared.yaml
       confirm_changeset: false
       fail_on_empty_changeset: false
       on_failure: ROLLBACK
