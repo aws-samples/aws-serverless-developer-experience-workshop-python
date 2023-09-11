@@ -234,8 +234,8 @@ Resources:
         Enabled: true
       Policies:
         - AWSXRayDaemonWriteAccess
-        - ComprehendBasicAccessPolicy
-        - RekognitionDetectOnlyPolicy
+        - ComprehendBasicAccessPolicy: {}
+        - RekognitionDetectOnlyPolicy: {}
         - LambdaInvokePolicy:
             FunctionName: !Ref WaitForContractApprovalFunction
         - LambdaInvokePolicy:
