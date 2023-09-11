@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
-Transform: 
+Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
@@ -11,10 +11,11 @@ Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
-        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
-        - WS2001      # Rule disabled because check does not support !ToJsonString transform
-        - ES1001      # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
+        - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000 # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - WS2001 # Rule disabled because check does not support !ToJsonString transform
+        - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
+        - W3002
 
 Parameters:
   Stage:
@@ -124,7 +125,7 @@ Resources:
             ScalingConfig:
               MaximumConcurrency: 5
 
-  # Log group for the RequestApprovalFunction  
+  # Log group for the RequestApprovalFunction
   RequestApprovalFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -414,7 +415,32 @@ Resources:
           ]
         }
 
+  #### CLOUDFORMATION NESTED STACKS
+  EventSchemasStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: "integration/event-schemas.yaml"
+      Parameters:
+        Stage: !Ref Stage
+  SubscriberPoliciesStack:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - UnicornWebEventBusParam
+    Properties:
+      Location: "integration/subscriber-policies.yaml"
+      Parameters:
+        Stage: !Ref Stage
+  SubscriptionsStack:
+    Type: AWS::Serverless::Application
+    DependsOn:
+      - UnicornWebEventBusArnParam
+    Properties:
+      Location: "integration/subscriptions.yaml"
+      Parameters:
+        Stage: !Ref Stage
+
 Outputs:
+  #### API GATEWAY OUTPUTS
   BaseUrl:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
@@ -422,6 +448,7 @@ Outputs:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
 
+  #### API ACTIONS OUTPUTS
   ApiSearchPropertiesByCity:
     Description: "GET request to list all properties in a given city"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}"
@@ -435,14 +462,17 @@ Outputs:
     Description: "GET request to get the full details of a single property"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/properties/{country}/{city}/{street}/{number}"
 
+  #### SQS OUTPUTS
   IngestQueueUrl:
     Description: URL for the Ingest SQS Queue
     Value: !GetAtt UnicornWebIngestQueue.QueueUrl
 
+  #### DYNAMODB OUTPUTS
   WebTableName:
     Description: Name of the DynamoDB Table for Unicorn Web
     Value: !Ref WebTable
 
+  #### LAMBDA FUNCTIONS OUTPUTS
   SearchFunctionArn:
     Description: Search function ARN
     Value: !GetAtt SearchFunction.Arn
@@ -453,5 +483,11 @@ Outputs:
     Description: Publication evaluation event handler function ARN
     Value: !GetAtt PublicationApprovedEventHandlerFunction.Arn
 
-  UnicornWebCatchAllLogGroupArn:
-    Value: !GetAtt UnicornWebCatchAllLogGroup.Arn
+  #### EVENT BRIDGE OUTPUTS
+  UnicornWebEventBusName:
+    Value: !GetAtt UnicornWebEventBus.Name
+
+  #### CLOUDWATCH LOGS OUTPUTS
+  UnicornWebCatchAllLogGroupName:
+    Description: Log all events on the service's EventBridge Bus
+    Value: !Ref UnicornWebCatchAllLogGroup

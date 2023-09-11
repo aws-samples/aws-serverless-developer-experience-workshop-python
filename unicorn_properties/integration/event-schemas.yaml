@@ -17,12 +17,14 @@ Resources:
     Type: AWS::EventSchemas::Registry
     Properties: 
       Description: 'Event schemas for Unicorn Properties'
-      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+      RegistryName:
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
   EventRegistryPolicy:
     Type: AWS::EventSchemas::RegistryPolicy
     Properties: 
-      RegistryName: !GetAtt EventRegistry.RegistryName
+      RegistryName:
+        Fn::GetAtt: EventRegistry.RegistryName
       Policy:
         Version: '2012-10-17'
         Statement:
@@ -30,7 +32,7 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                - !Ref AWS::AccountId
+                - Ref: AWS::AccountId
             Action:
               - schemas:DescribeCodeBinding
               - schemas:DescribeRegistry
@@ -40,90 +42,93 @@ Resources:
               - schemas:ListSchemaVersions
               - schemas:SearchSchemas
             Resource:
-              - !GetAtt EventRegistry.RegistryArn
-              - !Sub "arn:${AWS::Partition}:schemas:${AWS::Region}:${AWS::AccountId}:schema/${EventRegistry.RegistryName}*"
+              - Fn::GetAtt: EventRegistry.RegistryArn
+              - Fn::Sub: "arn:${AWS::Partition}:schemas:${AWS::Region}:${AWS::AccountId}:schema/${EventRegistry.RegistryName}*"
 
   PublicationEvaluationCompleted:
     Type: AWS::EventSchemas::Schema
     Properties:
       Type: 'OpenApi3'
-      RegistryName: !GetAtt EventRegistry.RegistryName
-      SchemaName: !Sub '${EventRegistry.RegistryName}@PublicationEvaluationCompleted'
+      RegistryName:
+        Fn::GetAtt: EventRegistry.RegistryName
+      SchemaName:
+        Fn::Sub: '${EventRegistry.RegistryName}@PublicationEvaluationCompleted'
       Description: 'The schema for when a property evaluation is completed'
-      Content: !Sub |
-        {
-          "openapi": "3.0.0",
-          "info": {
-            "version": "1.0.0",
-            "title": "PublicationEvaluationCompleted"
-          },
-          "paths": {},
-          "components": {
-            "schemas": {
-              "AWSEvent": {
-                "type": "object",
-                "required": [
-                  "detail-type",
-                  "resources",
-                  "detail",
-                  "id",
-                  "source",
-                  "time",
-                  "region",
-                  "version",
-                  "account"
-                ],
-                "x-amazon-events-detail-type": "PublicationEvaluationCompleted",
-                "x-amazon-events-source": "${EventRegistry.RegistryName}",
-                "properties": {
-                  "detail": {
-                    "$ref": "#/components/schemas/PublicationEvaluationCompleted"
-                  },
-                  "account": {
-                    "type": "string"
-                  },
-                  "detail-type": {
-                    "type": "string"
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "region": {
-                    "type": "string"
-                  },
-                  "resources": {
-                    "type": "array",
-                    "items": {
+      Content:
+        Fn::Sub: |
+          {
+            "openapi": "3.0.0",
+            "info": {
+              "version": "1.0.0",
+              "title": "PublicationEvaluationCompleted"
+            },
+            "paths": {},
+            "components": {
+              "schemas": {
+                "AWSEvent": {
+                  "type": "object",
+                  "required": [
+                    "detail-type",
+                    "resources",
+                    "detail",
+                    "id",
+                    "source",
+                    "time",
+                    "region",
+                    "version",
+                    "account"
+                  ],
+                  "x-amazon-events-detail-type": "PublicationEvaluationCompleted",
+                  "x-amazon-events-source": "${EventRegistry.RegistryName}",
+                  "properties": {
+                    "detail": {
+                      "$ref": "#/components/schemas/PublicationEvaluationCompleted"
+                    },
+                    "account": {
+                      "type": "string"
+                    },
+                    "detail-type": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "region": {
+                      "type": "string"
+                    },
+                    "resources": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "source": {
+                      "type": "string"
+                    },
+                    "time": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "version": {
                       "type": "string"
                     }
-                  },
-                  "source": {
-                    "type": "string"
-                  },
-                  "time": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "version": {
-                    "type": "string"
                   }
-                }
-              },
-              "PublicationEvaluationCompleted": {
-                "type": "object",
-                "required": [
-                  "property_id",
-                  "evaluation_result"
-                ],
-                "properties": {
-                  "property_id": {
-                    "type": "string"
-                  },
-                  "evaluation_result": {
-                    "type": "string"
+                },
+                "PublicationEvaluationCompleted": {
+                  "type": "object",
+                  "required": [
+                    "property_id",
+                    "evaluation_result"
+                  ],
+                  "properties": {
+                    "property_id": {
+                      "type": "string"
+                    },
+                    "evaluation_result": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
           }
-        }
