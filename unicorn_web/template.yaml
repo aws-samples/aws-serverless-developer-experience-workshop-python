@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
-Transform: 
+Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
@@ -11,10 +11,11 @@ Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
-        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
-        - WS2001      # Rule disabled because check does not support !ToJsonString transform
-        - ES1001      # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
+        - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000 # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - WS2001 # Rule disabled because check does not support !ToJsonString transform
+        - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
+        - W3002
 
 Parameters:
   Stage:
@@ -124,7 +125,7 @@ Resources:
             ScalingConfig:
               MaximumConcurrency: 5
 
-  # Log group for the RequestApprovalFunction  
+  # Log group for the RequestApprovalFunction
   RequestApprovalFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete

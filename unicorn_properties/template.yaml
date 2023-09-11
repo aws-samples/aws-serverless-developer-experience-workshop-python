@@ -11,8 +11,9 @@ Metadata:
   cfn-lint:
     config:
       ignore_checks:
-        - ES4000      # Rule disabled because the CatchAll Rule doesn't need a DLQ
-        - ES6000      # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
+        - ES6000 # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - E0001 # Rule disabled because cfn-lint cannot parse SAM Policy templates without arguments (ComprehendBasicAccessPolicy, RekognitionDetectOnlyPolicy)
 
 Parameters:
   Stage:
@@ -36,9 +37,7 @@ Mappings:
       Value: "AWS Serverless Developer Experience"
 
 Conditions:
-  IsProd: !Equals
-    - !Ref Stage
-    - Prod
+  IsProd: !Equals [!Ref Stage, Prod]
 
 Globals:
   Function:
@@ -61,7 +60,7 @@ Globals:
         LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
-      project: !FindInMap [ Constants, ProjectName, Value ]
+      project: !FindInMap [Constants, ProjectName, Value]
       namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
 Resources:
@@ -73,14 +72,13 @@ Resources:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBus
       Value: !GetAtt UnicornPropertiesEventBus.Name
-      
+
   UnicornPropertiesEventBusArnParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBusArn
       Value: !GetAtt UnicornPropertiesEventBus.Arn
-
 
   #### LAMBDA FUNCTIONS
   # Listens to ContractStatusChanged events from EventBridge
@@ -182,7 +180,7 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
 
-  # Log group for the ContractExistsCheckerFunction       
+  # Log group for the ContractExistsCheckerFunction
   ContractExistsCheckerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
@@ -312,7 +310,7 @@ Resources:
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
-          Value: !FindInMap [ Constants, ProjectName, Value ]
+          Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
@@ -328,7 +326,7 @@ Resources:
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       Tags:
         - Key: project
-          Value: !FindInMap [ Constants, ProjectName, Value ]
+          Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
@@ -351,12 +349,11 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       Tags:
         - Key: project
-          Value: !FindInMap [ Constants, ProjectName, Value ]
+          Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
           Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
-
 
   #### EVENT BUS
   # Event bus for Unicorn Properties Service, used to publish and consume events
