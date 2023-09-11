@@ -478,5 +478,11 @@ Outputs:
     Description: Publication evaluation event handler function ARN
     Value: !GetAtt PublicationApprovedEventHandlerFunction.Arn
 
-  UnicornWebCatchAllLogGroupArn:
-    Value: !GetAtt UnicornWebCatchAllLogGroup.Arn
+  #### EVENT BRIDGE OUTPUTS
+  UnicornWebEventBusName:
+    Value: !GetAtt UnicornWebEventBus.Name
+
+  #### CLOUDWATCH LOGS OUTPUTS
+  UnicornWebCatchAllLogGroupName:
+    Description: Log all events on the service's EventBridge Bus
+    Value: !Ref UnicornWebCatchAllLogGroup

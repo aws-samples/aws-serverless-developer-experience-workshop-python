@@ -453,6 +453,10 @@ Outputs:
     Description: ContractEventHandler function ARN
     Value: !GetAtt ContractEventHandlerFunction.Arn
 
+  #### EVENT BRIDGE OUTPUTS
+  UnicornContractsEventBusName:
+    Value: !GetAtt UnicornContractsEventBus.Name
+
   #### CLOUDWATCH LOGS OUTPUTS
   UnicornContractsCatchAllLogGroupArn:
     Value: !GetAtt UnicornContractsCatchAllLogGroup.Arn

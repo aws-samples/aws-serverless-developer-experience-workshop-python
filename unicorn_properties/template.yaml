@@ -496,6 +496,19 @@ Outputs:
   WaitForContractApprovalFunctionArn:
     Value: !GetAtt WaitForContractApprovalFunction.Arn
 
+  #### STEPFUNCTIONS OUTPUTS
+  ApprovalStateMachineName:
+    Value: !GetAtt ApprovalStateMachine.Name
+  ApprovalStateMachineArn:
+    Value: !Ref ApprovalStateMachine
+
+  #### EVENT BRIDGE OUTPUTS
+  UnicornPropertiesEventBusName:
+    Value: !GetAtt UnicornPropertiesEventBus.Name
+
   #### CLOUDWATCH LOGS OUTPUTS
   UnicornPropertiesCatchAllLogGroupArn:
     Value: !GetAtt UnicornPropertiesCatchAllLogGroup.Arn
+
+  ApprovalStateMachineLogGroupName:
+    Value: !Ref ApprovalStateMachineLogGroup
