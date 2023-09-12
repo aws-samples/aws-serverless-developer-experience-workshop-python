@@ -34,7 +34,7 @@ class TestUpdateContract(TestCase):
     # def test_update_existing_contract_invalid_payload_1(self):
     #     payload = get_event_payload('update_existing_contract_invalid_payload_1')
 
-    #     response = requests.put(f'{self.api_endpoint}contract', json=payload)
+    #     response = requests.put(f'{self.api_endpoint}contracts', json=payload)
     #     self.assertEqual(response.status_code, 400)
 
 
@@ -43,11 +43,11 @@ class TestUpdateContract(TestCase):
         payload = override_payload_number(get_event_payload('create_contract_valid_payload_1'), prop_number)
 
         # Call API to create new Contract
-        response = requests.post(f'{self.api_endpoint}contract', json=payload)
+        response = requests.post(f'{self.api_endpoint}contracts', json=payload)
         self.properties.append(payload['property_id'])
 
         # Call API to update contract
-        response = requests.put(f'{self.api_endpoint}contract', json={'property_id': payload['property_id']})
+        response = requests.put(f'{self.api_endpoint}contracts', json={'property_id': payload['property_id']})
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response.json() | {"message": "OK"})
 
@@ -70,7 +70,7 @@ class TestUpdateContract(TestCase):
             "prop": "4781231c-bc30-4f30-8b30-7145f4dd1adb"
         }
 
-        response = requests.put(f'{self.api_endpoint}contract', json=payload)
+        response = requests.put(f'{self.api_endpoint}contracts', json=payload)
         self.assertEqual(response.status_code, 400)
         self.assertDictEqual(response.json(), response.json() | {"message": "Invalid request body"})
 
@@ -80,6 +80,6 @@ class TestUpdateContract(TestCase):
             "property_id": "usa/some_other_town/street/878828"
         }
 
-        response = requests.put(f'{self.api_endpoint}contract', json=payload)
+        response = requests.put(f'{self.api_endpoint}contracts', json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response.json() | {"message": "OK"})

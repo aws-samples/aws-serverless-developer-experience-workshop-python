@@ -35,7 +35,7 @@ class TestCreateContract(TestCase):
         """
         
         payload = get_event_payload('create_contract_invalid_payload_1')
-        response = requests.post(f'{self.api_endpoint}contract', json = payload)
+        response = requests.post(f'{self.api_endpoint}contracts', json = payload)
         self.assertEqual(response.status_code, 400)
         self.assertDictEqual(response.json(), response.json() | {"message": "Invalid request body"})
 
@@ -45,7 +45,7 @@ class TestCreateContract(TestCase):
         payload = override_payload_number(get_event_payload('create_contract_valid_payload_1'), prop_number)
 
         # Call API to create new Contract
-        response = requests.post(f'{self.api_endpoint}contract', json=payload)
+        response = requests.post(f'{self.api_endpoint}contracts', json=payload)
         self.properties.append(payload['property_id'])
 
         self.assertEqual(response.status_code, 200)
