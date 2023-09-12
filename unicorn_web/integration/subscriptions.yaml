@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Defines the rule for the events (subscriptions) that Unicorn Properties wants to consume.
+Description: Defines the rule for the events (subscriptions) that Unicorn Web wants to consume.
 
 Parameters:
   Stage:
@@ -19,8 +19,7 @@ Resources:
     Properties:
       Name: unicorn.web-PublicationEvaluationCompleted
       Description: PublicationEvaluationCompleted subscription
-      EventBusName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
       EventPattern:
         source:
           - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"

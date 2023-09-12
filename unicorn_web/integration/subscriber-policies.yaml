@@ -19,10 +19,8 @@ Resources:
   CrossServiceCreateRulePolicy:
     Type: AWS::Events::EventBusPolicy
     Properties:
-      EventBusName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
-      StatementId:
-        Fn::Sub: "OnlyRulesForWebServiceEvents-${Stage}"
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
+      StatementId: !Sub "OnlyRulesForWebServiceEvents-${Stage}"
       Statement:
         Effect: Allow
         Principal:
