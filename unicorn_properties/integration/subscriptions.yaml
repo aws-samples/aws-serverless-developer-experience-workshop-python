@@ -24,7 +24,7 @@ Resources:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
         detail-type:
           - ContractStatusChanged
       State: ENABLED
@@ -45,7 +45,7 @@ Resources:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
       EventPattern:
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
         detail-type:
           - PublicationApprovalRequested
       State: ENABLED
@@ -74,13 +74,16 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: events:PutEvents
-                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+                Resource:
+                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
 
 Outputs:
   ContractStatusChangedSubscription:
     Description: Rule ARN for Contract service event subscription
-    Value: !GetAtt ContractStatusChangedSubscriptionRule.Arn
+    Value:
+      Fn::GetAtt: ContractStatusChangedSubscriptionRule.Arn
 
   PublicationApprovalRequestedSubscription:
     Description: Rule ARN for Web service event subscription
-    Value: !GetAtt PublicationApprovalRequestedSubscriptionRule.Arn
+    Value:
+      Fn::GetAtt: PublicationApprovalRequestedSubscriptionRule.Arn

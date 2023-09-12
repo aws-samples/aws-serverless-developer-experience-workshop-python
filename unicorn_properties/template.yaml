@@ -60,7 +60,7 @@ Globals:
         LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
-      project: !FindInMap [ Constants, ProjectName, Value ]
+      project: !FindInMap [Constants, ProjectName, Value]
       namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
 
 Resources:
@@ -72,14 +72,13 @@ Resources:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBus
       Value: !GetAtt UnicornPropertiesEventBus.Name
-      
+
   UnicornPropertiesEventBusArnParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBusArn
       Value: !GetAtt UnicornPropertiesEventBus.Arn
-
 
   #### LAMBDA FUNCTIONS
   # Listens to ContractStatusChanged events from EventBridge
