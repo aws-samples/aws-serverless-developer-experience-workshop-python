@@ -23,16 +23,14 @@ Resources:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
       EventPattern:
         source:
-          - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
         detail-type:
           - PublicationEvaluationCompleted
       State: ENABLED
       Targets:
         - Id: SendEventTo
-          Arn:
-            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
-          RoleArn:
-            Fn::GetAtt: UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+          RoleArn: !GetAtt UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
   # from the publishing event bus, to the subscribing event bus (UnicornWebEventBusArn)
@@ -51,11 +49,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: events:PutEvents
-                Resource:
-                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+                Resource: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
 
 Outputs:
   PublicationEvaluationCompletedSubscription:
     Description: Rule ARN for Property service event subscription
-    Value:
-      Fn::GetAtt: PublicationEvaluationCompletedSubscriptionRule.Arn
+    Value: !GetAtt PublicationEvaluationCompletedSubscriptionRule.Arn

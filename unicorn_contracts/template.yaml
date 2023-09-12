@@ -359,8 +359,6 @@ Resources:
           StartingPosition: LATEST
           OnPartialBatchItemFailure: AUTOMATIC_BISECT
           BatchSize: 1
-          # DeadLetterConfig:
-          #   Arn: String
         FilterCriteria:
           Filters:
             - Pattern: !ToJsonString
@@ -369,7 +367,6 @@ Resources:
                   NewImage:
                     contract_status:
                       S: [DRAFT, APPROVED]
-      # Enrichment: arn:aws:execute-api:us-east-1:123456789123:53eo2i89p9/*/POST/pets
       Target: !GetAtt UnicornContractsEventBus.Arn
       TargetParameters:
         EventBridgeEventBusParameters:

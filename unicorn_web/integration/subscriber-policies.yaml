@@ -26,8 +26,7 @@ Resources:
       Statement:
         Effect: Allow
         Principal:
-          AWS:
-            Fn::Sub: "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+          AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
         Action:
           - events:PutRule
           - events:DeleteRule
@@ -37,15 +36,14 @@ Resources:
           - events:PutTargets
           - events:RemoveTargets
         Resource:
-          - Fn::Sub:
+          - !Sub
               - arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/${eventBusName}/*
-              - eventBusName:
-                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
+              - eventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBus}}"
         Condition:
           StringEqualsIfExists:
             "events:creatorAccount": "${aws:PrincipalAccount}"
           StringEquals:
             "events:source":
-              - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
           "Null":
             "events:source": "false"

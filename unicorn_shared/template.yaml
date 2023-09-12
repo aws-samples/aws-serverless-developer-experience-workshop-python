@@ -74,6 +74,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.lambda_handler
+      Runtime: python3.11
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref UnicornPropertiesImagesBucket
