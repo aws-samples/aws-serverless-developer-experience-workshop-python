@@ -46,8 +46,10 @@ def publish_event(detail_type, resources, detail):
                  'DetailType': detail_type,
                  'Resources': resources,
                  'Detail': json.dumps(detail)}
+        logger.info(entry)
 
         response = event_bridge.put_events(Entries=[entry])
+        logger.info(response)
     except ClientError as e:
         error_msg = f"Unable to send event to Event Bus: {e}"
         logger.error(error_msg)
