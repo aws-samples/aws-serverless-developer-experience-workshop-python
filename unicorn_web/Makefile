@@ -11,8 +11,7 @@ apiUrl			= $(call cf_output,$(stackName),ApiUrl)
 build:
 	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
-	poetry export -f requirements.txt --without-hashes --output src/approvals_service/requirements.txt
-	poetry export -f requirements.txt --without-hashes --output src/search_service/requirements.txt
+	poetry export -f requirements.txt --without-hashes --output src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
 deps:
