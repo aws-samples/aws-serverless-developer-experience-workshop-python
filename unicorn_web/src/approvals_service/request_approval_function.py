@@ -134,9 +134,4 @@ def request_approval(raw_data: dict):
 def lambda_handler(event: SQSEvent, context: LambdaContext):
     # Multiple records can be delivered in a single event
     for record in event.records:
-        http_method = record.message_attributes.get('HttpMethod', {}).get('stringValue')
-
-        if http_method == 'POST':
-            request_approval(record.json_body)
-        else:
-            raise Exception(f'Unable to handle HttpMethod {http_method}')
+        request_approval(record.json_body)
