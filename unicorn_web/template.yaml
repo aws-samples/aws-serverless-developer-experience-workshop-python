@@ -157,7 +157,7 @@ Resources:
             EventBusName: !Ref UnicornWebEventBus
             Pattern:
               source:
-                - !Ref UnicornWebEventBus
+                - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
               detail-type:
                 - PublicationEvaluationCompleted
 
