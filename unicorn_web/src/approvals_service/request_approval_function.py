@@ -109,7 +109,7 @@ def request_approval(raw_data: dict):
     # Get property details from database
     item = get_property(pk=pk, sk=sk)
 
-    if (status := item.pop('status')) in [ 'APPROVED', 'DECLINED', 'PENDING' ]:
+    if (status := item.pop('status')) in [ 'APPROVED' ]:
         logger.info(f"Property '{property_id}' is already {status}; no action taken")
         return
 
