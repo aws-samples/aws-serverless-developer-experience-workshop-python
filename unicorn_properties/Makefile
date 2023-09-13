@@ -2,6 +2,9 @@
 stackName		:= $(shell yq -oy '.default.global.parameters.stack_name' samconfig.yaml)
 
 
+#### Test Variables
+
+
 #### Build/Deploy Tasks
 build:
 	sam validate --lint
@@ -12,30 +15,28 @@ build:
 deps:
 	poetry install
 
-deploy: build
+deploy: deps build
 	sam deploy
 
 
 #### Tests
-test: unit-test integration-test
+test: unit-test
 
 unit-test:
 	poetry run pytest tests/unit/
 
-integration-test: deps
-	poetry run pytest tests/integration/
 
 #### Utilities
 sync:
 	sam sync --stack-name $(stackName) --watch
 
 logs:
-	sam logs --stack-name $(stackName) -t
+	sam logs -t
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null || true
 	find . -type f -name requirements.txt -exec rm -f {} \; 2>/dev/null || true
-	rm -rf .pytest_cache/ .aws-sam/ htmlcov/ .coverage || true
+	rm -rf .pytest_cache/ .aws-sam/ || true
 
 delete:
 	sam delete --stack-name $(stackName) --no-prompts

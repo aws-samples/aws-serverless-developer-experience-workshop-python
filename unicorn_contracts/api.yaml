@@ -22,7 +22,7 @@ paths:
       x-amazon-apigateway-request-validator: "Validate body"
       x-amazon-apigateway-integration:
         credentials:
-          Fn::GetAtt: [ContractsApiIntegrationRole, Arn]
+          Fn::GetAtt: [UnicornContractsApiIntegrationRole, Arn]
         httpMethod: "POST"
         uri:
           "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornContractsIngestQueue.QueueName}"
@@ -84,7 +84,7 @@ paths:
       x-amazon-apigateway-request-validator: "Validate body"
       x-amazon-apigateway-integration:
         credentials:
-          Fn::GetAtt: [ContractsApiIntegrationRole, Arn]
+          Fn::GetAtt: [UnicornContractsApiIntegrationRole, Arn]
         httpMethod: "POST"
         uri:
           "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornContractsIngestQueue.QueueName}"

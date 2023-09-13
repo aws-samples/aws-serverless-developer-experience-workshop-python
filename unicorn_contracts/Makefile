@@ -19,15 +19,8 @@ build:
 deps:
 	poetry install
 
-deploy: build
-	sam deploy --no-confirm-changeset
-
-# NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
-ci_init:
-	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt --with dev
-	poetry run pip install -r src/requirements.txt
-	poetry install -n
-
+deploy: deps build
+	sam deploy
 
 #### Tests
 test: unit-test integration-test
@@ -66,15 +59,21 @@ sync:
 	sam sync --stack-name $(stackName) --watch
 
 logs:
-	sam logs --stack-name $(stackName) -t
+	sam logs -t
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null || true
 	find . -type f -name requirements.txt -exec rm -f {} \; 2>/dev/null || true
-	rm -rf .pytest_cache/ .aws-sam/ htmlcov/ .coverage || true
+	rm -rf .pytest_cache/ .aws-sam/ || true
 
 delete:
 	sam delete --stack-name $(stackName) --no-prompts
+
+# NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
+ci_init:
+	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt --with dev
+	poetry run pip install -r src/requirements.txt
+	poetry install -n
 
 
 #### Helper Functions

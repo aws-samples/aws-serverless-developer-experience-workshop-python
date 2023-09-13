@@ -14,6 +14,8 @@ Metadata:
         - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
         - ES6000 # Rule disabled because SQS DLOs don't need a RedrivePolicy
         - E0001 # Rule disabled because cfn-lint cannot parse SAM Policy templates without arguments (ComprehendBasicAccessPolicy, RekognitionDetectOnlyPolicy)
+        - WS2001 # Rule disabled because check does not support !ToJsonString transform
+        - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
 
 Parameters:
   Stage:
@@ -52,11 +54,13 @@ Globals:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
         EVENT_BUS: !Ref UnicornPropertiesEventBus
         SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_LOGGER_CASE: PascalCase
         POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
         POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
         LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
@@ -441,12 +445,15 @@ Resources:
         }
 
   #### CLOUDFORMATION NESTED STACKS
+  # CloudFormation Stack with the Properties Service Event Registry and Schemas
   EventSchemasStack:
     Type: AWS::Serverless::Application
     Properties:
       Location: "integration/event-schemas.yaml"
       Parameters:
         Stage: !Ref Stage
+
+  # CloudFormation Stack with the Cross-service EventBus policy for Properties Service
   SubscriberPoliciesStack:
     Type: AWS::Serverless::Application
     DependsOn:
@@ -455,6 +462,8 @@ Resources:
       Location: "integration/subscriber-policies.yaml"
       Parameters:
         Stage: !Ref Stage
+
+  # CloudFormation Stack with the Cross-service EventBus Rules for Properties Service
   SubscriptionsStack:
     Type: AWS::Serverless::Application
     DependsOn:

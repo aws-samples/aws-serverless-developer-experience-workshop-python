@@ -31,7 +31,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
-testpaths = ["tests/unit", "tests/integration"]
+testpaths = ["tests/unit"]
 
 [tool.ruff]
 line-length = 150

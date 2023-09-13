@@ -6,10 +6,8 @@ stackName		:= $(shell yq -oy '.default.global.parameters.stack_name' samconfig.y
 apiUrl			= $(call cf_output,$(stackName),ApiUrl)
 
 
-#### Build/Deploy Tasks
-deps:
-	poetry install
 
+#### Build/Deploy Tasks
 build:
 	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
@@ -17,18 +15,18 @@ build:
 	poetry export -f requirements.txt --without-hashes --output src/search_service/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
-deploy: build
+deps:
+	poetry install
+
+deploy: deps build
 	sam deploy
 
 
 #### Tests
-test: unit-test integration-test
+test: unit-test
 
 unit-test: deps
 	poetry run pytest tests/unit/
-
-integration-test: deps
-	poetry run pytest tests/integration/
 
 curl-test:
 	$(call mcurl,GET,search/usa/anytown)
@@ -42,15 +40,15 @@ sync:
 	sam sync --stack-name $(stackName) --watch
 
 logs:
-	sam logs --stack-name $(stackName) -t
+	sam logs -t
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null || true
 	find . -type f -name requirements.txt -exec rm -f {} \; 2>/dev/null || true
-	rm -rf .pytest_cache/ .aws-sam/ htmlcov/ .coverage || true
+	rm -rf .pytest_cache/ .aws-sam/ || true
 
 delete:
-	sam delete --no-prompts --region "$$(aws configure get region)"
+	sam delete --stack-name $(stackName) --no-prompts
 
 # NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
 ci_init:

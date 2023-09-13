@@ -47,7 +47,7 @@ Resources:
               - Fn::GetAtt: EventRegistry.RegistryArn
               - Fn::Sub: "arn:${AWS::Partition}:schemas:${AWS::Region}:${AWS::AccountId}:schema/${EventRegistry.RegistryName}*"
 
-  ContractApprovedEventSchema:
+  ContractStatusChangedEventSchema:
     Type: AWS::EventSchemas::Schema
     Properties:
       Type: 'OpenApi3'

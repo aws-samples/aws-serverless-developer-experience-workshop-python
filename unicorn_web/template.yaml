@@ -62,6 +62,7 @@ Globals:
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
         POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
+        LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
@@ -207,6 +208,15 @@ Resources:
         project: !FindInMap [Constants, ProjectName, Value]
         namespace: Unicorn Web Service
 
+  # API GW CloudWatch Logs Group, logs all requests from API Gateway
+  UnicornWebApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
+
+  # API Gateway Account Configuration, to enable Logs to be sent to CloudWatch
   UnicornWebApiGwAccountConfig:
     Type: AWS::ApiGateway::Account
     Properties:
@@ -251,14 +261,6 @@ Resources:
                 Action:
                   - lambda:InvokeFunction
                 Resource: !GetAtt SearchFunction.Arn
-
-  # API GW CloudWatch Logs Group, logs all requests from API Gateway
-  UnicornWebApiLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### INGEST QUEUES
   # Queue API Gateway requests to be processed by RequestApprovalFunction
@@ -416,12 +418,15 @@ Resources:
         }
 
   #### CLOUDFORMATION NESTED STACKS
+  # CloudFormation Stack with the Web Service Event Registry and Schemas
   EventSchemasStack:
     Type: AWS::Serverless::Application
     Properties:
       Location: "integration/event-schemas.yaml"
       Parameters:
         Stage: !Ref Stage
+
+  # CloudFormation Stack with the Cross-service EventBus policy for Web Service
   SubscriberPoliciesStack:
     Type: AWS::Serverless::Application
     DependsOn:
@@ -430,6 +435,8 @@ Resources:
       Location: "integration/subscriber-policies.yaml"
       Parameters:
         Stage: !Ref Stage
+
+  # CloudFormation Stack with the Cross-service EventBus Rules for Web Service
   SubscriptionsStack:
     Type: AWS::Serverless::Application
     DependsOn:
