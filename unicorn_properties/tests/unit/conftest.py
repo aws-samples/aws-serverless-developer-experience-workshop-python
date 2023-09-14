@@ -4,6 +4,7 @@
 import os
 
 import boto3
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 import pytest
 from moto import mock_dynamodb, mock_events, mock_stepfunctions
@@ -34,3 +35,18 @@ def eventbridge(aws_credentials):
 def stepfunction(aws_credentials):
     with mock_stepfunctions():
         yield boto3.client("stepfunctions", region_name='ap-southeast-2')
+
+
+@pytest.fixture(scope='function')
+def lambda_context():
+    context: LambdaContext = LambdaContext()
+    context._function_name="propertiesService-LambdaFunction-HJsvdah2ubi2"
+    context._function_version="$LATEST"
+    context._invoked_function_arn="arn:aws:lambda:ap-southeast-2:424490683636:function:propertiesService-LambdaFunction-HJsvdah2ubi2"
+    context._memory_limit_in_mb=128
+    context._aws_request_id="6f970d26-71d6-4c87-a196-9375f85c7b07"
+    context._log_group_name="/aws/lambda/propertiesService-LambdaFunction-HJsvdah2ubi2"
+    context._log_stream_name="2022/07/14/[$LATEST]7c71ca59882b4c569dd007c7e41c81e8"
+    # context._identity=CognitoIdentity([cognito_identity_id=None,cognito_identity_pool_id=None])])
+    # context._client_context=None
+    return context

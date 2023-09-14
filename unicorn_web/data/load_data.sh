@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-STACK_NAME="uni-prop-local-web"
+ROOT_DIR="$(cd -- "$(dirname "$0")/../" >/dev/null 2>&1 ; pwd -P )"
+STACK_NAME="$(yq -oy '.default.global.parameters.stack_name' $ROOT_DIR/samconfig.yaml)"
 
-JSON_FILE="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/property_data.json"
+JSON_FILE="$ROOT_DIR/data/property_data.json"
 echo "JSON_FILE: '${JSON_FILE}'"
 
 DDB_TBL_NAME="$(aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query 'Stacks[0].Outputs[?OutputKey==`WebTableName`].OutputValue' --output text)"

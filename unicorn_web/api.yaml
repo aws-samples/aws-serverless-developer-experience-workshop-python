@@ -1,0 +1,234 @@
+openapi: "3.0.1"
+info:
+  title: "Unicorn Web API"
+  version: "1.0.0"
+  description: Unicorn Properties Web Service API
+paths:
+  /request_approval:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicationEvaluationRequestModel"
+        required: true
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Empty'
+      x-amazon-apigateway-request-validator: "Validate body"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
+        httpMethod: POST
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornWebIngestQueue.QueueName}"
+        responses:
+          default:
+            statusCode: "200"
+            responseTemplates:
+              application/json: '{"message":"OK"}'
+        requestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        requestTemplates:
+          application/json: "Action=SendMessage&MessageBody=$input.body"
+        passthroughBehavior: never
+        type: aws
+  /search/{country}/{city}:
+    get:
+      parameters:
+        - name: country
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: '#/components/responses/ListPropertiesResponseBody'
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
+        httpMethod: POST
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchFunction.Arn}/invocations"
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+  /search/{country}/{city}/{street}:
+    get:
+      parameters:
+        - name: country
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: street
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: '#/components/responses/ListPropertiesResponseBody'
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
+        httpMethod: POST
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchFunction.Arn}/invocations"
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+  /properties/{country}/{city}/{street}/{number}:
+    get:
+      parameters:
+        - name: country
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: street
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: '#/components/responses/PropertyDetailsResponseBody'
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornWebApiIntegrationRole, Arn]
+        httpMethod: POST
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchFunction.Arn}/invocations"
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        type: aws_proxy
+components:
+  schemas:
+    PublicationEvaluationRequestModel:
+      required:
+        - "property_id"
+      type: "object"
+      properties:
+        property_id:
+          type: string
+    PublicationEvaluationResponseModel:
+      required:
+        - "result"
+      type: "object"
+      properties:
+        result:
+          type: string
+    PropertyAddress:
+      type: object
+      required:
+        - country
+        - city
+        - street
+        - number
+      properties:
+        country:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        number:
+          type: string
+    PropertyDetails:
+      type: object
+      required:
+        - description
+        - images
+        - status
+      properties:
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+    PropertyOffer:
+      type: object
+      required:
+        - currency
+        - listprice
+        - contract
+        - status
+      properties:
+        contract:
+          type: string
+        listprice:
+          type: string
+        currency:
+          type: string
+    Property:
+      allOf:
+        - $ref: "#/components/schemas/PropertyAddress"
+        - $ref: "#/components/schemas/PropertyDetails"
+        - $ref: "#/components/schemas/PropertyOffer"
+        - type: object
+          properties:
+            status:
+              type: string
+  responses:
+    ListPropertiesResponseBody:
+      description: 'OK'
+      content:
+        application/json:
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              allOf:
+                - $ref: "#/components/schemas/PropertyAddress"
+                - $ref: "#/components/schemas/PropertyOffer"
+    PropertyDetailsResponseBody:
+      description: 'OK'
+      content:
+        application/json:
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/Property'
+    Empty:
+      description: 'OK'
+      content:
+        application/json:
+          schema:
+            title: "Empty Schema"
+            type: "object"

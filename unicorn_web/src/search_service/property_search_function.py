@@ -1,11 +1,11 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-
 import os
 
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
+
 from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.metrics import Metrics
@@ -26,7 +26,6 @@ tracer: Tracer = Tracer()
 metrics: Metrics = Metrics()
 
 # Initialise boto3 clients
-event_bridge = boto3.client('events')
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
@@ -121,12 +120,12 @@ def property_details(country, city, street, number):
         }
     )
     if 'Item' not in response:
-        logger.exception(f"No property found at this address")
+        logger.exception(f"No property found at address {(country, city, street, number)}")
         raise NotFoundError
     item = response['Item']
     status = item['status']
     if status != 'APPROVED':
-        status_message = f"Property is not  approved; current status: {status}"
+        status_message = f"Property is not approved; current status: {status}"
         logger.exception(status_message)
         raise NotFoundError(status_message)
     item.pop("PK")
@@ -175,5 +174,5 @@ def lambda_handler(event, context):
     API Gateway Lambda Proxy Response
         HTTP response object with Contract and Property ID
     """
-    logger.info(event)
+    # logger.info(event)
     return app.resolve(event, context)

@@ -1,6 +1,13 @@
-stackName := uni-prop-local-properties
+#### Global Variables
+stackName		:= $(shell yq -oy '.default.global.parameters.stack_name' samconfig.yaml)
 
+
+#### Test Variables
+
+
+#### Build/Deploy Tasks
 build:
+	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
@@ -8,24 +15,28 @@ build:
 deps:
 	poetry install
 
-deploy: build
-	sam deploy --no-confirm-changeset
+deploy: deps build
+	sam deploy
 
-sync:
-	sam sync --stack-name $(stackName) --watch
 
+#### Tests
 test: unit-test
 
 unit-test:
 	poetry run pytest tests/unit/
 
+
+#### Utilities
+sync:
+	sam sync --stack-name $(stackName) --watch
+
 logs:
-	sam logs --stack-name $(stackName) -t
+	sam logs -t
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null || true
 	find . -type f -name requirements.txt -exec rm -f {} \; 2>/dev/null || true
-	rm -rf .pytest_cache/ .aws-sam/ htmlcov/ .coverage || true
+	rm -rf .pytest_cache/ .aws-sam/ || true
 
 delete:
 	sam delete --stack-name $(stackName) --no-prompts

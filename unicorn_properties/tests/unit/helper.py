@@ -1,28 +1,30 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-
 import json
+from pathlib import Path
+
 
 TABLE_NAME = 'table1'
+EVENTBUS_NAME = 'test-eventbridge'
+EVENTS_DIR = Path(__file__).parent / 'events'
 
 
 def load_event(filename):
-    with open(filename) as f:
-        data = json.load(f)
-    return data
+    return json.load(open(EVENTS_DIR / f'{filename}.json', 'r'))
 
 
 def return_env_vars_dict(k={}):
     d = {
             "AWS_DEFAULT_REGION": "ap-southeast-2",
             "CONTRACT_STATUS_TABLE": TABLE_NAME, 
-            "EVENT_BUS": "test-eventbridge", 
+            "EVENT_BUS": EVENTBUS_NAME, 
+            "SERVICE_NAMESPACE": "unicorn.properties", 
+            "POWERTOOLS_SERVICE_NAME":"unicorn.properties",
+            "POWERTOOLS_TRACE_DISABLED":"true",
             "POWERTOOLS_LOGGER_LOG_EVENT":"true",
             "POWERTOOLS_LOGGER_SAMPLE_RATE":"0.1",
-            "POWERTOOLS_METRICS_NAMESPACE":"unicorn.contracts",
-            "POWERTOOLS_SERVICE_NAME":"unicorn.contracts",
-            "POWERTOOLS_TRACE_DISABLED":"true",
-            "SERVICE_NAMESPACE": "unicorn.properties", 
+            "POWERTOOLS_METRICS_NAMESPACE":"unicorn.properties",
+            "LOG_LEVEL": "INFO",
         }
     d.update(k)
     return d
@@ -89,3 +91,8 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     }
     table.put_item(Item=contract)
     return table
+
+
+def create_test_eventbridge_bus(eventbridge):
+    bus = eventbridge.create_event_bus(Name=EVENTBUS_NAME)
+    return bus

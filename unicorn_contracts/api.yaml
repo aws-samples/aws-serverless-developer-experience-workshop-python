@@ -1,0 +1,145 @@
+openapi: "3.0.1"
+info:
+  title: "Unicorn Contracts API"
+  version: "1.0.0"
+  description: Unicorn Properties Contract Service API
+paths:
+  /contracts:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContractModel"
+        required: true
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-request-validator: "Validate body"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornContractsApiIntegrationRole, Arn]
+        httpMethod: "POST"
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornContractsIngestQueue.QueueName}"
+        responses:
+          default:
+            statusCode: "200"
+            responseTemplates:
+              application/json: '{"message":"OK"}'
+        requestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        requestTemplates:
+          application/json: "Action=SendMessage&MessageBody=$input.body&MessageAttribute.1.Name=HttpMethod&MessageAttribute.1.Value.StringValue=$context.httpMethod&MessageAttribute.1.Value.DataType=String"
+        passthroughBehavior: "never"
+        type: "aws"
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        type: "mock"
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContractModel"
+        required: true
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-request-validator: "Validate body"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [UnicornContractsApiIntegrationRole, Arn]
+        httpMethod: "POST"
+        uri:
+          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${UnicornContractsIngestQueue.QueueName}"
+        responses:
+          default:
+            statusCode: "200"
+            responseTemplates:
+              application/json: '{"message":"OK"}'
+        requestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        requestTemplates:
+          application/json: "Action=SendMessage&MessageBody=$input.body&MessageAttribute.1.Name=HttpMethod&MessageAttribute.1.Value.StringValue=$context.httpMethod&MessageAttribute.1.Value.DataType=String"
+        passthroughBehavior: "never"
+        type: "aws"
+components:
+  schemas:
+    CreateContractModel:
+      required:
+        - "property_id"
+        - "seller_name"
+        - "address"
+      type: "object"
+      properties:
+        property_id:
+          type: "string"
+        seller_name:
+          type: "string"
+        address:
+          required:
+            - "city"
+            - "country"
+            - "number"
+            - "street"
+          type: "object"
+          properties:
+            country:
+              type: "string"
+            city:
+              type: "string"
+            street:
+              type: "string"
+            number:
+              type: "integer"
+    UpdateContractModel:
+      required:
+        - "property_id"
+      type: "object"
+      properties:
+        $ref: "#/components/schemas/CreateContractModel/properties"
+        # property_id:
+        #   type: "string"
+    Empty:
+      title: "Empty Schema"
+      type: "object"
+x-amazon-apigateway-request-validators:
+  Validate body:
+    validateRequestParameters: false
+    validateRequestBody: true
