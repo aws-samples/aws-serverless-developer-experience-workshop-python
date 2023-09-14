@@ -1,0 +1,61 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Defines the rule for the events (subscriptions) that Unicorn Properties wants to consume.
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+  #### UNICORN PROPERTIES EVENT SUBSCRIPTIONS
+  PublicationEvaluationCompletedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: unicorn.web-PublicationEvaluationCompleted
+      Description: PublicationEvaluationCompleted subscription
+      EventBusName:
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+      EventPattern:
+        source:
+          - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        detail-type:
+          - PublicationEvaluationCompleted
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn:
+            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+          RoleArn:
+            Fn::GetAtt: UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
+
+  # This IAM role allows EventBridge to assume the permissions necessary to send events 
+  # from the publishing event bus, to the subscribing event bus (UnicornWebEventBusArn)
+  UnicornPropertiesEventBusToUnicornWebEventBusRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: events.amazonaws.com
+      Policies:
+        - PolicyName: PutEventsOnUnicornWebEventBus
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: events:PutEvents
+                Resource:
+                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
+
+Outputs:
+  PublicationEvaluationCompletedSubscription:
+    Description: Rule ARN for Property service event subscription
+    Value:
+      Fn::GetAtt: PublicationEvaluationCompletedSubscriptionRule.Arn

@@ -1,0 +1,5 @@
+.DS_Store
+.idea/*
+**/.aws-sam/
+.vscode/*
+.vscode/settings.json

@@ -1,84 +1,60 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-import os
+from typing import List
+
+from time import sleep
+from random import randint
+
+import requests
 from unittest import TestCase
 
-import boto3
-import requests
-
-"""
-Make sure env variable AWS_SAM_STACK_NAME exists with the name of the stack we are going to test. 
-"""
+from . import get_stack_output, get_cw_logs_values, clean_ddb
+from . import get_event_payload, override_payload_number
 
 
-class TestApiGateway(TestCase):
+class TestCreateContract(TestCase):
     api_endpoint: str
-
-    @classmethod
-    def get_stack_name(cls) -> str:
-        stack_name = os.environ.get("AWS_SAM_STACK_NAME")   
-        if not stack_name:
-            raise Exception(
-                "Cannot find env var AWS_SAM_STACK_NAME. \n"
-                "Please setup this environment variable with the stack name where we are running integration tests."
-            )
-
-        return stack_name
+    eb_log_group: str
+    contracts_table: str
+    properties: List[str]
 
     def setUp(self) -> None:
-        """
-        Based on the provided env variable AWS_SAM_STACK_NAME,
-        here we use cloudformation API to find out what the HelloWorldApi URL is
-        """
-        stack_name = TestApiGateway.get_stack_name()
+        self.api_endpoint = get_stack_output('ApiUrl')
+        self.eb_log_group = get_stack_output('UnicornContractsCatchAllLogGroupArn').rstrip(":*")
+        self.contracts_table = get_stack_output('ContractsTableName')
+        self.properties = list()
 
-        client = boto3.client("cloudformation")
+    def tearDown(self) -> None:
+        for i in self.properties:
+            clean_ddb(self.contracts_table, i)
 
-        try:
-            response = client.describe_stacks(StackName=stack_name)
-        except Exception as e:
-            raise Exception(
-                f"Cannot find stack {stack_name}. \n" f'Please make sure stack with the name "{stack_name}" exists.'
-            ) from e
 
-        stacks = response["Stacks"]
-
-        stack_outputs = stacks[0]["Outputs"]
-        api_outputs = [output for output in stack_outputs if output["OutputKey"] == "ApiUrl"]
-        print(api_outputs)
-        self.assertTrue(api_outputs, f"Cannot find output ApiUrl in stack {stack_name}")
-
-        self.api_endpoint = api_outputs[0]["OutputValue"]
-
-    def test_create_contract(self):
+    def test_create_contract_invalid_payload_1(self):
         """
         Call the API Gateway endpoint and check the response
         """
         
-        payload = {
-            "address": {
-                "country": "USA",
-                "city": "Anytown",
-                "street": "Main Street",
-                "number": 111
-            },
-            "seller_name": "John Smith",
-            "property_id": "usa/anytown/main-street/111"
-        }
-        response = requests.post(f'{self.api_endpoint}contracts', json = payload)
-        self.assertEqual(response.status_code, 200)
-        # https://stackoverflow.com/questions/20050913/python-unittests-assertdictcontainssubset-recommended-alternative
-        # self.assertDictEqual(response.json(), response.json() | {"message": "New contract has been successfully uploaded"})
-    
-    def test_create_contract_wrong_payload(self):
-        """
-        Call the API Gateway endpoint and check the response
-        """
-        
-        payload = {
-            "add": "St.1 , Building 10",
-            "sell": "John Smith",
-            "prop": "4781231c-bc30-4f30-8b30-7145f4dd1adb"
-        }
+        payload = get_event_payload('create_contract_invalid_payload_1')
         response = requests.post(f'{self.api_endpoint}contracts', json = payload)
         self.assertEqual(response.status_code, 400)
+        self.assertDictEqual(response.json(), response.json() | {"message": "Invalid request body"})
+
+
+    def test_create_contract_valid_payload_1(self):
+        prop_number = randint(1, 9999)
+        payload = override_payload_number(get_event_payload('create_contract_valid_payload_1'), prop_number)
+
+        # Call API to create new Contract
+        response = requests.post(f'{self.api_endpoint}contracts', json=payload)
+        self.properties.append(payload['property_id'])
+
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response.json() | {"message": "OK"})
+
+        sleep(5)
+        try:
+            eb_event = next(get_cw_logs_values(self.eb_log_group, payload['property_id']))
+        except Exception:
+            raise Exception(f'Unable to get EventBridge Event from CloudWatch Logs group {self.eb_log_group}')
+
+        self.assertEqual(eb_event['detail']['contract_status'], "DRAFT")

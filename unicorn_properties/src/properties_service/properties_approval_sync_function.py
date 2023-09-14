@@ -28,7 +28,7 @@ sfn = boto3.client('stepfunctions')
 
 
 @metrics.log_metrics(capture_cold_start_metric=True)  # type: ignore
-@logger.inject_lambda_context(log_event=True)  # type: ignore
+@logger.inject_lambda_context(log_event=True)
 @tracer.capture_method
 def lambda_handler(event, context):
     """Functions processes DynamoDB Stream to detect changes in the contract status
@@ -76,7 +76,7 @@ def lambda_handler(event, context):
         return result
 
 
-
+@tracer.capture_method
 def task_successful(task_token: str, contract_status: dict):
     """Send the token for a specified contract status back to Step Functions to continue workflow execution.
 
@@ -89,9 +89,11 @@ def task_successful(task_token: str, contract_status: dict):
         Contract Status object to return to statemachine.
     """
     output = {'Payload': contract_status}
+    logger.info(output)
     return sfn.send_task_success(taskToken=task_token, output=json.dumps(output))
 
 
+@tracer.capture_method
 def ddb_deserialize(dynamo_image: dict) -> dict:
     """Converts the DynamoDB stream object to json dict
 
