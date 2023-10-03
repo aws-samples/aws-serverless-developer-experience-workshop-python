@@ -350,11 +350,11 @@ Resources:
         }
 
   #### EVENT BRIDGE PIPES
-  # Pipe changed on DynamoDB Table to UnicornContractsEventBus
-  DdbStreamToEventPipe:
+  # Pipe to transform a changed Contracts table record to ContractStatusChanged and publish it via the UnicornContractsEventBus
+  ContractsTableStreamToEventPipe:
     Type: AWS::Pipes::Pipe
     Properties:
-      RoleArn: !GetAtt DdbStreamToEventPipeRole.Arn
+      RoleArn: !GetAtt ContractsTableStreamToEventPipeRole.Arn
       Source: !GetAtt ContractsTable.StreamArn
       SourceParameters:
         DynamoDBStreamParameters:
@@ -381,7 +381,7 @@ Resources:
           contract_last_modified_on: "<$.dynamodb.NewImage.contract_last_modified_on.S>"
 
   # IAM Role for Event Bridge Pipe
-  DdbStreamToEventPipeRole:
+  ContractsTableStreamToEventPipeRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
