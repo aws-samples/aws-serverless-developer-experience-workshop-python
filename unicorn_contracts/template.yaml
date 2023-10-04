@@ -190,6 +190,7 @@ Resources:
       Policies:
         - PolicyName: AllowSqsIntegration
           PolicyDocument:
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -393,6 +394,7 @@ Resources:
       Policies:
         - PolicyName: AllowDdbStreamRead
           PolicyDocument:
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
