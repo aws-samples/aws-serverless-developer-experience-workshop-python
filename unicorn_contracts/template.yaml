@@ -359,6 +359,9 @@ Resources:
       Source: !GetAtt ContractsTable.StreamArn
       SourceParameters:
         DynamoDBStreamParameters:
+          MaximumRetryAttempts: 3
+          DeadLetterConfig:
+            Arn: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
           StartingPosition: LATEST
           OnPartialBatchItemFailure: AUTOMATIC_BISECT
           BatchSize: 1
@@ -392,7 +395,7 @@ Resources:
           Principal:
             Service: pipes.amazonaws.com
       Policies:
-        - PolicyName: AllowDdbStreamRead
+        - PolicyName: ContractsTableStreamToEventPipePolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -410,6 +413,26 @@ Resources:
                 Action:
                   - events:PutEvents
                 Resource: !GetAtt UnicornContractsEventBus.Arn
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
+
+  ContractsTableStreamToEventPipeDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      QueueName: !Sub ContractsTableStreamToEventPipeDLQ-${Stage}
+      Tags:
+        - Key: stage
+          Value: !Ref Stage
+        - Key: project
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
 
   #### CLOUDFORMATION NESTED STACKS
   # CloudFormation Stack with the Contracts Service Event Registry and Schemas
