@@ -62,7 +62,7 @@ Globals:
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
         POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
-        LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
+        LOG_LEVEL: INFO # Log level for Logger
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
