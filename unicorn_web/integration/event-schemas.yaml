@@ -26,7 +26,7 @@ Resources:
       RegistryName:
         Fn::GetAtt: EventRegistry.RegistryName
       Policy:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowExternalServices
             Effect: Allow
