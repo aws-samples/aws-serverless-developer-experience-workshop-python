@@ -1,6 +1,6 @@
 # Developing Unicorn Web
 
-![Properties Web Architecture](https://static.us-east-1.prod.workshops.aws/public/fd291886-89c4-4336-b21b-5747484b495d/static/images/architecture-properties-web.png)
+![Properties Web Architecture](https://static.us-east-1.prod.workshops.aws/public/ba5300cf-a325-4124-83bf-5789cc30b8ff/static/images/architecture-properties-web.png)
 
 ## Architecture Overview
 
