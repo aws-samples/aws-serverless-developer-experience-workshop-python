@@ -12,10 +12,10 @@ Metadata:
     config:
       ignore_checks:
         - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
-        - ES6000 # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - ES6000 # Rule disabled because SQS DLQs don't need a RedrivePolicy
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
-        - W3002
+        - W3002 # Rule disabled as nested templates are being packaged 
 
 Parameters:
   Stage:
@@ -424,6 +424,8 @@ Resources:
   # CloudFormation Stack with the Web Service Event Registry and Schemas
   EventSchemasStack:
     Type: AWS::Serverless::Application
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
     Properties:
       Location: "integration/event-schemas.yaml"
       Parameters:
@@ -432,6 +434,8 @@ Resources:
   # CloudFormation Stack with the Cross-service EventBus policy for Web Service
   SubscriberPoliciesStack:
     Type: AWS::Serverless::Application
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
     DependsOn:
       - UnicornWebEventBusParam
     Properties:
@@ -442,6 +446,8 @@ Resources:
   # CloudFormation Stack with the Cross-service EventBus Rules for Web Service
   SubscriptionsStack:
     Type: AWS::Serverless::Application
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
     DependsOn:
       - UnicornWebEventBusArnParam
     Properties:
