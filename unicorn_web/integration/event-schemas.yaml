@@ -18,7 +18,7 @@ Resources:
     Properties: 
       Description: 'Event schemas for Unicorn Web'
       RegistryName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}-${Stage}"
+        Fn::Sub: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}-${Stage}"
 
   EventRegistryPolicy:
     Type: AWS::EventSchemas::RegistryPolicy

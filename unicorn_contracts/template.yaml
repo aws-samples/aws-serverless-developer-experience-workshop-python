@@ -54,19 +54,19 @@ Globals:
     Environment:
       Variables:
         DYNAMODB_TABLE: !Ref ContractsTable
-        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
         POWERTOOLS_LOGGER_CASE: PascalCase
-        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        POWERTOOLS_METRICS_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
         LOG_LEVEL: INFO # Log level for Logger
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
-      namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+      namespace: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
 Resources:
   #### SSM PARAMETERS
@@ -149,7 +149,7 @@ Resources:
       Tags:
         stage: !Ref Stage
         project: !FindInMap [Constants, ProjectName, Value]
-        namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+        namespace: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
   # API GW Cloudwatch Log Group
   UnicornContractsApiLogGroup:
@@ -218,7 +218,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
   #### DEAD LETTER QUEUES
   # DeadLetterQueue for UnicornContractsIngestQueue. Contains messages that failed to be processed
@@ -236,7 +236,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
   #### DYNAMODB TABLE
   # Persist Contracts information in DynamoDB
@@ -260,7 +260,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
   #### EVENT BUS
   # Event bus for Unicorn Contract Service used to publish and consume events
@@ -285,7 +285,7 @@ Resources:
         Condition:
           StringEquals:
             events:source:
-              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+              - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
   # Catchall rule used for development purposes.
   UnicornContractsCatchAllRule:
@@ -298,9 +298,9 @@ Resources:
         account:
           - !Ref AWS::AccountId
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
         - Arn: !GetAtt UnicornContractsCatchAllLogGroup.Arn
@@ -315,7 +315,7 @@ Resources:
       LogGroupName: !Sub
         - "/aws/events/${Stage}/${NS}-catchall"
         - Stage: !Ref Stage
-          NS: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          NS: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
       RetentionInDays: !FindInMap
         - LogsRetentionPeriodMap
         - !Ref Stage
@@ -376,7 +376,7 @@ Resources:
       Target: !GetAtt UnicornContractsEventBus.Arn
       TargetParameters:
         EventBridgeEventBusParameters:
-          Source: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
           DetailType: ContractStatusChanged
         InputTemplate: !ToJsonString
           property_id: "<$.dynamodb.NewImage.property_id.S>"
@@ -432,7 +432,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
 
   #### CLOUDFORMATION NESTED STACKS
   # CloudFormation Stack with the Contracts Service Event Registry and Schemas
