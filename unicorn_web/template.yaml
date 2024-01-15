@@ -55,19 +55,19 @@ Globals:
       Variables:
         DYNAMODB_TABLE: !Ref WebTable
         EVENT_BUS: !Ref UnicornWebEventBus
-        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+        SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
         POWERTOOLS_LOGGER_CASE: PascalCase
-        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+        POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+        POWERTOOLS_METRICS_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
         LOG_LEVEL: INFO # Log level for Logger
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
-      namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+      namespace: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
 
 Resources:
   #### SSM PARAMETERS
@@ -157,7 +157,7 @@ Resources:
             EventBusName: !Ref UnicornWebEventBus
             Pattern:
               source:
-                - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+                - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
               detail-type:
                 - PublicationEvaluationCompleted
 
@@ -285,7 +285,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
 
   # DeadLetterQueue for UnicornWebIngestQueue. Contains messages that failed to be processed
   UnicornWebIngestDLQ:
@@ -302,7 +302,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
 
   ##### DYNAMODB
   # Persists Property details in DynamoDB
@@ -326,7 +326,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -353,7 +353,7 @@ Resources:
         Condition:
           StringEquals:
             events:source:
-              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+              - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
 
   # Catchall rule used for development purposes.
   UnicornWebCatchAllRule:
@@ -371,9 +371,9 @@ Resources:
         account:
           - !Ref AWS::AccountId
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
         - Arn: !GetAtt UnicornWebCatchAllLogGroup.Arn
@@ -388,7 +388,7 @@ Resources:
       LogGroupName: !Sub
         - "/aws/events/${Stage}/${NS}-catchall"
         - Stage: !Ref Stage
-          NS: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          NS: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Permissions to allow EventBridge to send logs to CloudWatch
