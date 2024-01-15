@@ -46,6 +46,6 @@ Resources:
             "events:creatorAccount": "${aws:PrincipalAccount}"
           StringEquals:
             "events:source":
-              - Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+              - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
           "Null":
             "events:source": "false"
