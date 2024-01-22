@@ -32,7 +32,7 @@ Resources:
           Arn:
             Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
           RoleArn:
-            Fn::GetAtt: UnicornPropertiesEventBusToUnicornWebEventBusRole.Arn
+            Fn::GetAtt: [ UnicornPropertiesEventBusToUnicornWebEventBusRole, Arn ]
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
   # from the publishing event bus, to the subscribing event bus (UnicornWebEventBusArn)
