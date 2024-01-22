@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
@@ -12,10 +12,11 @@ Metadata:
     config:
       ignore_checks:
         - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
-        - ES6000 # Rule disabled because SQS DLOs don't need a RedrivePolicy
+        - ES6000 # Rule disabled because SQS DLQs don't need a RedrivePolicy
         - E0001 # Rule disabled because cfn-lint cannot parse SAM Policy templates without arguments (ComprehendBasicAccessPolicy, RekognitionDetectOnlyPolicy)
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
+        - W3002 # Rule disabled as nested templates are being packaged 
 
 Parameters:
   Stage:
@@ -53,19 +54,19 @@ Globals:
       Variables:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
         EVENT_BUS: !Ref UnicornPropertiesEventBus
-        SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         POWERTOOLS_LOGGER_CASE: PascalCase
-        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        POWERTOOLS_METRICS_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
         LOG_LEVEL: INFO # Log level for Logger
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
-      namespace: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+      namespace: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
 
 Resources:
   #### SSM PARAMETERS
@@ -104,7 +105,7 @@ Resources:
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
-                - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
+                - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
               detail-type:
                 - ContractStatusChanged
             RetryPolicy:
@@ -270,14 +271,14 @@ Resources:
         Level: ALL
         IncludeExecutionData: true
       Events:
-        PubApproReqEvent:
+        PublicationApprovalRequestedEvent:
           Type: EventBridgeRule
           Properties:
             RuleName: unicorn.properties-PublicationApprovalRequested
             EventBusName: !GetAtt UnicornPropertiesEventBus.Name
             Pattern:
               source:
-                - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+                - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
               detail-type:
                 - PublicationApprovalRequested
             RetryPolicy:
@@ -292,7 +293,7 @@ Resources:
         ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
         ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
-        ServiceName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+        ServiceName: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
 
   # Store ApprovalStateMachineLogGroup workflow execution logs
   ApprovalStateMachineLogGroup:
@@ -316,7 +317,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -332,7 +333,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -355,7 +356,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -382,7 +383,7 @@ Resources:
         Condition:
           StringEquals:
             events:source:
-              - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+              - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
 
   # Catchall rule used for development purposes. Logs all events matching any of the services to CloudWatch Logs
   UnicornPropertiesCatchAllRule:
@@ -395,9 +396,9 @@ Resources:
         account:
           - !Ref AWS::AccountId
         source:
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
-          - !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
         - Arn: !GetAtt UnicornPropertiesCatchAllLogGroup.Arn
@@ -412,7 +413,7 @@ Resources:
       LogGroupName: !Sub
         - "/aws/events/${Stage}/${NS}-catchall"
         - Stage: !Ref Stage
-          NS: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesNamespace}}"
+          NS: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Permissions to allow EventBridge to send logs to CloudWatch
@@ -448,6 +449,8 @@ Resources:
   # CloudFormation Stack with the Properties Service Event Registry and Schemas
   EventSchemasStack:
     Type: AWS::Serverless::Application
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
     Properties:
       Location: "integration/event-schemas.yaml"
       Parameters:
@@ -456,6 +459,8 @@ Resources:
   # CloudFormation Stack with the Cross-service EventBus policy for Properties Service
   SubscriberPoliciesStack:
     Type: AWS::Serverless::Application
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
     DependsOn:
       - UnicornPropertiesEventBusNameParam
     Properties:
@@ -466,6 +471,8 @@ Resources:
   # CloudFormation Stack with the Cross-service EventBus Rules for Properties Service
   SubscriptionsStack:
     Type: AWS::Serverless::Application
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
     DependsOn:
       - UnicornPropertiesEventBusArnParam
     Properties:

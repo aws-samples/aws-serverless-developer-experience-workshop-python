@@ -1,11 +1,14 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: "2010-09-09"
-Transform:
-  - AWS::Serverless-2016-10-31
+Transform: AWS::Serverless-2016-10-31
 Description: >
-  Base infrastructure that will set up the central event bus and S3 image upload bucket.
+  Base infrastructure that will set up the central event bus and S3 image upload bucket per stage.
 
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - ES6000
+        - WS1004
 
 Parameters:
   Stage:
@@ -16,12 +19,11 @@ Parameters:
       - dev
       - prod
 
-
 Globals:
   Function:
     Timeout: 15
     Runtime: python3.11
-    MemorySize: 128
+    MemorySize: 512
     Tracing: Active
     Architectures:
       - arm64
@@ -30,30 +32,11 @@ Globals:
       project: AWS Serverless Developer Experience
       service: Unicorn Base Infrastructure
 
-
 Resources:
-  #### SSM PARAMETERS
-  # Service Namespaces
-  UnicornContractsNamespaceParam:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornContractsNamespace
-      Value: "unicorn.contracts"
-  UnicornPropertiesNamespaceParam:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesNamespace
-      Value: "unicorn.properties"
-  UnicornWebNamespaceParam:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornWebNamespace
-      Value: "unicorn.web"
 
-  # Images S3 Bucket
+  #### SSM PARAMETERS
+
+
   UnicornPropertiesImagesBucketParam:
     Type: AWS::SSM::Parameter
     Properties:
@@ -61,19 +44,18 @@ Resources:
       Name: !Sub /uni-prop/${Stage}/ImagesBucket
       Value: !Ref UnicornPropertiesImagesBucket
 
-
   #### S3 PROPERTY IMAGES BUCKET
   UnicornPropertiesImagesBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub uni-prop-${Stage}-images-${AWS::AccountId}
-
+      BucketName: !Sub "uni-prop-${Stage}-images-${AWS::AccountId}-${AWS::Region}"
 
   #### IMAGE UPLOAD CUSTOM RESOURCE FUNCTION
   ImageUploadFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.lambda_handler
+      Runtime: python3.11
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref UnicornPropertiesImagesBucket
@@ -111,7 +93,7 @@ Resources:
           
           print('file unzipped')
           
-          # upload to s3
+          #### upload to s3
           for root,_,files in os.walk('/tmp/property_images'):
             for file in files:
               print(f"file: {os.path.join(root, file)}")
@@ -131,6 +113,12 @@ Resources:
           except Exception as e:
             print(e)
           cfnresponse.send(event, context, cfnresponse.SUCCESS, dict())
+  ImageUploadFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ImageUploadFunction}"
 
   ImageUpload:
     Type: Custom::ImageUpload
@@ -138,7 +126,7 @@ Resources:
       ServiceToken: !GetAtt ImageUploadFunction.Arn
       DestinationBucket: !Ref UnicornPropertiesImagesBucket
 
-# OUTPUTS
 Outputs:
   ImageUploadBucketName:
     Value: !Ref UnicornPropertiesImagesBucket
+    Description: "S3 bucket for property images"

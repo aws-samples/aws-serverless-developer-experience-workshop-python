@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: 'Event Schemas for use by the Web Service'
 
 Parameters:
@@ -18,7 +18,7 @@ Resources:
     Properties: 
       Description: 'Event schemas for Unicorn Web'
       RegistryName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebNamespace}}-${Stage}"
+        Fn::Sub: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}-${Stage}"
 
   EventRegistryPolicy:
     Type: AWS::EventSchemas::RegistryPolicy
