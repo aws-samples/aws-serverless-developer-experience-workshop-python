@@ -90,8 +90,8 @@ Resources:
         import boto3
         import cfnresponse
 
-        zip_file_name = 'property_images.zip'
-        url = f"https://aws-serverless-developer-experience-workshop-assets.s3.amazonaws.com/property_images/{zip_file_name}"
+        zip_file_name = "property_images.zip"
+        url = f"https://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee.s3.us-east-1.amazonaws.com/9a27e484-7336-4ed0-8f90-f2747e4ac65c/{zip_file_name}"
         temp_zip_download_location = f"/tmp/{zip_file_name}"
 
         s3 = boto3.resource('s3')
