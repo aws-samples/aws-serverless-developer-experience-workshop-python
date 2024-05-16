@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
@@ -15,7 +15,7 @@ Metadata:
         - ES6000 # Rule disabled because SQS DLQs don't need a RedrivePolicy
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
-        - W3002 # Rule disabled as nested templates are being packaged 
+        - W3002 # Rule disabled as nested templates are being packaged
 
 Parameters:
   Stage:
@@ -360,29 +360,37 @@ Resources:
       SourceParameters:
         DynamoDBStreamParameters:
           MaximumRetryAttempts: 3
+          BatchSize: 1
+          StartingPosition: LATEST
           DeadLetterConfig:
             Arn: !GetAtt ContractsTableStreamToEventPipeDLQ.Arn
-          StartingPosition: LATEST
-          OnPartialBatchItemFailure: AUTOMATIC_BISECT
-          BatchSize: 1
         FilterCriteria:
           Filters:
-            - Pattern: !ToJsonString
-                eventName: [INSERT, MODIFY]
-                dynamodb:
-                  NewImage:
-                    contract_status:
-                      S: [DRAFT, APPROVED]
-      Target: !GetAtt UnicornContractsEventBus.Arn
+            - Pattern: >-
+                {"eventName":["INSERT","MODIFY"],"dynamodb":{"NewImage":{"contract_status":{"S":["DRAFT","APPROVED"]}}}}
+      LogConfiguration:
+        CloudwatchLogsLogDestination:
+          LogGroupArn: !GetAtt ContractsTableStreamToEventPipeLogGroup.Arn
+        Level: ERROR
       TargetParameters:
         EventBridgeEventBusParameters:
-          Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
           DetailType: ContractStatusChanged
-        InputTemplate: !ToJsonString
-          property_id: "<$.dynamodb.NewImage.property_id.S>"
-          contract_id: "<$.dynamodb.NewImage.contract_id.S>"
-          contract_status: "<$.dynamodb.NewImage.contract_status.S>"
-          contract_last_modified_on: "<$.dynamodb.NewImage.contract_last_modified_on.S>"
+          Source: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+        InputTemplate: |-
+          {
+            "property_id": "<$.dynamodb.Keys.property_id.S>",
+            "contract_id": "<$.dynamodb.NewImage.contract_id.S>",
+            "contract_status": "<$.dynamodb.NewImage.contract_status.S>",
+            "contract_last_modified_on": "<$.dynamodb.NewImage.contract_last_modified_on.S>"
+          }
+      Target: !GetAtt UnicornContractsEventBus.Arn
+
+  ContractsTableStreamToEventPipeLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # IAM Role for Event Bridge Pipe
   ContractsTableStreamToEventPipeRole:
@@ -394,6 +402,9 @@ Resources:
           Effect: Allow
           Principal:
             Service: pipes.amazonaws.com
+          Condition:
+            StringEquals:
+              aws:SourceAccount: !Ref AWS::AccountId
       Policies:
         - PolicyName: ContractsTableStreamToEventPipePolicy
           PolicyDocument:
@@ -408,6 +419,7 @@ Resources:
                   - dynamodb:DescribeStream
                   - dynamodb:GetRecords
                   - dynamodb:GetShardIterator
+                  - dynamodb:ListStreams
                 Resource: !GetAtt ContractsTable.StreamArn
               - Effect: Allow
                 Action:
