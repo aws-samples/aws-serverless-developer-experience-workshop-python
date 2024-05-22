@@ -30,8 +30,6 @@ States:
 
   CheckImageIntegrity:
     Type: Map
-    Parameters:
-      ImageName.$: "$$.Map.Item.Value"
     Iterator:
       StartAt: CheckForUnsafeContentInImages
       States:
@@ -49,6 +47,8 @@ States:
       Loop through all the images for the property and ensure they don't have
       unsafe content.
     ItemsPath: "$.detail.images"
+    ItemSelector:
+      ImageName.$: $$.Map.Item.Value
     ResultPath: "$.imageModerations"
 
   CheckDescriptionSentiment:
