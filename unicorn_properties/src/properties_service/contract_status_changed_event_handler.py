@@ -40,7 +40,7 @@ def lambda_handler(event, context):
     Parameters
     ----------
     event: dict, required
-        Event Bridge Events Format
+        EventBridge Events Format
 
     context: object, required
         Lambda Context runtime methods and attributes
