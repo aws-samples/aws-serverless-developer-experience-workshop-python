@@ -392,7 +392,7 @@ Resources:
     Properties:
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
-  # IAM Role for Event Bridge Pipe
+  # IAM Role for EventBridge Pipe
   ContractsTableStreamToEventPipeRole:
     Type: AWS::IAM::Role
     Properties:
