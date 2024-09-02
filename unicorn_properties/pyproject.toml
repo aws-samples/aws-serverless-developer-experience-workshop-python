@@ -17,7 +17,7 @@ aws-xray-sdk = "^2.14.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
 requests = "^2.31.0"
-moto = "^5.0.6"
+moto = "^5.0.13"
 importlib-metadata = "^7.1.0"
 pyyaml = "^6.0.1"
 arnparse = "^0.0.2"
