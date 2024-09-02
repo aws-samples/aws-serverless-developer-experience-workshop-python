@@ -16,7 +16,7 @@ pytest = "^8.2.0"
 requests = "^2.31.0"
 moto = "^5.0.6"
 importlib-metadata = "^7.1.0"
-pyyaml = "^6.0.1"
+pyyaml = "^6.0.2"
 arnparse = "^0.0.2"
 aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.41.0"}
 
