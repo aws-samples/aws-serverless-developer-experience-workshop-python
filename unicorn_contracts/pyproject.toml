@@ -15,7 +15,7 @@ aws-xray-sdk = "^2.14.0"
 pytest = "^8.2.0"
 requests = "^2.31.0"
 moto = "^5.0.6"
-importlib-metadata = "^7.1.0"
+importlib-metadata = "^8.4.0"
 pyyaml = "^6.0.1"
 arnparse = "^0.0.2"
 aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.41.0"}
