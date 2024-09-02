@@ -18,7 +18,7 @@ requests = "2.31.0"
 crhelper = "^2.0.11"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.2.0"
+pytest = "^8.3.2"
 requests = "^2.31.0"
 moto = "^5.0.6"
 importlib-metadata = "^7.1.0"
