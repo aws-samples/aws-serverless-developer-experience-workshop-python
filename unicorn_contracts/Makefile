@@ -98,7 +98,7 @@ define ddb_delete
 endef
 
 define mcurl
-	curl -X $(1) -H "Content-type: application/json" -d @$(call payload,$(2)) $(apiUrl)contract
+	curl -X $(1) -H "Content-type: application/json" -d @$(call payload,$(2)) $(apiUrl)contracts
 endef
 
 define get_ddb_key
