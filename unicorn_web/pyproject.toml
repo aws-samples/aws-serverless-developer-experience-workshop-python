@@ -14,12 +14,12 @@ python = "^3.11"
 boto3 = "^1.34.143"
 aws-lambda-powertools = {extras = ["tracer"], version = "^2.41.0"}
 aws-xray-sdk = "^2.14.0"
-requests = "2.31.0"
+requests = "2.32.2"
 crhelper = "^2.0.11"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
-requests = "^2.31.0"
+requests = "^2.32.2"
 moto = "^5.0.6"
 importlib-metadata = "^7.1.0"
 pyyaml = "^6.0.1"
