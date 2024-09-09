@@ -6,7 +6,7 @@ import boto3
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 import pytest
-from moto import mock_dynamodb, mock_events, mock_sqs
+from moto import mock_aws
 
 
 @pytest.fixture(scope='function')
@@ -32,19 +32,19 @@ def env_vars():
 
 @pytest.fixture(scope='function')
 def dynamodb(aws_credentials):
-    with mock_dynamodb():
+    with mock_aws():
         yield boto3.resource('dynamodb', region_name='ap-southeast-2')
 
 
 @pytest.fixture(scope='function')
 def eventbridge(aws_credentials):
-    with mock_events():
+    with mock_aws():
         yield boto3.client('events', region_name='ap-southeast-2')
 
 
 @pytest.fixture(scope='function')
 def sqs(aws_credentials):
-    with mock_sqs():
+    with mock_aws():
         yield boto3.client('sqs', region_name='ap-southeast-2')
 
 
