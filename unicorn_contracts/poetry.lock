@@ -24,7 +24,6 @@ files = [
 
 [package.dependencies]
 aws-xray-sdk = {version = ">=2.8.0,<3.0.0", optional = true, markers = "extra == \"tracer\" or extra == \"all\""}
-boto3 = {version = ">=1.26.164,<2.0.0", optional = true, markers = "extra == \"aws-sdk\""}
 jmespath = ">=1.0.1,<2.0.0"
 typing-extensions = ">=4.11.0,<5.0.0"
 
@@ -573,13 +572,13 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "7.2.1"
+version = "8.4.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-7.2.1-py3-none-any.whl", hash = "sha256:ffef94b0b66046dd8ea2d619b701fe978d9264d38f3998bc4c27ec3b146a87c8"},
-    {file = "importlib_metadata-7.2.1.tar.gz", hash = "sha256:509ecb2ab77071db5137c655e24ceb3eee66e7bbc6574165d0d114d9fc4bbe68"},
+    {file = "importlib_metadata-8.4.0-py3-none-any.whl", hash = "sha256:66f342cc6ac9818fc6ff340576acd24d65ba0b3efabb2b4ac08b598965a4a2f1"},
+    {file = "importlib_metadata-8.4.0.tar.gz", hash = "sha256:9a547d3bc3608b025f93d403fdd1aae741c24fbb8314df4b155675742ce303c5"},
 ]
 
 [package.dependencies]
@@ -1722,4 +1721,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6538eff91a15a62cfe436e86b67ebcaf53a180434de25a592e09003e94508904"
+content-hash = "10242327ec076feb71d1bdb23b0c6f355835e157662d6f4ac6d4ba03698556c0"
