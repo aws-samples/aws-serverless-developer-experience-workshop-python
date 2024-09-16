@@ -15,7 +15,7 @@ aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
 aws-xray-sdk = "^2.14.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
+pytest = "^8.3.3"
 requests = "^2.32.3"
 moto = {version = "^5.0.14", extras = ["dynamodb", "events", "sqs"]}
 importlib-metadata = "^8.4.0"
