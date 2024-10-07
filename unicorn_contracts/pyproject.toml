@@ -7,7 +7,7 @@ packages = [{ include = "contracts_service", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-boto3 = "^1.35.14"
+boto3 = "^1.35.34"
 aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
 aws-xray-sdk = "^2.14.0"
 
