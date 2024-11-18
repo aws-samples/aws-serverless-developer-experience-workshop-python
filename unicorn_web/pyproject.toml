@@ -20,7 +20,7 @@ crhelper = "^2.0.11"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
 requests = "^2.32.3"
-moto = {version = "^5.0.14", extras = ["dynamodb", "events", "sqs"]}
+moto = {version = "^5.0.21", extras = ["dynamodb", "events", "sqs"]}
 importlib-metadata = "^8.4.0"
 pyyaml = "^6.0.2"
 arnparse = "^0.0.2"
