@@ -11,7 +11,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.11"
 boto3 = "^1.35.14"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
+aws-lambda-powertools = {extras = ["tracer"], version = "^3.3.0"}
 aws-xray-sdk = "^2.14.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -21,7 +21,7 @@ moto = {version = "^5.0.14", extras = ["dynamodb", "events", "sqs"]}
 importlib-metadata = "^8.4.0"
 pyyaml = "^6.0.2"
 arnparse = "^0.0.2"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
+aws-lambda-powertools = {extras = ["tracer"], version = "^3.3.0"}
 poetry-plugin-export = "^1.8.0"
 
 [build-system]
