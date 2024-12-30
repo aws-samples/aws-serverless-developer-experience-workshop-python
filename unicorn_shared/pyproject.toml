@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "unicorn-shared"
+version = "0.2.0"
+description = "Unicorn Properties Shared Resources"
+authors = ["Amazon Web Services"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
