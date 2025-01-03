@@ -1,0 +1,2825 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "uni-prop-local-properties": {
+        "id": "uni-prop-local-properties",
+        "path": "uni-prop-local-properties",
+        "children": {
+          "UnicornPropertiesBus-local": {
+            "id": "UnicornPropertiesBus-local",
+            "path": "uni-prop-local-properties/UnicornPropertiesBus-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/UnicornPropertiesBus-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "UnicornPropertiesBus-local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.EventBus",
+              "version": "2.173.4"
+            }
+          },
+          "UnicornPropertiesCatchAllLogGroup": {
+            "id": "UnicornPropertiesCatchAllLogGroup",
+            "path": "uni-prop-local-properties/UnicornPropertiesCatchAllLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/UnicornPropertiesCatchAllLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/events/local/unicorn.properties-catchall",
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "UnicornPropertiesEventsBusPublishPolicy": {
+            "id": "UnicornPropertiesEventsBusPublishPolicy",
+            "path": "uni-prop-local-properties/UnicornPropertiesEventsBusPublishPolicy",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
+              "aws:cdk:cloudformation:props": {
+                "eventBusName": {
+                  "Ref": "UnicornPropertiesBuslocal2042F62D"
+                },
+                "statement": {
+                  "Action": "events:PutEvents",
+                  "Condition": {
+                    "StringEquals": {
+                      "aws:Source": "unicorn.properties"
+                    }
+                  },
+                  "Effect": "Allow",
+                  "Principal": {
+                    "AWS": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "UnicornPropertiesBuslocal2042F62D",
+                      "Arn"
+                    ]
+                  },
+                  "Sid": "OnlyPropertiesServiceCanPublishToEventBus-local"
+                },
+                "statementId": "OnlyPropertiesServiceCanPublishToEventBus-local"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
+              "version": "2.173.4"
+            }
+          },
+          "UnicornPropertiesCatchAllRule": {
+            "id": "UnicornPropertiesCatchAllRule",
+            "path": "uni-prop-local-properties/UnicornPropertiesCatchAllRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/UnicornPropertiesCatchAllRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "Catch all events published by the conproperties service.",
+                    "eventBusName": {
+                      "Ref": "UnicornPropertiesBuslocal2042F62D"
+                    },
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "Ref": "AWS::AccountId"
+                        }
+                      ],
+                      "source": [
+                        "unicorn.contracts",
+                        "unicorn.properties",
+                        "unicorn.web"
+                      ]
+                    },
+                    "name": "unicorn.contracts-catchall",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":logs:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":log-group:",
+                              {
+                                "Ref": "UnicornPropertiesCatchAllLogGroup057F9994"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.173.4"
+            }
+          },
+          "EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E": {
+            "id": "EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E",
+            "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E",
+            "children": {
+              "Provider": {
+                "id": "Provider",
+                "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/Provider",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "2.173.4"
+                }
+              },
+              "CustomResourcePolicy": {
+                "id": "CustomResourcePolicy",
+                "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/CustomResourcePolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/CustomResourcePolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:DeleteResourcePolicy",
+                                "logs:PutResourcePolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7ECustomResourcePolicyBB9A9C8E",
+                        "roles": [
+                          {
+                            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
+              "version": "2.173.4"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "uni-prop-local-properties/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "2.173.4"
+            }
+          },
+          "AWS679f53fac002430cb0da5b7982bd2287": {
+            "id": "AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "ce2f3595a340d6c519a65888ef97e3b9b64f053f83608e32cc28162e22d7d99a.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
+                    "timeout": 120
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.4"
+            }
+          },
+          "ContractStatusTable": {
+            "id": "ContractStatusTable",
+            "path": "uni-prop-local-properties/ContractStatusTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContractStatusTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "property_id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "property_id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "replicas": [
+                      {
+                        "region": {
+                          "Ref": "AWS::Region"
+                        }
+                      }
+                    ],
+                    "streamSpecification": {
+                      "streamViewType": "NEW_AND_OLD_IMAGES"
+                    },
+                    "tableName": "uni-prop-local-properties-ContractStatusTable"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnGlobalTable",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
+              "version": "2.173.4"
+            }
+          },
+          "PropertiesEventBusRuleDLQ": {
+            "id": "PropertiesEventBusRuleDLQ",
+            "path": "uni-prop-local-properties/PropertiesEventBusRuleDLQ",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/PropertiesEventBusRuleDLQ/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "messageRetentionPeriod": 1209600,
+                    "queueName": "PropertiesEventBusRuleDLQ-local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "2.173.4"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "uni-prop-local-properties/PropertiesEventBusRuleDLQ/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/PropertiesEventBusRuleDLQ/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "unicornpropertiesContractStatusChanged15A011AE",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "PropertiesEventBusRuleDLQE70E543B",
+                                  "Arn"
+                                ]
+                              },
+                              "Sid": "AllowEventRuleuniproplocalpropertiesunicornpropertiesContractStatusChanged9FA2B6E7"
+                            },
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "unicornpropertiesPublicationApprovalRequested1AA17865",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "PropertiesEventBusRuleDLQE70E543B",
+                                  "Arn"
+                                ]
+                              },
+                              "Sid": "AllowEventRuleuniproplocalpropertiesunicornpropertiesPublicationApprovalRequestedACA676F8"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "PropertiesEventBusRuleDLQE70E543B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "2.173.4"
+            }
+          },
+          "PropertiesServiceDLQ": {
+            "id": "PropertiesServiceDLQ",
+            "path": "uni-prop-local-properties/PropertiesServiceDLQ",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/PropertiesServiceDLQ/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "messageRetentionPeriod": 1209600,
+                    "queueName": "PropertiesServiceDLQ-local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "2.173.4"
+            }
+          },
+          "ContractStatusChangedHandlerFunctionLogGroup-local": {
+            "id": "ContractStatusChangedHandlerFunctionLogGroup-local",
+            "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunctionLogGroup-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunctionLogGroup-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "ContractStatusChangedHandlerFunction-local": {
+            "id": "ContractStatusChangedHandlerFunction-local",
+            "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "xray:PutTelemetryRecords",
+                                    "xray:PutTraceSegments"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DeleteItem",
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:Scan",
+                                    "dynamodb:UpdateItem"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ContractStatusTableF5E34442",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:SendMessage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "PropertiesServiceDLQE9A990DB",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ContractStatusChangedHandlerFunctionlocalServiceRoleDefaultPolicy9858D6EC",
+                            "roles": [
+                              {
+                                "Ref": "ContractStatusChangedHandlerFunctionlocalServiceRoleCCA43736"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "architectures": [
+                      "x86_64"
+                    ],
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "41b29825c4a501cd77843c329f3cb8084f0b62b78cc715e5cdc69c3b075f32d2.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "SERVICE_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOGGER_CASE": "PascalCase",
+                        "POWERTOOLS_SERVICE_NAME": "unicorn.properties",
+                        "POWERTOOLS_TRACE_DISABLED": "false",
+                        "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+                        "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+                        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOG_LEVEL": "INFO",
+                        "LOG_LEVEL": "INFO",
+                        "CONTRACT_STATUS_TABLE": {
+                          "Ref": "ContractStatusTableF5E34442"
+                        }
+                      }
+                    },
+                    "functionName": "ContractStatusChangedHandlerFunction-local-local",
+                    "handler": "properties_service.contract_status_changed_event_handler.lambda_handler",
+                    "loggingConfig": {
+                      "logGroup": {
+                        "Ref": "ContractStatusChangedHandlerFunctionLogGrouplocalFC78CE21"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ContractStatusChangedHandlerFunctionlocalServiceRoleCCA43736",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.13",
+                    "timeout": 30,
+                    "tracingConfig": {
+                      "mode": "Active"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.4"
+            }
+          },
+          "unicorn.properties-ContractStatusChanged": {
+            "id": "unicorn.properties-ContractStatusChanged",
+            "path": "uni-prop-local-properties/unicorn.properties-ContractStatusChanged",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/unicorn.properties-ContractStatusChanged/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventBusName": {
+                      "Ref": "UnicornPropertiesBuslocal2042F62D"
+                    },
+                    "eventPattern": {
+                      "detail-type": [
+                        "ContractStatusChanged"
+                      ],
+                      "source": [
+                        "unicorn.contracts"
+                      ]
+                    },
+                    "name": "unicorn.properties-ContractStatusChanged",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "ContractStatusChangedHandlerFunctionlocalE63ECA03",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "PropertiesEventBusRuleDLQE70E543B",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.173.4"
+                }
+              },
+              "AllowEventRuleuniproplocalpropertiesContractStatusChangedHandlerFunctionlocal5B01E3E0": {
+                "id": "AllowEventRuleuniproplocalpropertiesContractStatusChangedHandlerFunctionlocal5B01E3E0",
+                "path": "uni-prop-local-properties/unicorn.properties-ContractStatusChanged/AllowEventRuleuniproplocalpropertiesContractStatusChangedHandlerFunctionlocal5B01E3E0",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "ContractStatusChangedHandlerFunctionlocalE63ECA03",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "unicornpropertiesContractStatusChanged15A011AE",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.173.4"
+            }
+          },
+          "PropertiesApprovalSyncFunctionLogGroup-local": {
+            "id": "PropertiesApprovalSyncFunctionLogGroup-local",
+            "path": "uni-prop-local-properties/PropertiesApprovalSyncFunctionLogGroup-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/PropertiesApprovalSyncFunctionLogGroup-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "PropertiesApprovalSyncFunction-local": {
+            "id": "PropertiesApprovalSyncFunction-local",
+            "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "xray:PutTelemetryRecords",
+                                    "xray:PutTraceSegments"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:SendMessage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "PropertiesServiceDLQE9A990DB",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:DescribeStream",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:ListStreams"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ContractStatusTableF5E34442",
+                                      "StreamArn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:Query",
+                                    "dynamodb:Scan"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ContractStatusTableF5E34442",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "states:SendTaskFailure",
+                                    "states:SendTaskHeartbeat",
+                                    "states:SendTaskSuccess"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "ApprovalStateMachine767589AA"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PropertiesApprovalSyncFunctionlocalServiceRoleDefaultPolicy62DB4FC9",
+                            "roles": [
+                              {
+                                "Ref": "PropertiesApprovalSyncFunctionlocalServiceRole0C471955"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "architectures": [
+                      "x86_64"
+                    ],
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "41b29825c4a501cd77843c329f3cb8084f0b62b78cc715e5cdc69c3b075f32d2.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "SERVICE_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOGGER_CASE": "PascalCase",
+                        "POWERTOOLS_SERVICE_NAME": "unicorn.properties",
+                        "POWERTOOLS_TRACE_DISABLED": "false",
+                        "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+                        "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+                        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOG_LEVEL": "INFO",
+                        "LOG_LEVEL": "INFO",
+                        "CONTRACT_STATUS_TABLE": {
+                          "Ref": "ContractStatusTableF5E34442"
+                        }
+                      }
+                    },
+                    "functionName": "PropertiesApprovalSyncFunction-local-local",
+                    "handler": "properties_service.properties_approval_sync_function.lambda_handler",
+                    "loggingConfig": {
+                      "logGroup": {
+                        "Ref": "PropertiesApprovalSyncFunctionLogGrouplocal9A16B938"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "PropertiesApprovalSyncFunctionlocalServiceRole0C471955",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.13",
+                    "timeout": 30,
+                    "tracingConfig": {
+                      "mode": "Active"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.4"
+                }
+              },
+              "DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED": {
+                "id": "DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED",
+                "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "batchSize": 100,
+                        "destinationConfig": {
+                          "onFailure": {
+                            "destination": {
+                              "Fn::GetAtt": [
+                                "PropertiesServiceDLQE9A990DB",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "ContractStatusTableF5E34442",
+                            "StreamArn"
+                          ]
+                        },
+                        "functionName": {
+                          "Ref": "PropertiesApprovalSyncFunctionlocal69C8A5CE"
+                        },
+                        "startingPosition": "TRIM_HORIZON"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.4"
+            }
+          },
+          "ContractExistsCheckerFunctionLogGroup-local": {
+            "id": "ContractExistsCheckerFunctionLogGroup-local",
+            "path": "uni-prop-local-properties/ContractExistsCheckerFunctionLogGroup-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContractExistsCheckerFunctionLogGroup-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "ContractExistsCheckerFunction-local": {
+            "id": "ContractExistsCheckerFunction-local",
+            "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "xray:PutTelemetryRecords",
+                                    "xray:PutTraceSegments"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DeleteItem",
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:Scan",
+                                    "dynamodb:UpdateItem"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ContractStatusTableF5E34442",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ContractExistsCheckerFunctionlocalServiceRoleDefaultPolicyDE5DD650",
+                            "roles": [
+                              {
+                                "Ref": "ContractExistsCheckerFunctionlocalServiceRole403DE853"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "architectures": [
+                      "x86_64"
+                    ],
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "41b29825c4a501cd77843c329f3cb8084f0b62b78cc715e5cdc69c3b075f32d2.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "SERVICE_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOGGER_CASE": "PascalCase",
+                        "POWERTOOLS_SERVICE_NAME": "unicorn.properties",
+                        "POWERTOOLS_TRACE_DISABLED": "false",
+                        "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+                        "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+                        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOG_LEVEL": "INFO",
+                        "LOG_LEVEL": "INFO",
+                        "CONTRACT_STATUS_TABLE": {
+                          "Ref": "ContractStatusTableF5E34442"
+                        }
+                      }
+                    },
+                    "functionName": "ContractExistsCheckerFunction-local-local",
+                    "handler": "properties_service.contract_exists_checker_function.lambda_handler",
+                    "loggingConfig": {
+                      "logGroup": {
+                        "Ref": "ContractExistsCheckerFunctionLogGrouplocal76EFD971"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ContractExistsCheckerFunctionlocalServiceRole403DE853",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.13",
+                    "timeout": 30,
+                    "tracingConfig": {
+                      "mode": "Active"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.4"
+            }
+          },
+          "WaitForContractApprovalFunctionLogGroup-local": {
+            "id": "WaitForContractApprovalFunctionLogGroup-local",
+            "path": "uni-prop-local-properties/WaitForContractApprovalFunctionLogGroup-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/WaitForContractApprovalFunctionLogGroup-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "WaitForContractApprovalFunction-local": {
+            "id": "WaitForContractApprovalFunction-local",
+            "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "xray:PutTelemetryRecords",
+                                    "xray:PutTraceSegments"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DeleteItem",
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:Scan",
+                                    "dynamodb:UpdateItem"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ContractStatusTableF5E34442",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "WaitForContractApprovalFunctionlocalServiceRoleDefaultPolicy54D250C0",
+                            "roles": [
+                              {
+                                "Ref": "WaitForContractApprovalFunctionlocalServiceRole53F34F6C"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "architectures": [
+                      "x86_64"
+                    ],
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "41b29825c4a501cd77843c329f3cb8084f0b62b78cc715e5cdc69c3b075f32d2.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "SERVICE_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOGGER_CASE": "PascalCase",
+                        "POWERTOOLS_SERVICE_NAME": "unicorn.properties",
+                        "POWERTOOLS_TRACE_DISABLED": "false",
+                        "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+                        "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+                        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOG_LEVEL": "INFO",
+                        "LOG_LEVEL": "INFO",
+                        "CONTRACT_STATUS_TABLE": {
+                          "Ref": "ContractStatusTableF5E34442"
+                        }
+                      }
+                    },
+                    "functionName": "WaitForContractApprovalFunction-local-local",
+                    "handler": "properties_service.wait_for_contract_approval_function.lambda_handler",
+                    "loggingConfig": {
+                      "logGroup": {
+                        "Ref": "WaitForContractApprovalFunctionLogGrouplocal6BDA45B6"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "WaitForContractApprovalFunctionlocalServiceRole53F34F6C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.13",
+                    "timeout": 30,
+                    "tracingConfig": {
+                      "mode": "Active"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.4"
+            }
+          },
+          "ContentIntegrityValidatorFunctionLogGroup-local": {
+            "id": "ContentIntegrityValidatorFunctionLogGroup-local",
+            "path": "uni-prop-local-properties/ContentIntegrityValidatorFunctionLogGroup-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContentIntegrityValidatorFunctionLogGroup-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "ContentIntegrityValidatorFunction-local": {
+            "id": "ContentIntegrityValidatorFunction-local",
+            "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "xray:PutTelemetryRecords",
+                                    "xray:PutTraceSegments"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ContentIntegrityValidatorFunctionlocalServiceRoleDefaultPolicy97B5F059",
+                            "roles": [
+                              {
+                                "Ref": "ContentIntegrityValidatorFunctionlocalServiceRoleAEDFC322"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "architectures": [
+                      "x86_64"
+                    ],
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "41b29825c4a501cd77843c329f3cb8084f0b62b78cc715e5cdc69c3b075f32d2.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "SERVICE_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOGGER_CASE": "PascalCase",
+                        "POWERTOOLS_SERVICE_NAME": "unicorn.properties",
+                        "POWERTOOLS_TRACE_DISABLED": "false",
+                        "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+                        "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+                        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.properties",
+                        "POWERTOOLS_LOG_LEVEL": "INFO",
+                        "LOG_LEVEL": "INFO"
+                      }
+                    },
+                    "functionName": "ContentIntegrityValidatorFunction-local-local",
+                    "handler": "properties_service.content_integrity_validator_function.lambda_handler",
+                    "loggingConfig": {
+                      "logGroup": {
+                        "Ref": "ContentIntegrityValidatorFunctionLogGrouplocal310E0303"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ContentIntegrityValidatorFunctionlocalServiceRoleAEDFC322",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.13",
+                    "timeout": 30,
+                    "tracingConfig": {
+                      "mode": "Active"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.4"
+            }
+          },
+          "SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "uni-prop-local-properties/SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.173.4"
+            }
+          },
+          "SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "uni-prop-local-properties/SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "2.173.4"
+            }
+          },
+          "ApprovalStateMachineLogGroup-local": {
+            "id": "ApprovalStateMachineLogGroup-local",
+            "path": "uni-prop-local-properties/ApprovalStateMachineLogGroup-local",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ApprovalStateMachineLogGroup-local/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.173.4"
+            }
+          },
+          "StateMachineRole": {
+            "id": "StateMachineRole",
+            "path": "uni-prop-local-properties/StateMachineRole",
+            "children": {
+              "ImportStateMachineRole": {
+                "id": "ImportStateMachineRole",
+                "path": "uni-prop-local-properties/StateMachineRole/ImportStateMachineRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.173.4"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/StateMachineRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "states.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AWSXRayDaemonWriteAccess"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/ComprehendFullAccess"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonRekognitionFullAccess"
+                          ]
+                        ]
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "policyName": "CloudWatchPublishLogsMetrics",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "cloudwatch:PutMetricData",
+                                "logs:CreateLogDelivery",
+                                "logs:DeleteLogDelivery",
+                                "logs:DescribeLogGroups",
+                                "logs:DescribeResourcePolicies",
+                                "logs:GetLogDelivery",
+                                "logs:ListLogDeliveries",
+                                "logs:PutResourcePolicy",
+                                "logs:UpdateLogDelivery"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      },
+                      {
+                        "policyName": "S3ReadPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "s3:Get*",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:aws:s3:::$",
+                                    {
+                                      "Ref": "SsmParameterValueuniproplocalImagesBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+                                    },
+                                    "/*"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.173.4"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "uni-prop-local-properties/StateMachineRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/StateMachineRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:CreateLogDelivery",
+                                "logs:DeleteLogDelivery",
+                                "logs:DescribeLogGroups",
+                                "logs:DescribeResourcePolicies",
+                                "logs:GetLogDelivery",
+                                "logs:ListLogDeliveries",
+                                "logs:PutResourcePolicy",
+                                "logs:UpdateLogDelivery",
+                                "xray:GetSamplingRules",
+                                "xray:GetSamplingTargets",
+                                "xray:PutTelemetryRecords",
+                                "xray:PutTraceSegments"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": "events:PutEvents",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "UnicornPropertiesBuslocal2042F62D",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "ContentIntegrityValidatorFunctionlocal05E28B54",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "ContractExistsCheckerFunctionlocalA9DDED8C",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "WaitForContractApprovalFunctionlocalB37F63DE",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ContentIntegrityValidatorFunctionlocal05E28B54",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ContractExistsCheckerFunctionlocalA9DDED8C",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "WaitForContractApprovalFunctionlocalB37F63DE",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "StateMachineRoleDefaultPolicy433448B5",
+                        "roles": [
+                          {
+                            "Ref": "StateMachineRole78EC082E"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.173.4"
+            }
+          },
+          "ApprovalStateMachine": {
+            "id": "ApprovalStateMachine",
+            "path": "uni-prop-local-properties/ApprovalStateMachine",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/ApprovalStateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\n    \"Comment\": \"The property approval workflow ensures that its images and content is safe to publish and that there is an approved contract in place before the listing is made available to the public through the Unicorn Properties website.\",\n    \"StartAt\": \"VerifyContractExists\",\n    \"States\": {\n        \"VerifyContractExists\": {\n            \"Type\": \"Task\",\n            \"Resource\": \"arn:aws:states:::lambda:invoke\",\n            \"InputPath\": \"$.detail\",\n            \"ResultPath\": \"$.contract_exists_check\",\n            \"Parameters\": {\n                \"Payload\": {\n                    \"Input.$\": \"$\"\n                },\n                \"FunctionName\": \"${ContractExistsChecker}\"\n            },\n            \"Next\": \"CheckImageIntegrity\",\n            \"Catch\": [\n                {\n                    \"ErrorEquals\": [\n                        \"ContractStatusNotFoundException\"\n                    ],\n                    \"Next\": \"NotFound\"\n                }\n            ],\n            \"Comment\": \"ContractExistsChecker checks to see if a contract for a specified property  exists.\"\n        },\n        \"NotFound\": {\n            \"Type\": \"Fail\"\n        },\n        \"CheckImageIntegrity\": {\n            \"Type\": \"Map\",\n            \"Parameters\": {\n                \"ImageName.$\": \"$$.Map.Item.Value\"\n            },\n            \"Iterator\": {\n                \"StartAt\": \"CheckForUnsafeContentInImages\",\n                \"States\": {\n                    \"CheckForUnsafeContentInImages\": {\n                        \"Type\": \"Task\",\n                        \"End\": true,\n                        \"Parameters\": {\n                            \"Image\": {\n                                \"S3Object\": {\n                                    \"Bucket\": \"${ImageUploadBucketName}\",\n                                    \"Name.$\": \"$.ImageName\"\n                                }\n                            }\n                        },\n                        \"Resource\": \"arn:aws:states:::aws-sdk:rekognition:detectModerationLabels\"\n                    }\n                }\n            },\n            \"Next\": \"CheckDescriptionSentiment\",\n            \"Comment\": \"Loop through all the images for the property and ensure they don't have unsafe content.\",\n            \"ItemsPath\": \"$.detail.images\",\n            \"ResultPath\": \"$.imageModerations\"\n        },\n        \"CheckDescriptionSentiment\": {\n            \"Type\": \"Task\",\n            \"Parameters\": {\n                \"LanguageCode\": \"en\",\n                \"Text.$\": \"$.detail.description\"\n            },\n            \"Resource\": \"arn:aws:states:::aws-sdk:comprehend:detectSentiment\",\n            \"Next\": \"ValidateContentIntegrity\",\n            \"ResultPath\": \"$.contentSentiment\"\n        },\n        \"ValidateContentIntegrity\": {\n            \"Type\": \"Task\",\n            \"Resource\": \"arn:aws:states:::lambda:invoke\",\n            \"ResultPath\": \"$.validation_check\",\n            \"ResultSelector\": {\n                \"validation_result.$\": \"$.Payload.validation_result\"\n            },\n            \"Parameters\": {\n                \"Payload.$\": \"$\",\n                \"FunctionName\": \"${ContentIntegrityValidator}\"\n            },\n            \"Retry\": [\n                {\n                    \"ErrorEquals\": [\n                        \"Lambda.ServiceException\",\n                        \"Lambda.AWSLambdaException\",\n                        \"Lambda.SdkClientException\"\n                    ],\n                    \"IntervalSeconds\": 2,\n                    \"MaxAttempts\": 6,\n                    \"BackoffRate\": 2\n                }\n            ],\n            \"Next\": \"IsContentSafe\"\n        },\n        \"IsContentSafe\": {\n            \"Type\": \"Choice\",\n            \"Choices\": [\n                {\n                    \"Variable\": \"$.validation_check.validation_result\",\n                    \"StringEquals\": \"PASS\",\n                    \"Next\": \"WaitForContractApproval\"\n                }\n            ],\n            \"Default\": \"PublicationEvaluationCompletedDeclined\"\n        },\n        \"PublicationEvaluationCompletedDeclined\": {\n            \"Type\": \"Task\",\n            \"Resource\": \"arn:aws:states:::events:putEvents\",\n            \"Parameters\": {\n                \"Entries\": [\n                    {\n                        \"Detail\": {\n                            \"property_id.$\": \"$.detail.property_id\",\n                            \"evaluation_result\": \"DECLINED\"\n                        },\n                        \"DetailType\": \"PublicationEvaluationCompleted\",\n                        \"EventBusName\": \"${EventBusName}\",\n                        \"Source\": \"${ServiceName}\"\n                    }\n                ]\n            },\n            \"Next\": \"Declined\"\n        },\n        \"Declined\": {\n            \"Type\": \"Succeed\"\n        },\n        \"WaitForContractApproval\": {\n            \"Type\": \"Task\",\n            \"Resource\": \"arn:aws:states:::lambda:invoke.waitForTaskToken\",\n            \"InputPath\": \"$.detail\",\n            \"ResultPath\": \"$.status_check\",\n            \"Parameters\": {\n                \"Payload\": {\n                    \"Input.$\": \"$\",\n                    \"TaskToken.$\": \"$$.Task.Token\"\n                },\n                \"FunctionName\": \"${WaitForContractApproval}\"\n            },\n            \"Retry\": [\n                {\n                    \"ErrorEquals\": [\n                        \"Lambda.ServiceException\",\n                        \"Lambda.AWSLambdaException\",\n                        \"Lambda.SdkClientException\"\n                    ],\n                    \"IntervalSeconds\": 2,\n                    \"MaxAttempts\": 6,\n                    \"BackoffRate\": 2\n                }\n            ],\n            \"Next\": \"PublicationEvaluationCompletedApproved\",\n            \"Comment\": \"ContractStatusChecker\"\n        },\n        \"PublicationEvaluationCompletedApproved\": {\n            \"Type\": \"Task\",\n            \"Resource\": \"arn:aws:states:::events:putEvents\",\n            \"Parameters\": {\n                \"Entries\": [\n                    {\n                        \"Detail\": {\n                            \"property_id.$\": \"$.detail.property_id\",\n                            \"evaluation_result\": \"APPROVED\"\n                        },\n                        \"DetailType\": \"PublicationEvaluationCompleted\",\n                        \"EventBusName\": \"${EventBusName}\",\n                        \"Source\": \"${ServiceName}\"\n                    }\n                ]\n            },\n            \"Next\": \"Approved\"\n        },\n        \"Approved\": {\n            \"Type\": \"Succeed\"\n        }\n    }\n}",
+                    "definitionSubstitutions": {
+                      "ContractExistsChecker": {
+                        "Fn::GetAtt": [
+                          "ContractExistsCheckerFunctionlocalA9DDED8C",
+                          "Arn"
+                        ]
+                      },
+                      "WaitForContractApproval": {
+                        "Fn::GetAtt": [
+                          "WaitForContractApprovalFunctionlocalB37F63DE",
+                          "Arn"
+                        ]
+                      },
+                      "ContentIntegrityValidator": {
+                        "Fn::GetAtt": [
+                          "ContentIntegrityValidatorFunctionlocal05E28B54",
+                          "Arn"
+                        ]
+                      },
+                      "ImageUploadBucketName": {
+                        "Ref": "SsmParameterValueuniproplocalImagesBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+                      },
+                      "EventBusName": {
+                        "Ref": "UnicornPropertiesBuslocal2042F62D"
+                      },
+                      "ServiceNmae": "unicorn.properties"
+                    },
+                    "loggingConfiguration": {
+                      "destinations": [
+                        {
+                          "cloudWatchLogsLogGroup": {
+                            "logGroupArn": {
+                              "Fn::GetAtt": [
+                                "ApprovalStateMachineLogGrouplocalF9763D65",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "includeExecutionData": true,
+                      "level": "ALL"
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRole78EC082E",
+                        "Arn"
+                      ]
+                    },
+                    "stateMachineName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "ApprovalStateMachine-",
+                          {
+                            "Ref": "AWS::StackName"
+                          }
+                        ]
+                      ]
+                    },
+                    "tracingConfiguration": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "2.173.4"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole",
+                "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.4"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "states:StartExecution",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "ApprovalStateMachine767589AA"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ApprovalStateMachineEventsRoleDefaultPolicy94B86841",
+                            "roles": [
+                              {
+                                "Ref": "ApprovalStateMachineEventsRole83695FBF"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "2.173.4"
+            }
+          },
+          "unicorn.properties-PublicationApprovalRequested": {
+            "id": "unicorn.properties-PublicationApprovalRequested",
+            "path": "uni-prop-local-properties/unicorn.properties-PublicationApprovalRequested",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "uni-prop-local-properties/unicorn.properties-PublicationApprovalRequested/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventBusName": {
+                      "Ref": "UnicornPropertiesBuslocal2042F62D"
+                    },
+                    "eventPattern": {
+                      "detail-type": [
+                        "PublicationApprovalRequested"
+                      ],
+                      "source": [
+                        "unicorn.web"
+                      ]
+                    },
+                    "name": "unicorn.properties-PublicationApprovalRequested",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Ref": "ApprovalStateMachine767589AA"
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "ApprovalStateMachineEventsRole83695FBF",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "PropertiesEventBusRuleDLQE70E543B",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.173.4"
+            }
+          },
+          "PublicationEvaluationCompletedSchema": {
+            "id": "PublicationEvaluationCompletedSchema",
+            "path": "uni-prop-local-properties/PublicationEvaluationCompletedSchema",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EventSchemas::Schema",
+              "aws:cdk:cloudformation:props": {
+                "content": "{\n  \"openapi\": \"3.0.0\",\n  \"info\": {\n    \"version\": \"1.0.0\",\n    \"title\": \"PublicationEvaluationCompleted\"\n  },\n  \"paths\": {},\n  \"components\": {\n    \"schemas\": {\n      \"AWSEvent\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"detail-type\",\n          \"resources\",\n          \"detail\",\n          \"id\",\n          \"source\",\n          \"time\",\n          \"region\",\n          \"version\",\n          \"account\"\n        ],\n        \"x-amazon-events-detail-type\": \"PublicationEvaluationCompleted\",\n        \"x-amazon-events-source\": \"unicorn.web\",\n        \"properties\": {\n          \"detail\": {\n            \"$ref\": \"#/components/schemas/PublicationEvaluationCompleted\"\n          },\n          \"account\": {\n            \"type\": \"string\"\n          },\n          \"detail-type\": {\n            \"type\": \"string\"\n          },\n          \"id\": {\n            \"type\": \"string\"\n          },\n          \"region\": {\n            \"type\": \"string\"\n          },\n          \"resources\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            }\n          },\n          \"source\": {\n            \"type\": \"string\"\n          },\n          \"time\": {\n            \"type\": \"string\",\n            \"format\": \"date-time\"\n          },\n          \"version\": {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"PublicationEvaluationCompleted\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"property_id\",\n          \"evaluation_result\"\n        ],\n        \"properties\": {\n          \"property_id\": {\n            \"type\": \"string\"\n          },\n          \"evaluation_result\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  }\n}",
+                "description": "The schema for when a property evaluation is completed",
+                "registryName": "unicorn.properties-local",
+                "schemaName": "unicorn.properties-local@PublicationEvaluationCompleted",
+                "type": "OpenApi3"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_eventschemas.CfnSchema",
+              "version": "2.173.4"
+            }
+          },
+          "uni-prop-local-properties-EventSchemaSack": {
+            "id": "uni-prop-local-properties-EventSchemaSack",
+            "path": "uni-prop-local-properties/uni-prop-local-properties-EventSchemaSack",
+            "children": {
+              "unicorn.properties": {
+                "id": "unicorn.properties",
+                "path": "uni-prop-local-properties/uni-prop-local-properties-EventSchemaSack/unicorn.properties",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EventSchemas::Registry",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "Event schemas for unicorn.properties",
+                    "registryName": "unicorn.properties-local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eventschemas.CfnRegistry",
+                  "version": "2.173.4"
+                }
+              },
+              "RegistryPolicy": {
+                "id": "RegistryPolicy",
+                "path": "uni-prop-local-properties/uni-prop-local-properties-EventSchemaSack/RegistryPolicy",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EventSchemas::RegistryPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policy": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "schemas:DescribeCodeBinding",
+                            "schemas:DescribeRegistry",
+                            "schemas:DescribeSchema",
+                            "schemas:GetCodeBindingSource",
+                            "schemas:ListSchemaVersions",
+                            "schemas:ListSchemas",
+                            "schemas:SearchSchemas"
+                          ],
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": [
+                            {
+                              "Fn::GetAtt": [
+                                "PublicationEvaluationCompletedSchema",
+                                "SchemaArn"
+                              ]
+                            },
+                            {
+                              "Fn::GetAtt": [
+                                "uniproplocalpropertiesEventSchemaSackunicornproperties94C67D84",
+                                "RegistryArn"
+                              ]
+                            }
+                          ],
+                          "Sid": "AllowExternalServices"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "registryName": "unicorn.properties-local"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eventschemas.CfnRegistryPolicy",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "uni-prop-local-properties-SubscriptionsStack": {
+            "id": "uni-prop-local-properties-SubscriptionsStack",
+            "path": "uni-prop-local-properties/uni-prop-local-properties-SubscriptionsStack",
+            "children": {
+              "ContractEventsBusPublishPolicy": {
+                "id": "ContractEventsBusPublishPolicy",
+                "path": "uni-prop-local-properties/uni-prop-local-properties-SubscriptionsStack/ContractEventsBusPublishPolicy",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "eventBusName": {
+                      "Ref": "UnicornPropertiesBuslocal2042F62D"
+                    },
+                    "statement": {
+                      "Action": [
+                        "events:PutRule",
+                        "events:DeleteRule",
+                        "events:DescribeRule",
+                        "events:DisableRule",
+                        "events:EnableRule",
+                        "events:PutTargets",
+                        "events:RemoveTargets"
+                      ],
+                      "Condition": {
+                        "StringEquals": {
+                          "events:source": [
+                            "unicorn.properties"
+                          ]
+                        },
+                        "StringEqualsIfExists": {
+                          "events:creatorAccount": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        },
+                        "Null": {
+                          "events:source": "false"
+                        }
+                      },
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":iam::",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":root"
+                            ]
+                          ]
+                        }
+                      },
+                      "Resource": {
+                        "Fn::GetAtt": [
+                          "UnicornPropertiesBuslocal2042F62D",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "statementId": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Ref": "UnicornPropertiesBuslocal2042F62D"
+                          },
+                          "-local-policy"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "ContractStatusTableName": {
+            "id": "ContractStatusTableName",
+            "path": "uni-prop-local-properties/ContractStatusTableName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ContractStatusChangedHandlerFunctionName": {
+            "id": "ContractStatusChangedHandlerFunctionName",
+            "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunctionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ContractStatusChangedHandlerFunctionArn": {
+            "id": "ContractStatusChangedHandlerFunctionArn",
+            "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunctionArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "PropertiesApprovalSyncFunctionName": {
+            "id": "PropertiesApprovalSyncFunctionName",
+            "path": "uni-prop-local-properties/PropertiesApprovalSyncFunctionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "PropertiesApprovalSyncFunctionArn": {
+            "id": "PropertiesApprovalSyncFunctionArn",
+            "path": "uni-prop-local-properties/PropertiesApprovalSyncFunctionArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ContractExistsCheckerFunctionNName": {
+            "id": "ContractExistsCheckerFunctionNName",
+            "path": "uni-prop-local-properties/ContractExistsCheckerFunctionNName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ContractExistsCheckerFunctionArn": {
+            "id": "ContractExistsCheckerFunctionArn",
+            "path": "uni-prop-local-properties/ContractExistsCheckerFunctionArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ContentIntegrityValidatorFunctionNName": {
+            "id": "ContentIntegrityValidatorFunctionNName",
+            "path": "uni-prop-local-properties/ContentIntegrityValidatorFunctionNName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ContentIntegrityValidatorFunctionArn": {
+            "id": "ContentIntegrityValidatorFunctionArn",
+            "path": "uni-prop-local-properties/ContentIntegrityValidatorFunctionArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "WaitForContractApprovalFunctionNName": {
+            "id": "WaitForContractApprovalFunctionNName",
+            "path": "uni-prop-local-properties/WaitForContractApprovalFunctionNName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "WaitForContractApprovalFunctionArn": {
+            "id": "WaitForContractApprovalFunctionArn",
+            "path": "uni-prop-local-properties/WaitForContractApprovalFunctionArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ApprovalStateMachineName": {
+            "id": "ApprovalStateMachineName",
+            "path": "uni-prop-local-properties/ApprovalStateMachineName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ApprovalStateMachineArn": {
+            "id": "ApprovalStateMachineArn",
+            "path": "uni-prop-local-properties/ApprovalStateMachineArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "UnicornPropertiesEventBusName": {
+            "id": "UnicornPropertiesEventBusName",
+            "path": "uni-prop-local-properties/UnicornPropertiesEventBusName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "UnicornPropertiesCatchAllLogGroupArn": {
+            "id": "UnicornPropertiesCatchAllLogGroupArn",
+            "path": "uni-prop-local-properties/UnicornPropertiesCatchAllLogGroupArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "ApprovalStateMachineLogGroupName": {
+            "id": "ApprovalStateMachineLogGroupName",
+            "path": "uni-prop-local-properties/ApprovalStateMachineLogGroupName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.173.4"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "uni-prop-local-properties/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "uni-prop-local-properties/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.4"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "uni-prop-local-properties/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "2.173.4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "uni-prop-local-properties/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.173.4"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "uni-prop-local-properties/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.173.4"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.173.4"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.173.4"
+    }
+  }
+}

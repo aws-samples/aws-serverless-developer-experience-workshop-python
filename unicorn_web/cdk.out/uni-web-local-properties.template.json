@@ -1,0 +1,1113 @@
+{
+ "Resources": {
+  "UnicornWebBuslocalE31649A0": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "UnicornWebBus-local"
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/UnicornWebBus-local/Resource"
+   }
+  },
+  "UnicornWebCatchAllLogGroup289B1B17": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/events/local/unicorn.web-catchall",
+    "RetentionInDays": 1
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/UnicornWebCatchAllLogGroup/Resource"
+   }
+  },
+  "UnicornWebEventsBusPublishPolicy": {
+   "Type": "AWS::Events::EventBusPolicy",
+   "Properties": {
+    "EventBusName": {
+     "Ref": "UnicornWebBuslocalE31649A0"
+    },
+    "Statement": {
+     "Action": "events:PutEvents",
+     "Condition": {
+      "StringEquals": {
+       "aws:Source": "unicorn.web"
+      }
+     },
+     "Effect": "Allow",
+     "Principal": {
+      "AWS": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":root"
+        ]
+       ]
+      }
+     },
+     "Resource": {
+      "Fn::GetAtt": [
+       "UnicornWebBuslocalE31649A0",
+       "Arn"
+      ]
+     },
+     "Sid": "OnlyWebServiceCanPublishToEventBus-local"
+    },
+    "StatementId": "OnlyWebServiceCanPublishToEventBus-local"
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/UnicornWebEventsBusPublishPolicy"
+   }
+  },
+  "UnicornWebCatchAllRule14221109": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Catch all events published by the web service.",
+    "EventBusName": {
+     "Ref": "UnicornWebBuslocalE31649A0"
+    },
+    "EventPattern": {
+     "account": [
+      {
+       "Ref": "AWS::AccountId"
+      }
+     ],
+     "source": [
+      "unicorn.contracts",
+      "unicorn.properties",
+      "unicorn.web"
+     ]
+    },
+    "Name": "unicorn.contracts-catchall",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":logs:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":log-group:",
+         {
+          "Ref": "UnicornWebCatchAllLogGroup289B1B17"
+         }
+        ]
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/UnicornWebCatchAllRule/Resource"
+   }
+  },
+  "EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323312AF7A6": {
+   "Type": "Custom::CloudwatchLogResourcePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"uniweblocalpropertiesEventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B03231B3BFB4E\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "UnicornWebCatchAllLogGroup289B1B17",
+         "Arn"
+        ]
+       },
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"uniweblocalpropertiesEventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B03231B3BFB4E\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "UnicornWebCatchAllLogGroup289B1B17",
+         "Arn"
+        ]
+       },
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323\"}}"
+      ]
+     ]
+    },
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"uniweblocalpropertiesEventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B03231B3BFB4E\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323CustomResourcePolicyFC9B6A2E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323/Resource/Default"
+   }
+  },
+  "EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323CustomResourcePolicyFC9B6A2E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteResourcePolicy",
+        "logs:PutResourcePolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323CustomResourcePolicyFC9B6A2E",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/EventsLogGroupPolicyuniweblocalpropertiesUnicornWebCatchAllRule621B0323/CustomResourcePolicy/Resource"
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource"
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ce2f3595a340d6c519a65888ef97e3b9b64f053f83608e32cc28162e22d7d99a.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+    "aws:asset:path": "asset.ce2f3595a340d6c519a65888ef97e3b9b64f053f83608e32cc28162e22d7d99a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ContractStatusTableF5E34442": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "PK",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "SK",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "PK",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "SK",
+      "KeyType": "RANGE"
+     }
+    ],
+    "Replicas": [
+     {
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "TableName": "uni-prop-local-contracts-WebTable"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/ContractStatusTable/Resource"
+   }
+  },
+  "UnicornWebIngestDLQFD321369": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "UnicornWebIngestDLQ-local"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/UnicornWebIngestDLQ/Resource"
+   }
+  },
+  "UnicornWebIngestQueue58B56F08": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "QueueName": "UnicornWebIngestQueue-local",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "UnicornWebIngestDLQFD321369",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 1
+    },
+    "VisibilityTimeout": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/UnicornWebIngestQueue/Resource"
+   }
+  },
+  "SearchFunctionLogGrouplocalB2B17303": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 1
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/SearchFunctionLogGroup-local/Resource"
+   }
+  },
+  "SearchFunctionlocalServiceRole36C7E834": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/SearchFunction-local/ServiceRole/Resource"
+   }
+  },
+  "SearchFunctionlocalServiceRoleDefaultPolicyF965AC33": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ContractStatusTableF5E34442",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SearchFunctionlocalServiceRoleDefaultPolicyF965AC33",
+    "Roles": [
+     {
+      "Ref": "SearchFunctionlocalServiceRole36C7E834"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/SearchFunction-local/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "SearchFunctionlocal746E3A2E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "da5593bcab8baad0b4d431dae7099531706cadcd65490e94e3f4b4826bf2ed7c.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SERVICE_NAMESPACE": "unicorn.web",
+      "POWERTOOLS_LOGGER_CASE": "PascalCase",
+      "POWERTOOLS_SERVICE_NAME": "unicorn.web",
+      "POWERTOOLS_TRACE_DISABLED": "false",
+      "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+      "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+      "POWERTOOLS_METRICS_NAMESPACE": "unicorn.web",
+      "POWERTOOLS_LOG_LEVEL": "INFO",
+      "LOG_LEVEL": "INFO",
+      "DYNAMODB_TABLE": {
+       "Ref": "ContractStatusTableF5E34442"
+      }
+     }
+    },
+    "FunctionName": "SearchFunction-local-local",
+    "Handler": "search_service.property_search_function.lambda_handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "SearchFunctionLogGrouplocalB2B17303"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "SearchFunctionlocalServiceRole36C7E834",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13",
+    "Timeout": 30,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "SearchFunctionlocalServiceRoleDefaultPolicyF965AC33",
+    "SearchFunctionlocalServiceRole36C7E834"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/SearchFunction-local/Resource",
+    "aws:asset:path": "asset.da5593bcab8baad0b4d431dae7099531706cadcd65490e94e3f4b4826bf2ed7c",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RequestApprovalFunctionLogslocal6CC49B6D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 1
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/RequestApprovalFunctionLogs-local/Resource"
+   }
+  },
+  "RequestApprovalFunctionlocalServiceRole5BE7A598": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/RequestApprovalFunction-local/ServiceRole/Resource"
+   }
+  },
+  "RequestApprovalFunctionlocalServiceRoleDefaultPolicyCC3180E3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "UnicornWebBuslocalE31649A0",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ContractStatusTableF5E34442",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "UnicornWebIngestQueue58B56F08",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RequestApprovalFunctionlocalServiceRoleDefaultPolicyCC3180E3",
+    "Roles": [
+     {
+      "Ref": "RequestApprovalFunctionlocalServiceRole5BE7A598"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/RequestApprovalFunction-local/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "RequestApprovalFunctionlocal9EA532D6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "da5593bcab8baad0b4d431dae7099531706cadcd65490e94e3f4b4826bf2ed7c.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SERVICE_NAMESPACE": "unicorn.web",
+      "POWERTOOLS_LOGGER_CASE": "PascalCase",
+      "POWERTOOLS_SERVICE_NAME": "unicorn.web",
+      "POWERTOOLS_TRACE_DISABLED": "false",
+      "POWERTOOLS_LOGGER_LOG_EVENT": "true",
+      "POWERTOOLS_LOGGER_SAMPLE_RATE": "0",
+      "POWERTOOLS_METRICS_NAMESPACE": "unicorn.web",
+      "POWERTOOLS_LOG_LEVEL": "INFO",
+      "LOG_LEVEL": "INFO",
+      "DYNAMODB_TABLE": {
+       "Ref": "ContractStatusTableF5E34442"
+      },
+      "EVENT_BUS": {
+       "Ref": "UnicornWebBuslocalE31649A0"
+      }
+     }
+    },
+    "FunctionName": "RequestApprovalFunction-local-local",
+    "Handler": "approvals_service.request_approval_function.lambda_handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "RequestApprovalFunctionLogslocal6CC49B6D"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "RequestApprovalFunctionlocalServiceRole5BE7A598",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13",
+    "Timeout": 30,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "RequestApprovalFunctionlocalServiceRoleDefaultPolicyCC3180E3",
+    "RequestApprovalFunctionlocalServiceRole5BE7A598"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/RequestApprovalFunction-local/Resource",
+    "aws:asset:path": "asset.da5593bcab8baad0b4d431dae7099531706cadcd65490e94e3f4b4826bf2ed7c",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RequestApprovalFunctionlocalSqsEventSourceuniweblocalpropertiesUnicornWebIngestQueueF241CCD750B9BDA5": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 1,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "UnicornWebIngestQueue58B56F08",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "RequestApprovalFunctionlocal9EA532D6"
+    },
+    "ScalingConfig": {
+     "MaximumConcurrency": 5
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/RequestApprovalFunction-local/SqsEventSource:uniweblocalpropertiesUnicornWebIngestQueueF241CCD7/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22Qy07DMBBFv6X76UAbJNZtBN2AVBrEtnIcJ5g4npKxqSrL/45s0vIQq3t9JHvOeImL2wJvZuLIc9n0c6NrDJUTsgdx5H1QH8o6xnCXcu0Zytb+17dktDzBzhuVcMoIhjrG8EDdZiR/SPzcIxgx1I3AUGnbGeXI3nsrnSYLl1K23zDPqciPUj2Kw0Hb7jL9F42gxYBh0ilbexajSYySGBd7wawc4yoFcIFrL3vl1oIVNCcrBmpqDM+iNuplmS5uDNXCZBCB3xnDk1c+v5lLjCA9Oxr2o+JsxLg6cpnZbkLw99jan/282YVlu8qJbtq3JNvo9B8Rtif3SvaqwEWB17M31no+euv0oHD3lZ/40y5g2wEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "uni-web-local-properties/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

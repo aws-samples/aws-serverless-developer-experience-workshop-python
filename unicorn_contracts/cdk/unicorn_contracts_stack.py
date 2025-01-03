@@ -18,8 +18,11 @@ from unicorn_shared import (
     eventBusName,
     isProd
 )
-from event_schema import EventsSchemaConstruct
-from subscriber_policies import SubscriberPoliciesConstruct
+
+from unicorn_shared.constructs import (
+    SubscriberPoliciesConstruct,
+    EventsSchemaConstruct,
+)
 
 import json
 import aws_cdk.aws_events as events
@@ -74,7 +77,7 @@ class UnicornConstractsStack(Stack):
         # Create a Catchall rule used for development purposes.
         catch_all_rule = events.Rule(
             self,
-            'contracts.catchall',
+            'UnicornContractsCatchAllRule',
             description='Catch all events published by the contracts service.',
             event_bus=event_bus,
             event_pattern={'account': [f'{Aws.ACCOUNT_ID}']},
