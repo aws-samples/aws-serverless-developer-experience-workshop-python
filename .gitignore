@@ -3,3 +3,4 @@
 **/.aws-sam/
 .vscode/*
 .vscode/settings.json
+**/cdk.out

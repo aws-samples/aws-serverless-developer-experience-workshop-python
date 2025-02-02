@@ -1,13 +1,28 @@
 [tool.poetry]
 name = "unicorn-shared"
-version = "0.2.0"
+version = "0.3.0"
 description = "Unicorn Properties Shared Resources"
 authors = ["Amazon Web Services"]
-readme = "README.md"
+packages = [
+    { include = "unicorn_shared", from = "src" }
+]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.13"
+boto3 = "^1.35"
+cdk-nag = "^2.35.7"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+# pytest-mock = "^3.11.1"
+requests = "^2.31.0"
+moto = "^4.1.13"
+importlib-metadata = "^6.8.0"
+pyyaml = "^6.0.1"
+arnparse = "^0.0.2"
+aws-cdk-lib = "^2.167.0"
+constructs = ">=10.0.0,<11.0.0"
+cdk-nag = "^2.33.1"
 
 [build-system]
 requires = ["poetry-core"]

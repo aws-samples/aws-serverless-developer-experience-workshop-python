@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "contracts_service"
-version = "0.2.0"
+version = "0.3.0"
 description = "Unicorn Properties Contact Service"
 authors = ["Amazon Web Services"]
 packages = [
@@ -13,6 +13,7 @@ boto3 = "^1.35"
 aws-lambda-powertools = { extras = ["aws-sdk"], version = "^3.3.0" }
 aws-xray-sdk = "^2.12.0"
 unicorn-shared = {path = "../unicorn_shared", develop = true}
+cdk-nag = "^2.35.7"
 
 
 [tool.poetry.group.dev.dependencies]

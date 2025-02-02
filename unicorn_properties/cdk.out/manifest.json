@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "uni-prop-local-properties.assets": {
       "type": "cdk:asset-manifest",
@@ -15,10 +15,15 @@
       "properties": {
         "templateFile": "uni-prop-local-properties.template.json",
         "terminationProtection": false,
+        "tags": {
+          "namespace": "unicorn.properties",
+          "project": "AWS_Serverless_Developer_Experience",
+          "stage": "local"
+        },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c707752fb0d8ac61e7fb8b3a12483f414bface1ffbc14436a1f5a89d0e5017f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9cd591dd88c4c70b70cd6deb44c837de6ec192d34c929b1db47230e955606e8f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +39,25 @@
         "uni-prop-local-properties.assets"
       ],
       "metadata": {
+        "/uni-prop-local-properties": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "namespace",
+                "Value": "unicorn.properties"
+              },
+              {
+                "Key": "project",
+                "Value": "AWS_Serverless_Developer_Experience"
+              },
+              {
+                "Key": "stage",
+                "Value": "local"
+              }
+            ]
+          }
+        ],
         "/uni-prop-local-properties/UnicornPropertiesBus-local/Resource": [
           {
             "type": "aws:cdk:logicalId",

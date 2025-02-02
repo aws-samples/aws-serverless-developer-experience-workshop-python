@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "unicorn_web"
-version = "0.2.0"
+version = "0.3.0"
 description = "Unicorn Properties Web Service"
 authors = ["Amazon Web Services"]
 packages = [

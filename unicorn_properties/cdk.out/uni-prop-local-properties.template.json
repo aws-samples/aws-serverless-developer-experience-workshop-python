@@ -3,7 +3,21 @@
   "UnicornPropertiesBuslocal2042F62D": {
    "Type": "AWS::Events::EventBus",
    "Properties": {
-    "Name": "UnicornPropertiesBus-local"
+    "Name": "UnicornPropertiesBus-local",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "Metadata": {
     "aws:cdk:path": "uni-prop-local-properties/UnicornPropertiesBus-local/Resource"
@@ -13,7 +27,21 @@
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": "/aws/events/local/unicorn.properties-catchall",
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -227,6 +255,20 @@
        ]
       ]
      }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
     ]
    },
    "Metadata": {
@@ -258,6 +300,20 @@
       "value"
      ]
     },
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Timeout": 120
    },
    "DependsOn": [
@@ -290,7 +346,21 @@
      {
       "Region": {
        "Ref": "AWS::Region"
-      }
+      },
+      "Tags": [
+       {
+        "Key": "namespace",
+        "Value": "unicorn.properties"
+       },
+       {
+        "Key": "project",
+        "Value": "AWS_Serverless_Developer_Experience"
+       },
+       {
+        "Key": "stage",
+        "Value": "local"
+       }
+      ]
      }
     ],
     "StreamSpecification": {
@@ -308,7 +378,21 @@
    "Type": "AWS::SQS::Queue",
    "Properties": {
     "MessageRetentionPeriod": 1209600,
-    "QueueName": "PropertiesEventBusRuleDLQ-local"
+    "QueueName": "PropertiesEventBusRuleDLQ-local",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -386,7 +470,21 @@
    "Type": "AWS::SQS::Queue",
    "Properties": {
     "MessageRetentionPeriod": 1209600,
-    "QueueName": "PropertiesServiceDLQ-local"
+    "QueueName": "PropertiesServiceDLQ-local",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -397,7 +495,21 @@
   "ContractStatusChangedHandlerFunctionLogGrouplocalFC78CE21": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -432,6 +544,20 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
      }
     ]
    },
@@ -545,6 +671,20 @@
      ]
     },
     "Runtime": "python3.13",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Timeout": 30,
     "TracingConfig": {
      "Mode": "Active"
@@ -626,7 +766,21 @@
   "PropertiesApprovalSyncFunctionLogGrouplocal9A16B938": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -661,6 +815,20 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
      }
     ]
    },
@@ -796,6 +964,20 @@
      ]
     },
     "Runtime": "python3.13",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Timeout": 30,
     "TracingConfig": {
      "Mode": "Active"
@@ -835,7 +1017,21 @@
     "FunctionName": {
      "Ref": "PropertiesApprovalSyncFunctionlocal69C8A5CE"
     },
-    "StartingPosition": "TRIM_HORIZON"
+    "StartingPosition": "TRIM_HORIZON",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "Metadata": {
     "aws:cdk:path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED/Resource"
@@ -844,7 +1040,21 @@
   "ContractExistsCheckerFunctionLogGrouplocal76EFD971": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -879,6 +1089,20 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
      }
     ]
    },
@@ -978,6 +1202,20 @@
      ]
     },
     "Runtime": "python3.13",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Timeout": 30,
     "TracingConfig": {
      "Mode": "Active"
@@ -997,7 +1235,21 @@
   "WaitForContractApprovalFunctionLogGrouplocal6BDA45B6": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -1032,6 +1284,20 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
      }
     ]
    },
@@ -1131,6 +1397,20 @@
      ]
     },
     "Runtime": "python3.13",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Timeout": 30,
     "TracingConfig": {
      "Mode": "Active"
@@ -1150,7 +1430,21 @@
   "ContentIntegrityValidatorFunctionLogGrouplocal310E0303": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -1185,6 +1479,20 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
      }
     ]
    },
@@ -1258,6 +1566,20 @@
      ]
     },
     "Runtime": "python3.13",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Timeout": 30,
     "TracingConfig": {
      "Mode": "Active"
@@ -1277,7 +1599,21 @@
   "ApprovalStateMachineLogGrouplocalF9763D65": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "RetentionInDays": 1
+    "RetentionInDays": 1,
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -1385,6 +1721,20 @@
        "Version": "2012-10-17"
       },
       "PolicyName": "S3ReadPolicy"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
      }
     ]
    },
@@ -1569,6 +1919,20 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "TracingConfiguration": {
      "Enabled": true
     }
@@ -1597,7 +1961,21 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "Metadata": {
     "aws:cdk:path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole/Resource"
@@ -1679,6 +2057,20 @@
     "Description": "The schema for when a property evaluation is completed",
     "RegistryName": "unicorn.properties-local",
     "SchemaName": "unicorn.properties-local@PublicationEvaluationCompleted",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ],
     "Type": "OpenApi3"
    },
    "DependsOn": [
@@ -1692,7 +2084,21 @@
    "Type": "AWS::EventSchemas::Registry",
    "Properties": {
     "Description": "Event schemas for unicorn.properties",
-    "RegistryName": "unicorn.properties-local"
+    "RegistryName": "unicorn.properties-local",
+    "Tags": [
+     {
+      "Key": "namespace",
+      "Value": "unicorn.properties"
+     },
+     {
+      "Key": "project",
+      "Value": "AWS_Serverless_Developer_Experience"
+     },
+     {
+      "Key": "stage",
+      "Value": "local"
+     }
+    ]
    },
    "Metadata": {
     "aws:cdk:path": "uni-prop-local-properties/uni-prop-local-properties-EventSchemaSack/unicorn.properties"
@@ -1836,7 +2242,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21RQW7CMBB8C3fjFlKpZ0Atl6KmpOoVbZwluDh26rWLIit/r2wCpFUv3pmxvDs7nvPZY8YfJnCiqaiOUyVLHgoH4sjgRLuA36gd8fAU69ITW+31fzg3SoqObb3CKMfaM2Vq4uHF1GtrfBv1C+6ZgqasgIdC6lqhM/rZa+Gk0ewKVns9xjnaRhJFlqYWxluBG2hbqeurl19qzyQ0PAzmYo/BphlsmmiTsh0QoSO+iIVRxpdeHNEtgZBVnYbGVCUP71Aq/JjHh2tlSlBJ6Bl9EQ9vHn3qeQbpvM0d0Z6Rw3Y/LEYpbYcbEAepU4Mx79n5A8QBGyAe4nXCyT3WkpztxniY0TPhyZlmZ5FSIMQXJ1olbTtI7C+NXW74EuxVS+EUDuoh7hwsNOjQRvLqXetdRCujKxlX61neuYPRdxmfZfx+8klSTq3XTjbIt+f6A6iI8Nd/AgAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Ry27DIBD8lt4JTeJDzonV5tKoblz1Gq3xxqHB4HqhkYX49wriPFr1ws4MYnd2mPPZYsGnD3CiiaiPEyUr7ksL4sjgRDuP36gtcf8U68oRy/f6P1wYJcXAtk5hlGMNTJmGuH8xzbo3rov6BQemoK1q4L6UulFojX52WlhpNLuCfK/vcYF9K4kiS1NL43qBG+g6qZurl19qYBJa7kdzscdo04w2TbRJ2Q6I0BJfxsIo4ysnjmhXQMjqQUNr6or7d6gUfszjw7UyFagkBEZfxP2bQ5d6nkE6b3PvaGBksduPi1FK2+IGxEHq1OCeB3b+AHHAFoj7eJ1wco+NJNsP93icEZhwZE2765FSIMSXJ8qTth0l9pfGLjd8CfaqpXBKC80YdwE9tGixj+TV2c7ZiHKjaxlXC6wY7MHox4zPMj59+CQpJ73TVrbIt+f6A1SEA1N/AgAA"
    },
    "Metadata": {
     "aws:cdk:path": "uni-prop-local-properties/CDKMetadata/Default"

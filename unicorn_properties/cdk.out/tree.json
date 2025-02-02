@@ -18,18 +18,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
                   "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "name": "UnicornPropertiesBus-local"
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.EventBus",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "UnicornPropertiesCatchAllLogGroup": {
@@ -43,18 +57,32 @@
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
                     "logGroupName": "/aws/events/local/unicorn.properties-catchall",
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "UnicornPropertiesEventsBusPublishPolicy": {
@@ -105,7 +133,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "UnicornPropertiesCatchAllRule": {
@@ -168,13 +196,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_events.CfnRule",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Rule",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E": {
@@ -186,7 +214,7 @@
                 "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/Provider",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -198,13 +226,13 @@
                     "path": "uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/Resource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "CustomResourcePolicy": {
@@ -240,19 +268,19 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "LatestNodeRuntimeMap": {
@@ -260,7 +288,7 @@
             "path": "uni-prop-local-properties/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
@@ -276,7 +304,7 @@
                     "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -310,18 +338,32 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Code": {
@@ -333,7 +375,7 @@
                     "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "AssetBucket": {
@@ -341,13 +383,13 @@
                     "path": "uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -378,18 +420,32 @@
                         "value"
                       ]
                     },
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "timeout": 120
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractStatusTable": {
@@ -419,7 +475,21 @@
                       {
                         "region": {
                           "Ref": "AWS::Region"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
+                        ]
                       }
                     ],
                     "streamSpecification": {
@@ -430,13 +500,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_dynamodb.CfnGlobalTable",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PropertiesEventBusRuleDLQ": {
@@ -450,12 +520,26 @@
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {
                     "messageRetentionPeriod": 1209600,
-                    "queueName": "PropertiesEventBusRuleDLQ-local"
+                    "queueName": "PropertiesEventBusRuleDLQ-local",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Policy": {
@@ -530,19 +614,19 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PropertiesServiceDLQ": {
@@ -556,18 +640,32 @@
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {
                     "messageRetentionPeriod": 1209600,
-                    "queueName": "PropertiesServiceDLQ-local"
+                    "queueName": "PropertiesServiceDLQ-local",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractStatusChangedHandlerFunctionLogGroup-local": {
@@ -580,18 +678,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractStatusChangedHandlerFunction-local": {
@@ -607,7 +719,7 @@
                     "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -641,12 +753,26 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -719,19 +845,19 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.173.4"
+                          "version": "2.177.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Code": {
@@ -743,7 +869,7 @@
                     "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "AssetBucket": {
@@ -751,13 +877,13 @@
                     "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -805,6 +931,20 @@
                       ]
                     },
                     "runtime": "python3.13",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "timeout": 30,
                     "tracingConfig": {
                       "mode": "Active"
@@ -813,13 +953,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "unicorn.properties-ContractStatusChanged": {
@@ -868,7 +1008,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_events.CfnRule",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "AllowEventRuleuniproplocalpropertiesContractStatusChangedHandlerFunctionlocal5B01E3E0": {
@@ -895,13 +1035,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Rule",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PropertiesApprovalSyncFunctionLogGroup-local": {
@@ -914,18 +1054,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PropertiesApprovalSyncFunction-local": {
@@ -941,7 +1095,7 @@
                     "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -975,12 +1129,26 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1075,19 +1243,19 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.173.4"
+                          "version": "2.177.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Code": {
@@ -1099,7 +1267,7 @@
                     "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "AssetBucket": {
@@ -1107,13 +1275,13 @@
                     "path": "uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -1161,6 +1329,20 @@
                       ]
                     },
                     "runtime": "python3.13",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "timeout": 30,
                     "tracingConfig": {
                       "mode": "Active"
@@ -1169,7 +1351,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED": {
@@ -1183,6 +1365,20 @@
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
                       "aws:cdk:cloudformation:props": {
                         "batchSize": 100,
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
+                        ],
                         "destinationConfig": {
                           "onFailure": {
                             "destination": {
@@ -1207,19 +1403,19 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractExistsCheckerFunctionLogGroup-local": {
@@ -1232,18 +1428,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractExistsCheckerFunction-local": {
@@ -1259,7 +1469,7 @@
                     "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -1293,12 +1503,26 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1357,19 +1581,19 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.173.4"
+                          "version": "2.177.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Code": {
@@ -1381,7 +1605,7 @@
                     "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "AssetBucket": {
@@ -1389,13 +1613,13 @@
                     "path": "uni-prop-local-properties/ContractExistsCheckerFunction-local/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -1443,6 +1667,20 @@
                       ]
                     },
                     "runtime": "python3.13",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "timeout": 30,
                     "tracingConfig": {
                       "mode": "Active"
@@ -1451,13 +1689,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "WaitForContractApprovalFunctionLogGroup-local": {
@@ -1470,18 +1708,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "WaitForContractApprovalFunction-local": {
@@ -1497,7 +1749,7 @@
                     "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -1531,12 +1783,26 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1595,19 +1861,19 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.173.4"
+                          "version": "2.177.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Code": {
@@ -1619,7 +1885,7 @@
                     "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "AssetBucket": {
@@ -1627,13 +1893,13 @@
                     "path": "uni-prop-local-properties/WaitForContractApprovalFunction-local/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -1681,6 +1947,20 @@
                       ]
                     },
                     "runtime": "python3.13",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "timeout": 30,
                     "tracingConfig": {
                       "mode": "Active"
@@ -1689,13 +1969,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContentIntegrityValidatorFunctionLogGroup-local": {
@@ -1708,18 +1988,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContentIntegrityValidatorFunction-local": {
@@ -1735,7 +2029,7 @@
                     "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -1769,12 +2063,26 @@
                               ]
                             ]
                           }
+                        ],
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1810,19 +2118,19 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.173.4"
+                          "version": "2.177.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Code": {
@@ -1834,7 +2142,7 @@
                     "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "AssetBucket": {
@@ -1842,13 +2150,13 @@
                     "path": "uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -1893,6 +2201,20 @@
                       ]
                     },
                     "runtime": "python3.13",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "timeout": 30,
                     "tracingConfig": {
                       "mode": "Active"
@@ -1901,13 +2223,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
@@ -1915,7 +2237,7 @@
             "path": "uni-prop-local-properties/SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118": {
@@ -1923,7 +2245,7 @@
             "path": "uni-prop-local-properties/SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ApprovalStateMachineLogGroup-local": {
@@ -1936,18 +2258,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
-                    "retentionInDays": 1
+                    "retentionInDays": 1,
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "StateMachineRole": {
@@ -1959,7 +2295,7 @@
                 "path": "uni-prop-local-properties/StateMachineRole/ImportStateMachineRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Resource": {
@@ -2066,12 +2402,26 @@
                           "Version": "2012-10-17"
                         }
                       }
+                    ],
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
                     ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "DefaultPolicy": {
@@ -2193,19 +2543,19 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ApprovalStateMachine": {
@@ -2279,6 +2629,20 @@
                         ]
                       ]
                     },
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ],
                     "tracingConfiguration": {
                       "enabled": true
                     }
@@ -2286,7 +2650,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "EventsRole": {
@@ -2298,7 +2662,7 @@
                     "path": "uni-prop-local-properties/ApprovalStateMachine/EventsRole/ImportEventsRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "Resource": {
@@ -2318,12 +2682,26 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "namespace",
+                            "value": "unicorn.properties"
+                          },
+                          {
+                            "key": "project",
+                            "value": "AWS_Serverless_Developer_Experience"
+                          },
+                          {
+                            "key": "stage",
+                            "value": "local"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -2358,25 +2736,25 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.173.4"
+                          "version": "2.177.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.173.4"
+                      "version": "2.177.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "unicorn.properties-PublicationApprovalRequested": {
@@ -2428,13 +2806,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_events.CfnRule",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Rule",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PublicationEvaluationCompletedSchema": {
@@ -2447,12 +2825,26 @@
                 "description": "The schema for when a property evaluation is completed",
                 "registryName": "unicorn.properties-local",
                 "schemaName": "unicorn.properties-local@PublicationEvaluationCompleted",
+                "tags": [
+                  {
+                    "key": "namespace",
+                    "value": "unicorn.properties"
+                  },
+                  {
+                    "key": "project",
+                    "value": "AWS_Serverless_Developer_Experience"
+                  },
+                  {
+                    "key": "stage",
+                    "value": "local"
+                  }
+                ],
                 "type": "OpenApi3"
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_eventschemas.CfnSchema",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "uni-prop-local-properties-EventSchemaSack": {
@@ -2466,12 +2858,26 @@
                   "aws:cdk:cloudformation:type": "AWS::EventSchemas::Registry",
                   "aws:cdk:cloudformation:props": {
                     "description": "Event schemas for unicorn.properties",
-                    "registryName": "unicorn.properties-local"
+                    "registryName": "unicorn.properties-local",
+                    "tags": [
+                      {
+                        "key": "namespace",
+                        "value": "unicorn.properties"
+                      },
+                      {
+                        "key": "project",
+                        "value": "AWS_Serverless_Developer_Experience"
+                      },
+                      {
+                        "key": "stage",
+                        "value": "local"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_eventschemas.CfnRegistry",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "RegistryPolicy": {
@@ -2535,7 +2941,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_eventschemas.CfnRegistryPolicy",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
@@ -2623,7 +3029,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
@@ -2637,7 +3043,7 @@
             "path": "uni-prop-local-properties/ContractStatusTableName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractStatusChangedHandlerFunctionName": {
@@ -2645,7 +3051,7 @@
             "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunctionName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractStatusChangedHandlerFunctionArn": {
@@ -2653,7 +3059,7 @@
             "path": "uni-prop-local-properties/ContractStatusChangedHandlerFunctionArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PropertiesApprovalSyncFunctionName": {
@@ -2661,7 +3067,7 @@
             "path": "uni-prop-local-properties/PropertiesApprovalSyncFunctionName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "PropertiesApprovalSyncFunctionArn": {
@@ -2669,7 +3075,7 @@
             "path": "uni-prop-local-properties/PropertiesApprovalSyncFunctionArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractExistsCheckerFunctionNName": {
@@ -2677,7 +3083,7 @@
             "path": "uni-prop-local-properties/ContractExistsCheckerFunctionNName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContractExistsCheckerFunctionArn": {
@@ -2685,7 +3091,7 @@
             "path": "uni-prop-local-properties/ContractExistsCheckerFunctionArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContentIntegrityValidatorFunctionNName": {
@@ -2693,7 +3099,7 @@
             "path": "uni-prop-local-properties/ContentIntegrityValidatorFunctionNName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ContentIntegrityValidatorFunctionArn": {
@@ -2701,7 +3107,7 @@
             "path": "uni-prop-local-properties/ContentIntegrityValidatorFunctionArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "WaitForContractApprovalFunctionNName": {
@@ -2709,7 +3115,7 @@
             "path": "uni-prop-local-properties/WaitForContractApprovalFunctionNName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "WaitForContractApprovalFunctionArn": {
@@ -2717,7 +3123,7 @@
             "path": "uni-prop-local-properties/WaitForContractApprovalFunctionArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ApprovalStateMachineName": {
@@ -2725,7 +3131,7 @@
             "path": "uni-prop-local-properties/ApprovalStateMachineName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ApprovalStateMachineArn": {
@@ -2733,7 +3139,7 @@
             "path": "uni-prop-local-properties/ApprovalStateMachineArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "UnicornPropertiesEventBusName": {
@@ -2741,7 +3147,7 @@
             "path": "uni-prop-local-properties/UnicornPropertiesEventBusName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "UnicornPropertiesCatchAllLogGroupArn": {
@@ -2749,7 +3155,7 @@
             "path": "uni-prop-local-properties/UnicornPropertiesCatchAllLogGroupArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "ApprovalStateMachineLogGroupName": {
@@ -2757,7 +3163,7 @@
             "path": "uni-prop-local-properties/ApprovalStateMachineLogGroupName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "CDKMetadata": {
@@ -2769,7 +3175,7 @@
                 "path": "uni-prop-local-properties/CDKMetadata/Default",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               },
               "Condition": {
@@ -2777,7 +3183,7 @@
                 "path": "uni-prop-local-properties/CDKMetadata/Condition",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnCondition",
-                  "version": "2.173.4"
+                  "version": "2.177.0"
                 }
               }
             },
@@ -2791,7 +3197,7 @@
             "path": "uni-prop-local-properties/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           },
           "CheckBootstrapVersion": {
@@ -2799,13 +3205,13 @@
             "path": "uni-prop-local-properties/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
-              "version": "2.173.4"
+              "version": "2.177.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
-          "version": "2.173.4"
+          "version": "2.177.0"
         }
       },
       "Tree": {
@@ -2819,7 +3225,7 @@
     },
     "constructInfo": {
       "fqn": "aws-cdk-lib.App",
-      "version": "2.173.4"
+      "version": "2.177.0"
     }
   }
 }
