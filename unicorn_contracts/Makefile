@@ -1,6 +1,5 @@
 #### Global Variables
-stackName		:= $(shell yq -oy '.default.global.parameters.stack_name' samconfig.yaml)
-
+stackName		:= $(shell yq -ot '.default.global.parameters.stack_name' samconfig.toml)
 
 #### Test Variables
 apiUrl			= $(call cf_output,$(stackName),ApiUrl)

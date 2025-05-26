@@ -10,6 +10,7 @@ python = "^3.11"
 boto3 = "^1.35.14"
 aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
 aws-xray-sdk = "^2.14.0"
+tomli = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
