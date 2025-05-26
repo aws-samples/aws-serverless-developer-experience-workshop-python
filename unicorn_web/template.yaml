@@ -38,7 +38,7 @@ Mappings:
       Value: "AWS Serverless Developer Experience"
 
 Conditions:
-  IsProd: !Equals [!Ref Stage, Prod]
+  IsProd: !Equals [!Ref Stage, prod]
 
 Globals:
   Api:
