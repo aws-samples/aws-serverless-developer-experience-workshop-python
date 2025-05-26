@@ -3,15 +3,15 @@
 from typing import Iterator
 
 import json
+import tomli
 from pathlib import Path
 
 import boto3
 from arnparse import arnparse
-from yaml import load, Loader
 
 
 #### CONSTANTS
-DEFAULT_SAM_CONFIG_FILE = Path(__file__).parent.parent.parent.resolve() / 'samconfig.yaml'
+DEFAULT_SAM_CONFIG_FILE = Path(__file__).parent.parent.parent.resolve() / 'samconfig.toml'
 STACK_OUTPUTS = dict()
 EVENTS_DIR = Path(__file__).parent / 'events'
 
@@ -23,8 +23,8 @@ ddb = boto3.client('dynamodb')
 
 
 def get_stack_name(samconfig: Path | str = DEFAULT_SAM_CONFIG_FILE) -> str:
-    with open(samconfig, 'r') as f:
-        conf = load(f, Loader=Loader)
+    with open(samconfig, 'rb') as f:
+        conf = tomli.load(f)
         stack_name = conf['default']['global']['parameters']['stack_name']
 
     return stack_name
