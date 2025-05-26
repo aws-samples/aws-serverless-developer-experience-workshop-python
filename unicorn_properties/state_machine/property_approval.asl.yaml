@@ -1,139 +1,123 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-Comment: >-
-  The property approval workflow ensures that its images and content is safe
-  to publish and that there is an approved contract in place before the listing is
-  made available to the public through the Unicorn Properties website.
-StartAt: VerifyContractExists
-
+Comment: The property approval workflow ensures that its images and content is
+  safe to publish and that there is an approved contract in place before the
+  listing is made available to the public through the Unicorn Properties
+  website.
+QueryLanguage: JSONata
+StartAt: LookupContract
 States:
-  VerifyContractExists:
+  LookupContract:
     Type: Task
-    Resource: arn:aws:states:::lambda:invoke
-    InputPath: $.detail
-    ResultPath: $.contract_exists_check
-    Parameters:
-      Payload:
-        Input.$: $
-      FunctionName: ${ContractExistsChecker}
-    Next: CheckImageIntegrity
+    Resource: arn:aws:states:::dynamodb:getItem
+    Arguments:
+      TableName: ${TableName}
+      Key:
+        property_id:
+          S: "{% $states.input.detail.property_id %}"
+      ProjectionExpression: contract_id, property_id, contract_status
+    Next: VerifyContractExists
     Catch:
       - ErrorEquals:
-          - ContractStatusNotFoundException
+          - States.ALL
         Next: NotFound
-    Comment: >-
-      ContractExistsChecker checks to see if a contract for a specified
-      property  exists.
-
-  NotFound:
-    Type: Fail
-
-  CheckImageIntegrity:
-    Type: Map
-    Iterator:
-      StartAt: CheckForUnsafeContentInImages
-      States:
-        CheckForUnsafeContentInImages:
-          Type: Task
-          End: true
-          Parameters:
-            Image:
-              S3Object:
-                Bucket: ${ImageUploadBucketName}
-                Name.$: "$.ImageName"
-          Resource: arn:aws:states:::aws-sdk:rekognition:detectModerationLabels
-    Next: CheckDescriptionSentiment
-    Comment: >-
-      Loop through all the images for the property and ensure they don't have
-      unsafe content.
-    ItemsPath: "$.detail.images"
-    ItemSelector:
-      ImageName.$: $$.Map.Item.Value
-    ResultPath: "$.imageModerations"
-
-  CheckDescriptionSentiment:
-    Type: Task
-    Parameters:
-      LanguageCode: en
-      Text.$: $.detail.description
-    Resource: arn:aws:states:::aws-sdk:comprehend:detectSentiment
-    Next: ValidateContentIntegrity
-    ResultPath: "$.contentSentiment"
-
-  ValidateContentIntegrity:
-    Type: Task
-    Resource: arn:aws:states:::lambda:invoke
-    ResultPath: "$.validation_check"
-    ResultSelector:
-      validation_result.$: "$.Payload.validation_result"
-    Parameters:
-      Payload.$: $
-      FunctionName: ${ContentIntegrityValidator}
-    Retry:
-      - ErrorEquals:
-          - Lambda.ServiceException
-          - Lambda.AWSLambdaException
-          - Lambda.SdkClientException
-        IntervalSeconds: 2
-        MaxAttempts: 6
-        BackoffRate: 2
+  VerifyContractExists:
+    Type: Choice
+    Choices:
+      - Comment: Contract Exists
+        Condition: "{% $exists($states.input.Item) %}"
+        Next: Parallel
+    Default: NotFound
+    Comment: No Contract Found
+  Parallel:
+    Type: Parallel
     Next: IsContentSafe
-
+    Branches:
+      - StartAt: CheckDescriptionSentiment
+        States:
+          CheckDescriptionSentiment:
+            Type: Task
+            Resource: arn:aws:states:::aws-sdk:comprehend:detectSentiment
+            Arguments:
+              LanguageCode: en
+              Text: "{% $states.context.Execution.Input.detail.description %}"
+            End: true
+      - StartAt: Map
+        States:
+          Map:
+            Type: Map
+            Items: "{% $states.context.Execution.Input.detail.images %}"
+            ItemProcessor:
+              ProcessorConfig:
+                Mode: INLINE
+              StartAt: CheckForUnsafeContentInImages
+              States:
+                CheckForUnsafeContentInImages:
+                  Type: Task
+                  Resource: arn:aws:states:::aws-sdk:rekognition:detectModerationLabels
+                  Arguments:
+                    Image:
+                      S3Object:
+                        Bucket: ${ImageUploadBucketName}
+                        Name: "{% $states.input %}"
+                  End: true
+            End: true
   IsContentSafe:
     Type: Choice
     Choices:
-      - Variable: $.validation_check.validation_result
-        StringEquals: PASS
+      - Comment: ContentModerationPassed
+        Condition: "{% $states.input[0].Sentiment = 'POSITIVE' and
+          $not($exists($states.input[1].ModerationLabels.*)) %}"
         Next: WaitForContractApproval
-    Default: PublicationEvaluationCompletedDeclined
-
-  PublicationEvaluationCompletedDeclined:
-    Type: Task
-    Resource: arn:aws:states:::events:putEvents
-    Parameters:
-      Entries:
-        - Detail:
-            property_id.$: "$.detail.property_id"
-            evaluation_result: "DECLINED"
-          DetailType: PublicationEvaluationCompleted
-          EventBusName: ${EventBusName}
-          Source: ${ServiceName}
-    Next: Declined
-  Declined:
-    Type: Succeed
-
+    Default: PublishPropertyPublicationRejected
   WaitForContractApproval:
     Type: Task
     Resource: arn:aws:states:::lambda:invoke.waitForTaskToken
-    InputPath: "$.detail"
-    ResultPath: "$.status_check"
-    Parameters:
+    Comment: ContractStatusChecker
+    Arguments:
+      FunctionName: ${WaitForContractApprovalArn}
       Payload:
-        Input.$: $
-        TaskToken.$: $$.Task.Token
-      FunctionName: ${WaitForContractApproval}
+        Input: "{% $states.context.Execution.Input.detail %}"
+        TaskToken: "{% $states.context.Task.Token %}"
     Retry:
       - ErrorEquals:
           - Lambda.ServiceException
           - Lambda.AWSLambdaException
           - Lambda.SdkClientException
-        IntervalSeconds: 2
-        MaxAttempts: 6
+          - Lambda.TooManyRequestsException
+        IntervalSeconds: 1
+        MaxAttempts: 3
         BackoffRate: 2
-    Next: PublicationEvaluationCompletedApproved
-    Comment: ContractStatusChecker
-
-  PublicationEvaluationCompletedApproved:
+        JitterStrategy: FULL
+    Output: "{% $states.context.Execution.Input %}"
+    Next: PublishPropertyPublicationApproved
+  PublishPropertyPublicationApproved:
     Type: Task
     Resource: arn:aws:states:::events:putEvents
-    Parameters:
+    Arguments:
       Entries:
-        - Detail:
-            property_id.$: "$.detail.property_id"
-            evaluation_result: "APPROVED"
-          DetailType: PublicationEvaluationCompleted
-          EventBusName: ${EventBusName}
+        - EventBusName: ${EventBusName}
           Source: ${ServiceName}
+          Detail:
+            property_id: "{% $states.context.Execution.Input.detail.property_id %}"
+            evaluation_result: APPROVED
+          DetailType: PublicationEvaluationCompleted
     Next: Approved
+  PublishPropertyPublicationRejected:
+    Type: Task
+    Resource: arn:aws:states:::events:putEvents
+    Arguments:
+      Entries:
+        - EventBusName: ${EventBusName}
+          Source: ${ServiceName}
+          Detail:
+            property_id: "{% $states.context.Execution.Input.detail.property_id %}"
+            evaluation_result: DECLINED
+          DetailType: PublicationEvaluationCompleted
+    Next: Declined
+  Declined:
+    Type: Succeed
   Approved:
     Type: Succeed
+  NotFound:
+    Type: Fail

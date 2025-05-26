@@ -20,11 +20,11 @@
     "listprice": 200,
     "currency": "SPL",
     "images": [
-      "prop1_exterior1.jpg",
-      "prop1_interior1.jpg",
-      "prop1_interior2.jpg",
-      "prop1_interior3.jpg",
-      "prop1_interior4-bad.jpg"
+      "property_images/prop1_exterior1.jpg",
+      "property_images/prop1_interior1.jpg",
+      "property_images/prop1_interior2.jpg",
+      "property_images/prop1_interior3.jpg",
+      "property_images/prop1_interior4-bad.jpg"
     ]
   }
 }

@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
 Transform:
-  - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
   Unicorn Web Service - web interface. Add, list and get details for Unicorn Properties.
@@ -191,15 +190,16 @@ Resources:
           ThrottlingRateLimit: 100
       AccessLogSetting:
         DestinationArn: !GetAtt UnicornWebApiLogGroup.Arn
-        Format: !ToJsonString
-          requestId: $context.requestId
-          integration-error: $context.integration.error
-          integration-status: $context.integration.status
-          integration-latency: $context.integration.latency
-          integration-requestId: $context.integration.requestId
-          integration-integrationStatus: $context.integration.integrationStatus
-          response-latency: $context.responseLatency
-          status: $context.status
+        Format: !Join
+          - ""
+          - - '{"requestId":"$context.requestId",'
+            - '"integration-error":"$context.integration.error",'
+            - '"integration-status":"$context.integration.status",'
+            - '"integration-latency":"$context.integration.latency",'
+            - '"integration-requestId":"$context.integration.requestId",'
+            - '"integration-integrationStatus":"$context.integration.integrationStatus",'
+            - '"response-latency":"$context.responseLatency",'
+            - '"status":"$context.status"}'
       DefinitionBody: !Transform
         Name: "AWS::Include"
         Parameters:
@@ -460,7 +460,7 @@ Outputs:
   BaseUrl:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
-  ApiUrl:
+  UnicornWebApiUrl:
     Description: Web service API endpoint
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/"
 
@@ -484,7 +484,7 @@ Outputs:
     Value: !GetAtt UnicornWebIngestQueue.QueueUrl
 
   #### DYNAMODB OUTPUTS
-  WebTableName:
+  UnicornWebTableName:
     Description: Name of the DynamoDB Table for Unicorn Web
     Value: !Ref WebTable
 

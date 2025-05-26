@@ -11,10 +11,10 @@
       "listprice": 200,
       "currency": "SPL",
       "images": [
-          "prop1_exterior1.jpg",
-          "prop1_interior1.jpg",
-          "prop1_interior2.jpg",
-          "prop1_interior3.jpg"
+          "property_images/prop1_exterior1.jpg",
+          "property_images/prop1_interior1.jpg",
+          "property_images/prop1_interior2.jpg",
+          "property_images/prop1_interior3.jpg"
       ],
       "status": "PENDING"
   },
@@ -30,10 +30,10 @@
       "listprice": 150,
       "currency": "SPL",
       "images": [
-          "prop2_exterior1.jpg",
-          "prop2_exterior2.jpg",
-          "prop2_interior1.jpg",
-          "prop2_interior2.jpg"
+          "property_images/prop2_exterior1.jpg",
+          "property_images/prop2_exterior2.jpg",
+          "property_images/prop2_interior1.jpg",
+          "property_images/prop2_interior2.jpg"
       ],
       "status": "PENDING"
   },
@@ -49,10 +49,10 @@
       "listprice": 250,
       "currency": "SPL",
       "images": [
-          "prop3_exterior1.jpg",
-          "prop3_interior1.jpg",
-          "prop3_interior2.jpg",
-          "prop3_interior3.jpg"
+          "property_images/prop3_exterior1.jpg",
+          "property_images/prop3_interior1.jpg",
+          "property_images/prop3_interior2.jpg",
+          "property_images/prop3_interior3.jpg"
       ],
       "status": "PENDING"
   }
