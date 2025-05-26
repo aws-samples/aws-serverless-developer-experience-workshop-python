@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
 Transform:
-  - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Description: >
   Unicorn Properties Service. Validate the content, images and contract of property listings.
@@ -175,41 +174,6 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${PropertiesApprovalSyncFunction}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
-  # Part of the ApprovalStateMachine, checks if a given Property has an existing Contract in ContractStatusTable
-  ContractExistsCheckerFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/
-      Handler: properties_service.contract_exists_checker_function.lambda_handler
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ContractStatusTable
-
-  # Log group for the ContractExistsCheckerFunction
-  ContractExistsCheckerFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${ContractExistsCheckerFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
-  # Part of the ApprovalStateMachine, validates if all outputs of content checking steps are OK
-  ContentIntegrityValidatorFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/
-      Handler: properties_service.content_integrity_validator_function.lambda_handler
-
-  # Log group for the ContentIntegrityValidatorFunction
-  ContentIntegrityValidatorFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    UpdateReplacePolicy: Delete
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${ContentIntegrityValidatorFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
-
   # Part of the ApprovalStateMachine, pauses the workflow execution and stores token in ContractStatusTable until contract is approved
   WaitForContractApprovalFunction:
     Type: AWS::Serverless::Function
@@ -243,10 +207,8 @@ Resources:
         - RekognitionDetectOnlyPolicy: {}
         - LambdaInvokePolicy:
             FunctionName: !Ref WaitForContractApprovalFunction
-        - LambdaInvokePolicy:
-            FunctionName: !Ref ContentIntegrityValidatorFunction
-        - LambdaInvokePolicy:
-            FunctionName: !Ref ContractExistsCheckerFunction
+        - DynamoDBReadPolicy:
+            TableName: !Ref ContractStatusTable
         - S3ReadPolicy:
             BucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         - EventBridgePutEventsPolicy:
@@ -288,9 +250,8 @@ Resources:
               Type: SQS
               Destination: !GetAtt PropertiesServiceDLQ.Arn
       DefinitionSubstitutions:
-        ContractExistsChecker: !GetAtt ContractExistsCheckerFunction.Arn
-        WaitForContractApproval: !GetAtt WaitForContractApprovalFunction.Arn
-        ContentIntegrityValidator: !GetAtt ContentIntegrityValidatorFunction.Arn
+        WaitForContractApprovalArn: !GetAtt WaitForContractApprovalFunction.Arn
+        TableName: !Ref ContractStatusTable
         ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
         ServiceName: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
@@ -496,16 +457,6 @@ Outputs:
     Value: !Ref PropertiesApprovalSyncFunction
   PropertiesApprovalSyncFunctionArn:
     Value: !GetAtt PropertiesApprovalSyncFunction.Arn
-
-  ContractExistsCheckerFunctionName:
-    Value: !Ref ContractExistsCheckerFunction
-  ContractExistsCheckerFunctionArn:
-    Value: !GetAtt ContractExistsCheckerFunction.Arn
-
-  ContentIntegrityValidatorFunctionName:
-    Value: !Ref ContentIntegrityValidatorFunction
-  ContentIntegrityValidatorFunctionArn:
-    Value: !GetAtt ContentIntegrityValidatorFunction.Arn
 
   WaitForContractApprovalFunctionName:
     Value: !Ref WaitForContractApprovalFunction

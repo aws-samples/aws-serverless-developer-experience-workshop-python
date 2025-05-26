@@ -98,7 +98,7 @@ Resources:
             for file in files:
               print(f"file: {os.path.join(root, file)}")
               print(f"s3 bucket: {image_bucket_name}")
-              bucket.upload_file(os.path.join(root, file), file)
+              bucket.upload_file(os.path.join(root, file), f"property_images/{file}")
         def delete(event, context):
           image_bucket_name = event['ResourceProperties']['DestinationBucket']
           img_bucket = s3.Bucket(image_bucket_name)
