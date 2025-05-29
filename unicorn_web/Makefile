@@ -50,7 +50,6 @@ clean:
 delete:
 	sam delete --stack-name $(stackName) --no-prompts
 
-# NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
 ci_init:
 	uv venv
 	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
