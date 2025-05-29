@@ -44,7 +44,7 @@ Globals:
   Api:
     OpenApiVersion: 3.0.1
   Function:
-    Runtime: python3.11
+    Runtime: python3.13
     MemorySize: 128
     Timeout: 15
     Tracing: Active
@@ -190,16 +190,8 @@ Resources:
           ThrottlingRateLimit: 100
       AccessLogSetting:
         DestinationArn: !GetAtt UnicornWebApiLogGroup.Arn
-        Format: !Join
-          - ""
-          - - '{"requestId":"$context.requestId",'
-            - '"integration-error":"$context.integration.error",'
-            - '"integration-status":"$context.integration.status",'
-            - '"integration-latency":"$context.integration.latency",'
-            - '"integration-requestId":"$context.integration.requestId",'
-            - '"integration-integrationStatus":"$context.integration.integrationStatus",'
-            - '"response-latency":"$context.responseLatency",'
-            - '"status":"$context.status"}'
+        Format: >
+          {"requestId": $context.requestId, "integration-error": $context.integration.error, "integration-status": $context.integration.status, "integration-latency": $context.integration.latency, "integration-requestId": $context.integration.requestId, "integration-integrationStatus": $context.integration.integrationStatus, "response-latency": $context.responseLatency, "status": $context.status}
       DefinitionBody: !Transform
         Name: "AWS::Include"
         Parameters:

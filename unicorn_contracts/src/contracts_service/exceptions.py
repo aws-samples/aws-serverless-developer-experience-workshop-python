@@ -15,8 +15,5 @@ class ContractNotFoundException(Exception):
         self.message = message or "No contract found for specified Property ID"
         self.status_code = status_code or 400
         self.details = details or {}
-        
-        self.apigw_return = {
-            "statusCode": self.status_code,
-            "body": json.dumps({"message": self.message})
-        }
+
+        self.apigw_return = {"statusCode": self.status_code, "body": json.dumps({"message": self.message})}

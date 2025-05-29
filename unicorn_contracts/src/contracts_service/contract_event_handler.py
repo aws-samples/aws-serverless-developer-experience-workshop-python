@@ -34,21 +34,21 @@ dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
 
-@metrics.log_metrics(capture_cold_start_metric=True) # type: ignore
+@metrics.log_metrics(capture_cold_start_metric=True)  # type: ignore
 @logger.inject_lambda_context
 @tracer.capture_method
 @event_source(data_class=SQSEvent)
 def lambda_handler(event: SQSEvent, context: LambdaContext):
     # Multiple records can be delivered in a single event
     for record in event.records:
-        http_method = record.message_attributes.get('HttpMethod', {}).get('stringValue')
+        http_method = record.message_attributes.get("HttpMethod", {}).get("stringValue")
 
-        if http_method == 'POST':
+        if http_method == "POST":
             create_contract(record.json_body)
-        elif http_method == 'PUT':
+        elif http_method == "PUT":
             update_contract(record.json_body)
         else:
-            raise Exception(f'Unable to handle HttpMethod {http_method}')
+            raise Exception(f"Unable to handle HttpMethod {http_method}")
 
 
 @tracer.capture_method
@@ -78,13 +78,13 @@ def create_contract(event: dict) -> None:
 
     current_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     contract = {
-        "property_id":                  event["property_id"],  # PK
-        "address":                      event["address"],
-        "seller_name":                  event["seller_name"],
-        "contract_created":              current_date,
-        "contract_last_modified_on":    current_date,
-        "contract_id":                  str(uuid.uuid4()),
-        "contract_status":              ContractStatus.DRAFT.name,
+        "property_id": event["property_id"],  # PK
+        "address": event["address"],
+        "seller_name": event["seller_name"],
+        "contract_created": current_date,
+        "contract_last_modified_on": current_date,
+        "contract_id": str(uuid.uuid4()),
+        "contract_status": ContractStatus.DRAFT.name,
     }
 
     logger.info(msg={"Creating contract": contract, "From event": event})
@@ -92,23 +92,25 @@ def create_contract(event: dict) -> None:
     try:
         response = table.put_item(
             Item=contract,
-            ConditionExpression=
-                Attr('property_id').not_exists()
-              | Attr('contract_status').is_in([
-                  ContractStatus.CANCELLED.name,
-                  ContractStatus.CLOSED.name,
-                  ContractStatus.EXPIRED.name,
-                ]))
+            ConditionExpression=Attr("property_id").not_exists()
+            | Attr("contract_status").is_in(
+                [
+                    ContractStatus.CANCELLED.name,
+                    ContractStatus.CLOSED.name,
+                    ContractStatus.EXPIRED.name,
+                ]
+            ),
+        )
         logger.info(f'var:response - "{response}"')
-        
+
         # Annotate trace with contract status
         tracer.put_annotation(key="ContractStatus", value=contract["contract_status"])
 
     except ClientError as e:
         code = e.response["Error"]["Code"]
-        if code == 'ConditionalCheckFailedException':
+        if code == "ConditionalCheckFailedException":
             logger.info(f"""
-                        Unable to create contract for Property {contract['property_id']}.
+                        Unable to create contract for Property {contract["property_id"]}.
                         There already is a contract for this property in status {ContractStatus.DRAFT.name} or {ContractStatus.APPROVED.name}
                         """)
         else:
@@ -149,29 +151,27 @@ def update_contract(contract: dict) -> None:
 
         response = table.update_item(
             Key={
-                'property_id': contract['property_id'],
+                "property_id": contract["property_id"],
             },
             UpdateExpression="set contract_status=:t, modified_date=:m",
-            ConditionExpression=
-                Attr('property_id').exists()
-              & Attr('contract_status').is_in([
-                  ContractStatus.DRAFT.name
-                ]),
+            ConditionExpression=Attr("property_id").exists()
+            & Attr("contract_status").is_in([ContractStatus.DRAFT.name]),
             ExpressionAttributeValues={
-                ':t': contract['contract_status'],
-                ':m': current_date,
+                ":t": contract["contract_status"],
+                ":m": current_date,
             },
-            ReturnValues="UPDATED_NEW")
+            ReturnValues="UPDATED_NEW",
+        )
         logger.info(f'var:response - "{response}"')
-        
+
         # Annotate trace with contract status
         tracer.put_annotation(key="ContractStatus", value=contract["contract_status"])
 
     except ClientError as e:
         code = e.response["Error"]["Code"]
-        if code == 'ConditionalCheckFailedException':
+        if code == "ConditionalCheckFailedException":
             logger.exception(f"Unable to update contract Id {contract['property_id']}. Status is not in status DRAFT")
-        elif code == 'ResourceNotFoundException':
+        elif code == "ResourceNotFoundException":
             logger.exception(f"Unable to update contract Id {contract['property_id']}. Not Found")
         else:
             raise e

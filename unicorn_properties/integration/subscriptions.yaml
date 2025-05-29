@@ -16,6 +16,8 @@ Resources:
   #### UNICORN CONTRACTS EVENT SUBSCRIPTIONS
   ContractStatusChangedSubscriptionRule:
     Type: AWS::Events::Rule
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Name: unicorn.properties-ContractStatusChanged
       Description: Contract Status Changed subscription
@@ -37,6 +39,8 @@ Resources:
   #### UNICORN WEB EVENT SUBSCRIPTIONS
   PublicationApprovalRequestedSubscriptionRule:
     Type: AWS::Events::Rule
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Name: unicorn.properties-PublicationApprovalRequested
       Description: Publication evaluation completed subscription
@@ -60,6 +64,8 @@ Resources:
   # from the publishing event bus, to the subscribing event bus (UnicornPropertiesEventBusArn)
   UnicornPropertiesSubscriptionRole:
     Type: AWS::IAM::Role
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       AssumeRolePolicyDocument:
         Statement:

@@ -6,16 +6,7 @@ Transform:
 Description: >
   Unicorn Properties Service. Validate the content, images and contract of property listings.
 
-Metadata:
-  cfn-lint:
-    config:
-      ignore_checks:
-        - ES4000 # Rule disabled because the CatchAll Rule doesn't need a DLQ
-        - ES6000 # Rule disabled because SQS DLQs don't need a RedrivePolicy
-        - E0001 # Rule disabled because cfn-lint cannot parse SAM Policy templates without arguments (ComprehendBasicAccessPolicy, RekognitionDetectOnlyPolicy)
-        - WS2001 # Rule disabled because check does not support !ToJsonString transform
-        - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
-        - W3002 # Rule disabled as nested templates are being packaged 
+
 
 Parameters:
   Stage:
@@ -43,7 +34,7 @@ Conditions:
 
 Globals:
   Function:
-    Runtime: python3.11
+    Runtime: python3.13
     MemorySize: 128
     Timeout: 15
     Tracing: Active
@@ -52,7 +43,6 @@ Globals:
     Environment:
       Variables:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
-        EVENT_BUS: !Ref UnicornPropertiesEventBus
         SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
         POWERTOOLS_LOGGER_CASE: PascalCase
         POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
@@ -72,6 +62,8 @@ Resources:
   # Services share their event bus name and arn
   UnicornPropertiesEventBusNameParam:
     Type: AWS::SSM::Parameter
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBus
@@ -79,6 +71,8 @@ Resources:
 
   UnicornPropertiesEventBusArnParam:
     Type: AWS::SSM::Parameter
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Type: String
       Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBusArn
@@ -196,6 +190,8 @@ Resources:
   #### STATE MACHINE
   ApprovalStateMachine:
     Type: AWS::Serverless::StateMachine
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Name: !Sub "${AWS::StackName}-ApprovalStateMachine"
       DefinitionUri: state_machine/property_approval.asl.yaml
@@ -325,12 +321,16 @@ Resources:
   # Event bus for Unicorn Properties Service, used to publish and consume events
   UnicornPropertiesEventBus:
     Type: AWS::Events::EventBus
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Name: !Sub UnicornPropertiesBus-${Stage}
 
   # Event bus policy to restrict who can publish events (should only be services from UnicornPropertiesNamespace)
   UnicornPropertiesEventsBusPublishPolicy:
     Type: AWS::Events::EventBusPolicy
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       EventBusName: !Ref UnicornPropertiesEventBus
       StatementId: !Sub OnlyPropertiesServiceCanPublishToEventBus-${Stage}
@@ -349,6 +349,8 @@ Resources:
   # Catchall rule used for development purposes. Logs all events matching any of the services to CloudWatch Logs
   UnicornPropertiesCatchAllRule:
     Type: AWS::Events::Rule
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Name: properties.catchall
       Description: Catchall rule used for development purposes.

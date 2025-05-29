@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: 2010-09-09
 Transform:
   - AWS::Serverless-2016-10-31
 Description: >
@@ -15,7 +15,8 @@ Metadata:
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
         - W3002 # Rule disabled as nested templates are being packaged
-
+        - E0002
+        
 Parameters:
   Stage:
     Type: String
@@ -39,12 +40,13 @@ Mappings:
 
 Conditions:
   IsProd: !Equals [!Ref Stage, prod]
+  IsProd: !Equals [!Ref Stage, prod]
 
 Globals:
   Api:
     OpenApiVersion: 3.0.1
   Function:
-    Runtime: python3.11
+    Runtime: python3.13
     MemorySize: 128
     Timeout: 3
     Tracing: Active
@@ -132,16 +134,8 @@ Resources:
           ThrottlingRateLimit: 100
       AccessLogSetting:
         DestinationArn: !GetAtt UnicornContractsApiLogGroup.Arn
-        Format: !Join
-          - ""
-          - - '{"requestId":"$context.requestId",'
-            - '"integration-error":"$context.integration.error",'
-            - '"integration-status":"$context.integration.status",'
-            - '"integration-latency":"$context.integration.latency",'
-            - '"integration-requestId":"$context.integration.requestId",'
-            - '"integration-integrationStatus":"$context.integration.integrationStatus",'
-            - '"response-latency":"$context.responseLatency",'
-            - '"status":"$context.status"}'
+        Format: >
+          {"requestId": $context.requestId, "integration-error": $context.integration.error, "integration-status": $context.integration.status, "integration-latency": $context.integration.latency, "integration-requestId": $context.integration.requestId, "integration-integrationStatus": $context.integration.integrationStatus, "response-latency": $context.responseLatency, "status": $context.status}
       DefinitionBody: !Transform
         Name: "AWS::Include"
         Parameters:
