@@ -10,7 +10,7 @@ build:
 	ruff format
 	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
-	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
+	uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
 deps:
@@ -42,7 +42,6 @@ clean:
 delete:
 	sam delete --stack-name $(stackName) --no-prompts
 
-# NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
 ci_init:
 	uv venv
 	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
