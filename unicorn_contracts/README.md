@@ -1,6 +1,6 @@
 # Developing Unicorn Contracts
 
-![Contracts Service Architecture](https://static.us-east-1.prod.workshops.aws/public/58b97c0e-7fa7-44db-8eb4-618dad70a20c/static/images/architecture-contracts.png)
+![Contracts Service Architecture](https://static.us-east-1.prod.workshops.aws/public/f273b5fc-17cd-406b-9e63-1d331b00589d/static/images/architecture-contracts.png)
 
 ## Architecture overview
 
