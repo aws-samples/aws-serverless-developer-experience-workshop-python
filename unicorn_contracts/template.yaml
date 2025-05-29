@@ -40,7 +40,6 @@ Mappings:
 
 Conditions:
   IsProd: !Equals [!Ref Stage, prod]
-  IsProd: !Equals [!Ref Stage, prod]
 
 Globals:
   Api:
