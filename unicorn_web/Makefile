@@ -25,7 +25,7 @@ deploy: deps build
 #### Tests
 test: unit-test
 
-unit-test: deps
+unit-test:
 	uv run pytest tests/unit/
 
 curl-test:
