@@ -1,5 +1,6 @@
 #### Global Variables
-stackName		:= $(shell yq -ot '.default.global.parameters.stack_name' samconfig.toml)
+stackName		:= $(shell yq -r '.default.global.parameters.stack_name' samconfig.toml)
+
 
 #### Test Variables
 apiUrl			= $(call cf_output,$(stackName),ApiUrl)
@@ -10,13 +11,14 @@ ddbPropertyId 	= $(call get_ddb_key,create_contract_valid_payload_1)
 ci: clean build deploy
 
 build:
+	ruff format 
 	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
-	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
+	uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
 deps:
-	poetry install
+	uv sync
 
 deploy: deps build
 	sam deploy
@@ -25,10 +27,10 @@ deploy: deps build
 test: unit-test integration-test
 
 unit-test:
-	poetry run pytest tests/unit/
+	uv run pytest tests/unit/
 
 integration-test: deps
-	poetry run pytest tests/integration/
+	uv run pytest tests/integration/
 
 curl-test: clean-tests
 	$(call runif,CREATE CONTRACT)
@@ -68,11 +70,11 @@ clean:
 delete:
 	sam delete --stack-name $(stackName) --no-prompts
 
-# NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
+# NOTE: [2023-05-09] This is a fix for installing uv dependencies in GitHub Actions
 ci_init:
-	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt --with dev
-	poetry run pip install -r src/requirements.txt
-	poetry install -n
+	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
+	uv pip install -r src/requirements.txt
+	uv sync
 
 
 #### Helper Functions

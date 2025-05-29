@@ -1,40 +1,31 @@
-[tool.poetry]
+[project]
 name = "properties_service"
 version = "0.2.0"
 description = "Unicorn Properties Property Service"
-authors = ["Amazon Web Services"]
-packages = [
-    { include = "properties_service", from = "src" },
-    { include = "schema", from = "src" },
+authors = [
+    {name = "Amazon Web Services"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+
+dependencies = [
+    "aws-lambda-powertools[tracer]>=3.9.0",
+    "aws-xray-sdk>=2.14.0",
+    "boto3>=1.37.23",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-boto3 = "^1.35.14"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
-aws-xray-sdk = "^2.14.0"
+[dependency-groups]
+dev = [
+    "aws-lambda-powertools[all]>=3.9.0",
+    "requests>=2.32.3",
+    "moto[dynamodb,events,sqs]>=5.0.14",
+    "importlib-metadata>=8.4.0",
+    "pyyaml>=6.0.2",
+    "arnparse>=0.0.2",
+    "pytest>=8.3.4",
+    "ruff>=0.9.7",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
-requests = "^2.32.3"
-moto = {version = "^5.0.14", extras = ["dynamodb", "events", "sqs"]}
-importlib-metadata = "^8.4.0"
-pyyaml = "^6.0.2"
-arnparse = "^0.0.2"
-aws-lambda-powertools = {extras = ["tracer"], version = "^2.43.1"}
-poetry-plugin-export = "^1.8.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.pytest.ini_options]
-minversion = "8.0"
-addopts = "-ra -vv -W ignore::UserWarning"
-testpaths = ["tests/unit"]
-
-
-
-
-[tool.ruff]
-line-length = 150
+[tool.setuptools]
+package-dir = {"properties_service" = "src"}
+packages = ["properties_service"]
