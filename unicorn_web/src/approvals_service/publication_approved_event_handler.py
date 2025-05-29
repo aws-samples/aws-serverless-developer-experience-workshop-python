@@ -11,19 +11,23 @@ from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.metrics import Metrics, MetricUnit
 from aws_lambda_powertools.event_handler.exceptions import InternalServerError
 
-from schema.unicorn_properties.publicationevaluationcompleted import (AWSEvent, Marshaller, PublicationEvaluationCompleted)
+from schema.unicorn_properties.publicationevaluationcompleted import (
+    AWSEvent,
+    Marshaller,
+    PublicationEvaluationCompleted,
+)
 
 
 # Initialise Environment variables
-if (SERVICE_NAMESPACE := os.environ.get('SERVICE_NAMESPACE')) is None:
-    raise InternalServerError('SERVICE_NAMESPACE environment variable is undefined')
-if (DYNAMODB_TABLE := os.environ.get('DYNAMODB_TABLE')) is None:
-    raise InternalServerError('DYNAMODB_TABLE environment variable is undefined')
-if (EVENT_BUS := os.environ.get('EVENT_BUS')) is None:
-    raise InternalServerError('EVENT_BUS environment variable is undefined')
+if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
+    raise InternalServerError("SERVICE_NAMESPACE environment variable is undefined")
+if (DYNAMODB_TABLE := os.environ.get("DYNAMODB_TABLE")) is None:
+    raise InternalServerError("DYNAMODB_TABLE environment variable is undefined")
+if (EVENT_BUS := os.environ.get("EVENT_BUS")) is None:
+    raise InternalServerError("EVENT_BUS environment variable is undefined")
 
 EXPRESSION = r"[a-z-]+\/[a-z-]+\/[a-z][a-z0-9-]*\/[0-9-]+"
-TARGET_STATE = 'PENDING'
+TARGET_STATE = "PENDING"
 
 # Initialise PowerTools
 logger: Logger = Logger()
@@ -32,7 +36,7 @@ metrics: Metrics = Metrics()
 
 # Initialise boto3 clients
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
 
@@ -42,15 +46,15 @@ def get_keys_for_property(property_id: str) -> Tuple[str, str]:
     if not re.fullmatch(EXPRESSION, property_id):
         error_msg = f"Invalid property id '{property_id}'; must conform to regular expression: {EXPRESSION}"
         logger.error(error_msg)
-        return '', ''
+        return "", ""
 
     # Extract components from property_id
-    country, city, street, number = property_id.split('/')
+    country, city, street, number = property_id.split("/")
 
     # Construct DDB PK & SK keys for this property
-    pk_details = f"{country}#{city}".replace(' ', '-').lower()
+    pk_details = f"{country}#{city}".replace(" ", "-").lower()
     pk = f"PROPERTY#{pk_details}"
-    sk = f"{street}#{str(number)}".replace(' ', '-').lower()
+    sk = f"{street}#{str(number)}".replace(" ", "-").lower()
     return pk, sk
 
 
@@ -71,33 +75,33 @@ def publication_approved(event_detail, errors):
 
     property_id = event_detail.property_id
     evaluation_result = event_detail.evaluation_result
-    country, city, street, number = property_id.split('/')
+    country, city, street, number = property_id.split("/")
 
-    pk_details = f"{country}#{city}".replace(' ', '-').lower()
+    pk_details = f"{country}#{city}".replace(" ", "-").lower()
     pk = f"PROPERTY#{pk_details}"
-    sk = f"{street}#{str(number)}".replace(' ', '-').lower()
+    sk = f"{street}#{str(number)}".replace(" ", "-").lower()
 
-    metrics.add_metric(name='PropertiesAdded', unit=MetricUnit.Count, value=1)
+    metrics.add_metric(name="PropertiesAdded", unit=MetricUnit.Count, value=1)
 
     logger.info(f"Storing new property in DynamoDB with PK {pk} and SK {sk}")
     dynamodb_response = table.update_item(
         Key={
-            'PK': pk,
-            'SK': sk,
+            "PK": pk,
+            "SK": sk,
         },
         AttributeUpdates={
-            'status': {
-                'Value': evaluation_result,
-                'Action': 'PUT',
+            "status": {
+                "Value": evaluation_result,
+                "Action": "PUT",
             }
         },
     )
-    http_status_code = dynamodb_response['ResponseMetadata']['HTTPStatusCode']
+    http_status_code = dynamodb_response["ResponseMetadata"]["HTTPStatusCode"]
     logger.info(f"Stored item in DynamoDB; responded with status code {http_status_code}")
 
-    metrics.add_metric(name='PropertiesApproved', unit=MetricUnit.Count, value=1)
+    metrics.add_metric(name="PropertiesApproved", unit=MetricUnit.Count, value=1)
 
-    return { 'result': 'Successfully updated property status' }
+    return {"result": "Successfully updated property status"}
 
 
 @tracer.capture_lambda_handler  # type: ignore
@@ -119,10 +123,10 @@ def lambda_handler(event, context):
 
     logger.info(event)
 
-    errors = None if 'workflowErrors' not in event['detail'] else event['detail'].pop('workflowErrors')
+    errors = None if "workflowErrors" not in event["detail"] else event["detail"].pop("workflowErrors")
 
     # Deserialize event into strongly typed object
-    awsEvent:AWSEvent = Marshaller.unmarshall(event, AWSEvent)  # type: ignore
-    detail:PublicationEvaluationCompleted = awsEvent.detail  # type: ignore
+    awsEvent: AWSEvent = Marshaller.unmarshall(event, AWSEvent)  # type: ignore
+    detail: PublicationEvaluationCompleted = awsEvent.detail  # type: ignore
 
     return publication_approved(detail, errors)

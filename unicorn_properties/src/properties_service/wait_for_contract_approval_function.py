@@ -52,18 +52,17 @@ def lambda_handler(event, context):
         The same input event file
     """
 
-    task_token: str = event['TaskToken']
-    detail: dict = event['Input']
-
+    task_token: str = event["TaskToken"]
+    detail: dict = event["Input"]
 
     try:
         contract_status = get_contract_status(detail["property_id"])
-        update_token_and_pause_execution(task_token=task_token,
-            property_id=contract_status["property_id"])
+        update_token_and_pause_execution(task_token=task_token, property_id=contract_status["property_id"])
         return detail
     except ContractStatusNotFoundException as error:
         logger.critical("Cannot approve a property that does not exist.")
         raise error
+
 
 @tracer.capture_method
 def get_contract_status(property_id: str) -> dict:
@@ -81,11 +80,7 @@ def get_contract_status(property_id: str) -> dict:
     """
 
     try:
-        response = table.get_item(
-            Key={
-                'property_id': property_id
-            }
-        )
+        response = table.get_item(Key={"property_id": property_id})
         return response["Item"]
 
     except ClientError as error:
@@ -109,10 +104,8 @@ def update_token_and_pause_execution(task_token: str, property_id: str):
         Property ID
     """
     table.update_item(
-        Key={'property_id': property_id},
+        Key={"property_id": property_id},
         UpdateExpression="set sfn_wait_approved_task_token = :g",
-        ExpressionAttributeValues={
-                ':g': task_token
-        },
-        ReturnValues='ALL_NEW'
+        ExpressionAttributeValues={":g": task_token},
+        ReturnValues="ALL_NEW",
     )

@@ -12,10 +12,11 @@ from .helper import load_event, return_env_vars_dict, create_ddb_table_propertie
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_contract_status_changed_event_handler(dynamodb, lambda_context):
-    eventbridge_event = load_event('eventbridge/contract_status_changed')
+    eventbridge_event = load_event("eventbridge/contract_status_changed")
 
     from properties_service import contract_status_changed_event_handler
-    # Reload is required to prevent function setup reuse from another test 
+
+    # Reload is required to prevent function setup reuse from another test
     reload(contract_status_changed_event_handler)
 
     create_ddb_table_properties(dynamodb)
@@ -27,10 +28,11 @@ def test_contract_status_changed_event_handler(dynamodb, lambda_context):
 
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_missing_property_id(dynamodb, lambda_context):
-    eventbridge_event = {'detail': {}}
+    eventbridge_event = {"detail": {}}
 
     from properties_service import contract_status_changed_event_handler
-    # Reload is required to prevent function setup reuse from another test 
+
+    # Reload is required to prevent function setup reuse from another test
     reload(contract_status_changed_event_handler)
 
     create_ddb_table_properties(dynamodb)
@@ -38,4 +40,4 @@ def test_missing_property_id(dynamodb, lambda_context):
     with pytest.raises(ClientError) as e:
         contract_status_changed_event_handler.lambda_handler(eventbridge_event, lambda_context)
 
-    assert 'ValidationException' in str(e.value)
+    assert "ValidationException" in str(e.value)

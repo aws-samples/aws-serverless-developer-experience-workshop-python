@@ -15,10 +15,10 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError, Intern
 
 
 # Initialise Environment variables
-if (SERVICE_NAMESPACE := os.environ.get('SERVICE_NAMESPACE')) is None:
-    raise InternalServerError('SERVICE_NAMESPACE environment variable is undefined')
-if (DYNAMODB_TABLE := os.environ.get('DYNAMODB_TABLE')) is None:
-    raise InternalServerError('DYNAMODB_TABLE environment variable is undefined')
+if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
+    raise InternalServerError("SERVICE_NAMESPACE environment variable is undefined")
+if (DYNAMODB_TABLE := os.environ.get("DYNAMODB_TABLE")) is None:
+    raise InternalServerError("DYNAMODB_TABLE environment variable is undefined")
 
 # Initialise PowerTools
 logger: Logger = Logger()
@@ -26,13 +26,13 @@ tracer: Tracer = Tracer()
 metrics: Metrics = Metrics()
 
 # Initialise boto3 clients
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
 app = ApiGatewayResolver()
 
 
-@app.get('/search/<country>/<city>')
+@app.get("/search/<country>/<city>")
 @tracer.capture_method
 def list_properties_by_city(country, city):
     """Queries database for all properties within a city within a country; requires full city name
@@ -47,12 +47,12 @@ def list_properties_by_city(country, city):
     The list of Unicorn properties for this country/city combination
     """
     logger.info(f"List properties by city: country = {country}; city = {city}")
-    key_condition = Key('PK').eq(f"PROPERTY#{country}#{city}")
+    key_condition = Key("PK").eq(f"PROPERTY#{country}#{city}")
 
     return query_dynamodb(key_condition)
 
 
-@app.get('/search/<country>/<city>/<street>')
+@app.get("/search/<country>/<city>/<street>")
 @tracer.capture_method
 def list_properties_by_street(country, city, street):
     """Queries database for all properties within a street within a city; requires full street name
@@ -68,7 +68,7 @@ def list_properties_by_street(country, city, street):
     The list of Unicorn properties for this country/city/street combination
     """
     logger.info(f"List properties by street: country = {country}; city = {city}; street = {street}")
-    key_condition = Key('PK').eq(f"PROPERTY#{country}#{city}") & Key('SK').begins_with(f"{street}#")
+    key_condition = Key("PK").eq(f"PROPERTY#{country}#{city}") & Key("SK").begins_with(f"{street}#")
 
     return query_dynamodb(key_condition)
 
@@ -88,12 +88,12 @@ def query_dynamodb(key_condition):
 
     """
     response = table.query(
-        ProjectionExpression='country, city, street, #NUM, contract, listprice, currency',
-        ExpressionAttributeNames={'#NUM': 'number'},
+        ProjectionExpression="country, city, street, #NUM, contract, listprice, currency",
+        ExpressionAttributeNames={"#NUM": "number"},
         KeyConditionExpression=key_condition,
-        FilterExpression=Attr('status').eq('APPROVED'),
+        FilterExpression=Attr("status").eq("APPROVED"),
     )
-    return response['Items']
+    return response["Items"]
 
 
 @app.get("/properties/<country>/<city>/<street>/<number>")
@@ -115,16 +115,16 @@ def property_details(country, city, street, number):
     logger.info(f"Get property details for: country = {country}; city = {city}; street = {street}; number = {number}")
     response = table.get_item(
         Key={
-            'PK': f"PROPERTY#{country}#{city}",
-            'SK': f"{street}#{number}",
+            "PK": f"PROPERTY#{country}#{city}",
+            "SK": f"{street}#{number}",
         }
     )
-    if 'Item' not in response:
+    if "Item" not in response:
         logger.exception(f"No property found at address {(country, city, street, number)}")
         raise NotFoundError
-    item = response['Item']
-    status = item['status']
-    if status != 'APPROVED':
+    item = response["Item"]
+    status = item["status"]
+    if status != "APPROVED":
         status_message = f"Property is not approved; current status: {status}"
         logger.exception(status_message)
         raise NotFoundError(status_message)
@@ -145,15 +145,11 @@ def handle_service_error(ex: ClientError):
     -------
     Specific HTTP error code to be returned to the client as well as a friendly error message
     """
-    error_code = ex.response['Error']['Code']
-    http_status_code = ex.response['ResponseMetadata']['HTTPStatusCode']
-    error_message = ex.response['Error']['Message']
+    error_code = ex.response["Error"]["Code"]
+    http_status_code = ex.response["ResponseMetadata"]["HTTPStatusCode"]
+    error_message = ex.response["Error"]["Message"]
     logger.exception(f"EXCEPTION {error_code} ({http_status_code}): {error_message}")
-    return Response(
-        status_code=http_status_code,
-        content_type=content_types.TEXT_PLAIN,
-        body=error_code
-    )
+    return Response(status_code=http_status_code, content_type=content_types.TEXT_PLAIN, body=error_code)
 
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_HTTP)  # type: ignore

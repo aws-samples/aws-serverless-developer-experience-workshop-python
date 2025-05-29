@@ -24,7 +24,7 @@ tracer: Tracer = Tracer()
 metrics: Metrics = Metrics()
 
 # Initialise boto3 clients
-sfn = boto3.client('stepfunctions')
+sfn = boto3.client("stepfunctions")
 
 
 @metrics.log_metrics(capture_cold_start_metric=True)  # type: ignore
@@ -60,17 +60,15 @@ def lambda_handler(event, context):
         # Merge old image with new image
         property_contract_status = {**old_image, **new_image}
 
-        # If we have both tokens, check what the property status is. If it's 
+        # If we have both tokens, check what the property status is. If it's
         if "sfn_wait_approved_task_token" not in property_contract_status:
             return
 
         if property_contract_status["contract_status"] != "APPROVED":
-            logger.info({"Contract status for property is not APPROVED":
-                property_contract_status["property_id"]})
+            logger.info({"Contract status for property is not APPROVED": property_contract_status["property_id"]})
             return
 
-        logger.info({"Contract status for property is APPROVED":
-            property_contract_status["property_id"]})
+        logger.info({"Contract status for property is APPROVED": property_contract_status["property_id"]})
 
         result = task_successful(property_contract_status["sfn_wait_approved_task_token"], property_contract_status)
         return result
@@ -88,7 +86,7 @@ def task_successful(task_token: str, contract_status: dict):
     contract_status : dict
         Contract Status object to return to statemachine.
     """
-    output = {'Payload': contract_status}
+    output = {"Payload": contract_status}
     logger.info(output)
     return sfn.send_task_success(taskToken=task_token, output=json.dumps(output))
 
@@ -111,8 +109,4 @@ def ddb_deserialize(dynamo_image: dict) -> dict:
         return {}
 
     deserializer = TypeDeserializer()
-    return {
-        k: deserializer.deserialize(v)
-        for k, v in dynamo_image.items()
-    }
-    
+    return {k: deserializer.deserialize(v) for k, v in dynamo_image.items()}

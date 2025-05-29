@@ -18,7 +18,7 @@
 #     # Loading function here so that mocking works correctly.
 #     import search_service.property_search_function as app
 
-#     # Reload is required to prevent function setup reuse from another test 
+#     # Reload is required to prevent function setup reuse from another test
 #     reload(app)
 
 #     create_ddb_table_property_web(dynamodb)

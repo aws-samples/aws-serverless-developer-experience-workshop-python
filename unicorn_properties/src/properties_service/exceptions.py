@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
+
 class ContractStatusNotFoundException(Exception):
     """
     Custom exception for encapsulating exceptions Contract Status for a specified property is not found

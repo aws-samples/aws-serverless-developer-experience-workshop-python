@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 import os
+
 # import json
 from importlib import reload
 
@@ -14,14 +15,16 @@ from .helper import load_event, return_env_vars_dict
 from .helper import create_ddb_table_property_web, create_test_eventbridge_bus, create_test_sqs_ingestion_queue
 from .helper import prop_id_to_pk_sk
 
+
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
 def test_valid_event(dynamodb, eventbridge, sqs, lambda_context):
-    payload = load_event('request_approval_event')
-    event = sqs_event([{'body': payload, 'attributes': {'HttpMethod': 'POST'}}])
+    payload = load_event("request_approval_event")
+    event = sqs_event([{"body": payload, "attributes": {"HttpMethod": "POST"}}])
 
     # Loading function here so that mocking works correctly.
     from approvals_service import request_approval_function
-    # Reload is required to prevent function setup reuse from another test 
+
+    # Reload is required to prevent function setup reuse from another test
     reload(request_approval_function)
 
     create_ddb_table_property_web(dynamodb)
@@ -34,21 +37,20 @@ def test_valid_event(dynamodb, eventbridge, sqs, lambda_context):
     # 'SK': 'main-street#123',
     # usa/anytown/main-street/123
 
-    prop_id = prop_id_to_pk_sk(payload['property_id'])
+    prop_id = prop_id_to_pk_sk(payload["property_id"])
     res = dynamodb.Table(TABLE_NAME).get_item(Key=prop_id)
 
-    assert res['Item']['PK']            == prop_id['PK']
-    assert res['Item']['SK']            == prop_id['SK']
+    assert res["Item"]["PK"] == prop_id["PK"]
+    assert res["Item"]["SK"] == prop_id["SK"]
 
-    assert res['Item']['city']          == 'Anytown'
-    assert res['Item']['contract']      == 'sale'
-    assert res['Item']['country']       == 'USA'
-    assert res['Item']['description']   == 'Test Description'
-    assert res['Item']['listprice']     == '200'
-    assert res['Item']['number']        == '123'
-    assert res['Item']['status']        == 'PENDING'
-    assert res['Item']['street']        == 'Main Street'
-
+    assert res["Item"]["city"] == "Anytown"
+    assert res["Item"]["contract"] == "sale"
+    assert res["Item"]["country"] == "USA"
+    assert res["Item"]["description"] == "Test Description"
+    assert res["Item"]["listprice"] == "200"
+    assert res["Item"]["number"] == "123"
+    assert res["Item"]["status"] == "PENDING"
+    assert res["Item"]["street"] == "Main Street"
 
 
 # @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)

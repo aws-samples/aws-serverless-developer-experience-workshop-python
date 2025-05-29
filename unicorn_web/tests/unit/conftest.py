@@ -9,55 +9,57 @@ import pytest
 from moto import mock_aws
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
-    os.environ['AWS_ACCESS_KEY_ID'] = 'testing'
-    os.environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
-    os.environ['AWS_SECURITY_TOKEN'] = 'testing'
-    os.environ['AWS_SESSION_TOKEN'] = 'testing'
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def env_vars():
-    os.environ['POWERTOOLS_SERVICE_NAME']='unicorn.contracts'
-    os.environ['SERVICE_NAMESPACE']='unicorn.contracts'
-    os.environ['POWERTOOLS_SERVICE_NAME']='unicorn.contracts'
-    os.environ['POWERTOOLS_TRACE_DISABLED']='true'
-    os.environ['POWERTOOLS_LOGGER_LOG_EVENT']='Info'
-    os.environ['POWERTOOLS_LOGGER_SAMPLE_RATE']='0.1'
-    os.environ['POWERTOOLS_METRICS_NAMESPACE']='unicorn.contracts'
-    os.environ['LOG_LEVEL']='INFO'
+    os.environ["POWERTOOLS_SERVICE_NAME"] = "unicorn.contracts"
+    os.environ["SERVICE_NAMESPACE"] = "unicorn.contracts"
+    os.environ["POWERTOOLS_SERVICE_NAME"] = "unicorn.contracts"
+    os.environ["POWERTOOLS_TRACE_DISABLED"] = "true"
+    os.environ["POWERTOOLS_LOGGER_LOG_EVENT"] = "Info"
+    os.environ["POWERTOOLS_LOGGER_SAMPLE_RATE"] = "0.1"
+    os.environ["POWERTOOLS_METRICS_NAMESPACE"] = "unicorn.contracts"
+    os.environ["LOG_LEVEL"] = "INFO"
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def dynamodb(aws_credentials):
     with mock_aws():
-        yield boto3.resource('dynamodb', region_name='ap-southeast-2')
+        yield boto3.resource("dynamodb", region_name="ap-southeast-2")
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def eventbridge(aws_credentials):
     with mock_aws():
-        yield boto3.client('events', region_name='ap-southeast-2')
+        yield boto3.client("events", region_name="ap-southeast-2")
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sqs(aws_credentials):
     with mock_aws():
-        yield boto3.client('sqs', region_name='ap-southeast-2')
+        yield boto3.client("sqs", region_name="ap-southeast-2")
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def lambda_context():
     context: LambdaContext = LambdaContext()
-    context._function_name="contractsService-CreateContractFunction-IWaQgsTEtLtX"
-    context._function_version="$LATEST"
-    context._invoked_function_arn="arn:aws:lambda:ap-southeast-2:424490683636:function:contractsService-CreateContractFunction-IWaQgsTEtLtX"
-    context._memory_limit_in_mb=128
-    context._aws_request_id="6f970d26-71d6-4c87-a196-9375f85c7b07"
-    context._log_group_name="/aws/lambda/contractsService-CreateContractFunction-IWaQgsTEtLtX"
-    context._log_stream_name="2022/07/14/[$LATEST]7c71ca59882b4c569dd007c7e41c81e8"
+    context._function_name = "contractsService-CreateContractFunction-IWaQgsTEtLtX"
+    context._function_version = "$LATEST"
+    context._invoked_function_arn = (
+        "arn:aws:lambda:ap-southeast-2:424490683636:function:contractsService-CreateContractFunction-IWaQgsTEtLtX"
+    )
+    context._memory_limit_in_mb = 128
+    context._aws_request_id = "6f970d26-71d6-4c87-a196-9375f85c7b07"
+    context._log_group_name = "/aws/lambda/contractsService-CreateContractFunction-IWaQgsTEtLtX"
+    context._log_stream_name = "2022/07/14/[$LATEST]7c71ca59882b4c569dd007c7e41c81e8"
     # context._identity=CognitoIdentity([cognito_identity_id=None,cognito_identity_pool_id=None])])
     # context._client_context=None
     return context
