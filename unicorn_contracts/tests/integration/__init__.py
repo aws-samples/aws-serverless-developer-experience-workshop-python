@@ -11,7 +11,7 @@ from arnparse import arnparse
 
 
 #### CONSTANTS
-DEFAULT_SAM_CONFIG_FILE = Path(__file__).parent.parent.parent.resolve() / 'samconfig.toml'
+DEFAULT_SAM_CONFIG_FILE = Path(__file__).parent.parent.parent.resolve() / "samconfig.toml"
 STACK_OUTPUTS = dict()
 EVENTS_DIR = Path(__file__).parent / "events"
 
@@ -23,9 +23,9 @@ ddb = boto3.client("dynamodb")
 
 
 def get_stack_name(samconfig: Path | str = DEFAULT_SAM_CONFIG_FILE) -> str:
-    with open(samconfig, 'rb') as f:
+    with open(samconfig, "rb") as f:
         conf = tomli.load(f)
-        stack_name = conf['default']['global']['parameters']['stack_name']
+        stack_name = conf["default"]["global"]["parameters"]["stack_name"]
 
     return stack_name
 

@@ -1,5 +1,5 @@
 #### Global Variables
-stackName		:= $(shell yq -ot '.default.global.parameters.stack_name' samconfig.toml)
+stackName		:= $(shell yq -r '.default.global.parameters.stack_name' samconfig.toml)
 
 
 #### Test Variables
@@ -7,13 +7,14 @@ stackName		:= $(shell yq -ot '.default.global.parameters.stack_name' samconfig.t
 
 #### Build/Deploy Tasks
 build:
+	ruff format
 	sam validate --lint
 	cfn-lint template.yaml -a cfn_lint_serverless.rules
 	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
 deps:
-	poetry install
+	uv sync
 
 deploy: deps build
 	sam deploy
@@ -23,7 +24,7 @@ deploy: deps build
 test: unit-test
 
 unit-test:
-	poetry run pytest tests/unit/
+	uv run pytest tests/unit/
 
 
 #### Utilities
@@ -43,6 +44,6 @@ delete:
 
 # NOTE: [2023-05-09] This is a fix for installing Poetry dependencies in GitHub Actions
 ci_init:
-	poetry export --without-hashes --format=requirements.txt --output=src/requirements.txt --with dev
-	poetry run pip install -r src/requirements.txt
-	poetry install -n
+	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
+	uv run pip install -r src/requirements.txt
+	uv sync

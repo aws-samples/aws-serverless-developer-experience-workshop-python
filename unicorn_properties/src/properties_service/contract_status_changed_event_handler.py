@@ -52,8 +52,8 @@ def lambda_handler(event, context):
         The same input event file
     """
     # Deserialize event into strongly typed object
-    awsEvent:AWSEvent = Marshaller.unmarshall(event, AWSEvent)  # type: ignore
-    detail:ContractStatusChanged = awsEvent.detail  # type: ignore
+    awsEvent: AWSEvent = Marshaller.unmarshall(event, AWSEvent)  # type: ignore
+    detail: ContractStatusChanged = awsEvent.detail  # type: ignore
 
     save_contract_status(detail)
 
@@ -77,13 +77,11 @@ def save_contract_status(contract_status_changed_event):
     logger.info("Saving contract status to contract status table. %s", contract_status_changed_event.contract_id)
 
     return table.update_item(
-                    Key={
-                        'property_id': contract_status_changed_event.property_id
-                    },
-                    UpdateExpression="set contract_status=:t, contract_last_modified_on=:m, contract_id=:c",
-                    ExpressionAttributeValues={
-                        ':c': contract_status_changed_event.contract_id,
-                        ':t': contract_status_changed_event.contract_status,
-                        ':m': contract_status_changed_event.contract_last_modified_on
-                    }
-            )
+        Key={"property_id": contract_status_changed_event.property_id},
+        UpdateExpression="set contract_status=:t, contract_last_modified_on=:m, contract_id=:c",
+        ExpressionAttributeValues={
+            ":c": contract_status_changed_event.contract_id,
+            ":t": contract_status_changed_event.contract_status,
+            ":m": contract_status_changed_event.contract_last_modified_on,
+        },
+    )
