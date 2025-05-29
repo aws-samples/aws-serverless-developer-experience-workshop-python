@@ -47,4 +47,3 @@ ci_init:
 	uv venv
 	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
 	uv run pip install -r src/requirements.txt
-	uv sync
