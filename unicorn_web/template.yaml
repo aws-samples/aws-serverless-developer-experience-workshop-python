@@ -14,7 +14,8 @@ Metadata:
         - ES6000 # Rule disabled because SQS DLQs don't need a RedrivePolicy
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
-        - W3002 # Rule disabled as nested templates are being packaged 
+        - W3002  # Rule disabled as nested templates are being packaged
+        - E3030  # Rule disabled due to using cfn-lint-serverless rules v0.3
 
 Parameters:
   Stage:
