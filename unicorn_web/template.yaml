@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::Serverless-2016-10-31
 Description: >
@@ -14,6 +14,7 @@ Metadata:
         - ES6000 # Rule disabled because SQS DLQs don't need a RedrivePolicy
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
+        - W3002  # Rule disabled as nested templates are being packaged 
         - W3002  # Rule disabled as nested templates are being packaged
         - E3030  # Rule disabled due to using cfn-lint-serverless rules v0.3
 
@@ -46,8 +47,8 @@ Globals:
     OpenApiVersion: 3.0.1
   Function:
     Runtime: python3.12
-    MemorySize: 128
-    Timeout: 15
+    MemorySize: 512
+    Timeout: 10
     Tracing: Active
     Architectures:
       - x86_64
@@ -143,7 +144,7 @@ Resources:
       CodeUri: src/
       Handler: approvals_service.publication_approved_event_handler.lambda_handler
       Policies:
-        - DynamoDBWritePolicy:
+        - DynamoDBCrudPolicy:
             TableName: !Ref WebTable
       EventInvokeConfig:
         DestinationConfig:
@@ -183,10 +184,7 @@ Resources:
         - MetricsEnabled: true
           ResourcePath: /*
           HttpMethod: "*"
-          LoggingLevel: !If
-            - IsProd
-            - ERROR
-            - INFO
+          LoggingLevel: !If [IsProd, ERROR, INFO]
           ThrottlingBurstLimit: 10
           ThrottlingRateLimit: 100
       AccessLogSetting:
