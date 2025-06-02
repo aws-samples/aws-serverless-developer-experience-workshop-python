@@ -52,7 +52,7 @@ Resources:
       RegistryName:
         Fn::GetAtt: EventRegistry.RegistryName
       SchemaName:
-        Fn::Sub: '${EventRegistry.RegistryName}@PublicationEvaluationCompleted'
+        Fn::Sub: '{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}@PublicationEvaluationCompleted'
       Description: 'The schema for when a property evaluation is completed'
       Content:
         Fn::Sub: |

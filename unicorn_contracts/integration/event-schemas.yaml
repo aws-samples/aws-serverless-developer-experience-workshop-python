@@ -54,7 +54,7 @@ Resources:
       RegistryName:
         Fn::GetAtt: EventRegistry.RegistryName
       SchemaName:
-        Fn::Sub: "${EventRegistry.RegistryName}@ContractStatusChanged"
+        Fn::Sub: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}@ContractStatusChanged"
       Description: 'The schema for a request to publish a property'
       Content:
         Fn::Sub: |
