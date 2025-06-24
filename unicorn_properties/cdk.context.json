@@ -1,0 +1,4 @@
+{
+  "ssm:account=491085425146:parameterName=/uni-prop/local/UnicornContractsEventBusArn:region=eu-central-1": "arn:aws:events:eu-central-1:491085425146:event-bus/UnicornContractsBus-local",
+  "ssm:account=491085425146:parameterName=/uni-prop/local/UnicornWebEventBusArn:region=eu-central-1": "arn:aws:events:eu-central-1:491085425146:event-bus/UnicornWebBus-local"
+}

@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-from cdk_nag import AwsSolutionsChecks
-from unicorn_shared import STAGE, UNICORN_NAMESPACES
-from aws_cdk import Tags, App, Stack
-
-from unicorn_shared_stack import UnicornSharedStack
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+from aws_cdk import App
+from app.unicorn_namespaces import UnicornNamespacesStack
+from app.unicorn_images import UnicornImagesStack
+from app.constructs.images_construct import STAGE
 
 app = App()
-#cdk.Aspects.of(app).add(AwsSolutionsChecks())
 
-unicorn_contracts = UnicornSharedStack(app, f'uni-prop-{STAGE.local.value}-shared', stage=STAGE.local)
-Tags.of(unicorn_contracts).add("stage", STAGE.local.value)
-Tags.of(unicorn_contracts).add("project", "AWS_Serverless_Developer_Experience")
-Tags.of(unicorn_contracts).add("namespace", UNICORN_NAMESPACES.CONTRACTS.value)
+UnicornNamespacesStack(app, 'uni-prop-namespaces', 
+    description='Global namespaces for Unicorn Properties applications and services. This only needs to be deployed once.'
+)
+
+stages = [STAGE.local, STAGE.dev, STAGE.prod]
+for stage in stages:
+    UnicornImagesStack(app, f'uni-prop-{stage.name}-shared',
+        description='Global namespaces for Unicorn Properties applications and services. This only needs to be deployed once.',
+        stage=stage
+    )
 
 app.synth()

@@ -1,37 +1,35 @@
-[tool.poetry]
+[project]
 name = "unicorn_web"
 version = "0.3.0"
 description = "Unicorn Properties Web Service"
-authors = ["Amazon Web Services"]
-packages = [
-    { include = "approvals_service", from = "src" },
-    { include = "search_service", from = "src" },
-    { include = "schema", from = "src" },
+authors = [
+    {name = "Amazon Web Services"}
+]
+requires-python = ">=3.13"
+
+dependencies = [
+    "boto3>=1.35",
+    "aws-lambda-powertools[aws-sdk]>=3.3.0",
+    "aws-xray-sdk>=2.12.0",
+    "requests==2.31.0",
+    "crhelper>=2.0.11",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.13"
-boto3 = "^1.35"
-aws-lambda-powertools = { extras = ["aws-sdk"], version = "^2.23.0" }
-aws-xray-sdk = "^2.12.0"
-requests = "2.31.0"
-crhelper = "^2.0.11"
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "moto>=4.1.13",
+    "importlib-metadata>=6.8.0",
+    "pyyaml>=6.0.1",
+    "arnparse>=0.0.2"
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-requests = "^2.31.0"
-moto = "^4.1.13"
-importlib-metadata = "^6.8.0"
-pyyaml = "^6.0.1"
-arnparse = "^0.0.2"
-aws-cdk-lib = "^2.167.0"
-constructs = ">=10.0.0,<11.0.0"
-cdk-nag = "^2.33.1"
-unicorn-shared = {path = "../unicorn_shared", develop = true}
+[tool.uv.workspace]
+members = ["cdk"]
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.setuptools]
+packages = ["approvals_service", "search_service", "schema"]
+package-dir = {"approvals_service" = "src/approvals_service","search_service" = "src/search_service","schema" = "src/schema"}
 
 [tool.pytest.ini_options]
 minversion = "7.0"

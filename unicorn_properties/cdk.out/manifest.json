@@ -1,45 +1,45 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "uni-prop-local-properties.assets": {
+    "uni-prop-local-properties-events.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "uni-prop-local-properties.assets.json",
+        "file": "uni-prop-local-properties-events.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "uni-prop-local-properties": {
+    "uni-prop-local-properties-events": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://491085425146/eu-central-1",
       "properties": {
-        "templateFile": "uni-prop-local-properties.template.json",
+        "templateFile": "uni-prop-local-properties-events.template.json",
         "terminationProtection": false,
         "tags": {
           "namespace": "unicorn.properties",
-          "project": "AWS_Serverless_Developer_Experience",
+          "project": "AWS Serverless Developer Experience",
           "stage": "local"
         },
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9cd591dd88c4c70b70cd6deb44c837de6ec192d34c929b1db47230e955606e8f.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-deploy-role-491085425146-eu-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-cfn-exec-role-491085425146-eu-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-491085425146-eu-central-1/b072b5f323dc4b6afdc93a1a86e06938a2cd966e1fafad1a2057042a27a00b24.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "uni-prop-local-properties.assets"
+          "uni-prop-local-properties-events.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-lookup-role-491085425146-eu-central-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "uni-prop-local-properties.assets"
+        "uni-prop-local-properties-events.assets"
       ],
       "metadata": {
-        "/uni-prop-local-properties": [
+        "/uni-prop-local-properties-events": [
           {
             "type": "aws:cdk:stack-tags",
             "data": [
@@ -49,7 +49,7 @@
               },
               {
                 "Key": "project",
-                "Value": "AWS_Serverless_Developer_Experience"
+                "Value": "AWS Serverless Developer Experience"
               },
               {
                 "Key": "stage",
@@ -58,49 +58,73 @@
             ]
           }
         ],
-        "/uni-prop-local-properties/UnicornPropertiesBus-local/Resource": [
+        "/uni-prop-local-properties-events/UnicornPropertiesBus-local/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UnicornPropertiesBuslocal2042F62D"
           }
         ],
-        "/uni-prop-local-properties/UnicornPropertiesCatchAllLogGroup/Resource": [
+        "/uni-prop-local-properties-events/UnicornPropertiesBus-local/cdk-AllowSubscribersToCreateSubscriptionRules-properties-local/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UnicornPropertiesCatchAllLogGroup057F9994"
+            "data": "UnicornPropertiesBuslocalcdkAllowSubscribersToCreateSubscriptionRulespropertieslocal11DBAADA"
           }
         ],
-        "/uni-prop-local-properties/UnicornPropertiesEventsBusPublishPolicy": [
+        "/uni-prop-local-properties-events/UnicornPropertiesEventsBusPublishPolicy": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UnicornPropertiesEventsBusPublishPolicy"
           }
         ],
-        "/uni-prop-local-properties/UnicornPropertiesCatchAllRule/Resource": [
+        "/uni-prop-local-properties-events/UnicornPropertiesEventBus": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UnicornPropertiesCatchAllRule9EAFE704"
+            "data": "UnicornPropertiesEventBus"
           }
         ],
-        "/uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/Resource/Default": [
+        "/uni-prop-local-properties-events/--uni-prop--local--UnicornPropertiesEventBusParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E7417BF5E"
+            "data": "uniproplocalUnicornPropertiesEventBusParameter09B4622E"
           }
         ],
-        "/uni-prop-local-properties/EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7E/CustomResourcePolicy/Resource": [
+        "/uni-prop-local-properties-events/UnicornPropertiesEventBusArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventsLogGroupPolicyuniproplocalpropertiesUnicornPropertiesCatchAllRuleCA1ADD7ECustomResourcePolicyBB9A9C8E"
+            "data": "UnicornPropertiesEventBusArn"
           }
         ],
-        "/uni-prop-local-properties/LatestNodeRuntimeMap": [
+        "/uni-prop-local-properties-events/--uni-prop--local--UnicornPropertiesEventBusArnParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
+            "data": "uniproplocalUnicornPropertiesEventBusArnParameterFDBA8EC6"
           }
         ],
-        "/uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287": [
+        "/uni-prop-local-properties-events/UnicornPropertiesCatchAllLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnicornPropertiesCatchAllLogGroup057F9994"
+          }
+        ],
+        "/uni-prop-local-properties-events/properties.catchall/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "propertiescatchall89A207AD"
+          }
+        ],
+        "/uni-prop-local-properties-events/EventsLogGroupPolicyuniproplocalpropertieseventspropertiescatchallF3715F6B/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventsLogGroupPolicyuniproplocalpropertieseventspropertiescatchallF3715F6B1C49EB86"
+          }
+        ],
+        "/uni-prop-local-properties-events/EventsLogGroupPolicyuniproplocalpropertieseventspropertiescatchallF3715F6B/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventsLogGroupPolicyuniproplocalpropertieseventspropertiescatchallF3715F6BCustomResourcePolicy00A429FA"
+          }
+        ],
+        "/uni-prop-local-properties-events/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
@@ -110,19 +134,128 @@
             "data": 0
           }
         ],
-        "/uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/uni-prop-local-properties-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ],
-        "/uni-prop-local-properties/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/uni-prop-local-properties-events/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/uni-prop-local-properties/ContractStatusTable": [
+        "/uni-prop-local-properties-events/UnicornPropertiesCatchAllLogGroupName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnicornPropertiesCatchAllLogGroupName"
+          }
+        ],
+        "/uni-prop-local-properties-events/UnicornPropertiesCatchAllLogGroupArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnicornPropertiesCatchAllLogGroupArn"
+          }
+        ],
+        "/uni-prop-local-properties-events/EventRegistry": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventRegistry"
+          }
+        ],
+        "/uni-prop-local-properties-events/RegistryPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RegistryPolicy"
+          }
+        ],
+        "/uni-prop-local-properties-events/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/uni-prop-local-properties-events/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/uni-prop-local-properties-events/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "uni-prop-local-properties-events"
+    },
+    "uni-prop-local-properties-contracts.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "uni-prop-local-properties-contracts.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "uni-prop-local-properties-contracts": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://491085425146/eu-central-1",
+      "properties": {
+        "templateFile": "uni-prop-local-properties-contracts.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "namespace": "unicorn.properties",
+          "project": "AWS Serverless Developer Experience",
+          "stage": "local"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-deploy-role-491085425146-eu-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-cfn-exec-role-491085425146-eu-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-491085425146-eu-central-1/a99920d26f5ced237b2b2262d0992450930ef07a11580513775f8e7a1a91b883.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "uni-prop-local-properties-contracts.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-lookup-role-491085425146-eu-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "uni-prop-local-properties-events",
+        "uni-prop-local-properties-contracts.assets"
+      ],
+      "metadata": {
+        "/uni-prop-local-properties-contracts": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "namespace",
+                "Value": "unicorn.properties"
+              },
+              {
+                "Key": "project",
+                "Value": "AWS Serverless Developer Experience"
+              },
+              {
+                "Key": "stage",
+                "Value": "local"
+              }
+            ]
+          }
+        ],
+        "/uni-prop-local-properties-contracts/SsmParameterValue:--uni-prop--local--UnicornPropertiesEventBus:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalUnicornPropertiesEventBusC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-contracts/ContractStatusTable": [
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
@@ -130,362 +263,576 @@
             }
           }
         ],
-        "/uni-prop-local-properties/ContractStatusTable/Resource": [
+        "/uni-prop-local-properties-contracts/ContractStatusTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ContractStatusTableF5E34442"
           }
         ],
-        "/uni-prop-local-properties/PropertiesEventBusRuleDLQ/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesEventBusRuleDLQE70E543B"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesEventBusRuleDLQ/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesEventBusRuleDLQPolicyBF5784B3"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesServiceDLQ/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesServiceDLQE9A990DB"
-          }
-        ],
-        "/uni-prop-local-properties/ContractStatusChangedHandlerFunctionLogGroup-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractStatusChangedHandlerFunctionLogGrouplocalFC78CE21"
-          }
-        ],
-        "/uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractStatusChangedHandlerFunctionlocalServiceRoleCCA43736"
-          }
-        ],
-        "/uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractStatusChangedHandlerFunctionlocalServiceRoleDefaultPolicy9858D6EC"
-          }
-        ],
-        "/uni-prop-local-properties/ContractStatusChangedHandlerFunction-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractStatusChangedHandlerFunctionlocalE63ECA03"
-          }
-        ],
-        "/uni-prop-local-properties/unicorn.properties-ContractStatusChanged/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "unicornpropertiesContractStatusChanged15A011AE"
-          }
-        ],
-        "/uni-prop-local-properties/unicorn.properties-ContractStatusChanged/AllowEventRuleuniproplocalpropertiesContractStatusChangedHandlerFunctionlocal5B01E3E0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "unicornpropertiesContractStatusChangedAllowEventRuleuniproplocalpropertiesContractStatusChangedHandlerFunctionlocal5B01E3E0C5EDF417"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunctionLogGroup-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionLogGrouplocal9A16B938"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionlocalServiceRole0C471955"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunction-local/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionlocalServiceRoleDefaultPolicy62DB4FC9"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunction-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionlocal69C8A5CE"
-          }
-        ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunction-local/DynamoDBEventSource:uniproplocalpropertiesContractStatusTable446352ED/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionlocalDynamoDBEventSourceuniproplocalpropertiesContractStatusTable446352ED71D1B772"
-          }
-        ],
-        "/uni-prop-local-properties/ContractExistsCheckerFunctionLogGroup-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractExistsCheckerFunctionLogGrouplocal76EFD971"
-          }
-        ],
-        "/uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractExistsCheckerFunctionlocalServiceRole403DE853"
-          }
-        ],
-        "/uni-prop-local-properties/ContractExistsCheckerFunction-local/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractExistsCheckerFunctionlocalServiceRoleDefaultPolicyDE5DD650"
-          }
-        ],
-        "/uni-prop-local-properties/ContractExistsCheckerFunction-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContractExistsCheckerFunctionlocalA9DDED8C"
-          }
-        ],
-        "/uni-prop-local-properties/WaitForContractApprovalFunctionLogGroup-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitForContractApprovalFunctionLogGrouplocal6BDA45B6"
-          }
-        ],
-        "/uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitForContractApprovalFunctionlocalServiceRole53F34F6C"
-          }
-        ],
-        "/uni-prop-local-properties/WaitForContractApprovalFunction-local/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitForContractApprovalFunctionlocalServiceRoleDefaultPolicy54D250C0"
-          }
-        ],
-        "/uni-prop-local-properties/WaitForContractApprovalFunction-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitForContractApprovalFunctionlocalB37F63DE"
-          }
-        ],
-        "/uni-prop-local-properties/ContentIntegrityValidatorFunctionLogGroup-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContentIntegrityValidatorFunctionLogGrouplocal310E0303"
-          }
-        ],
-        "/uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContentIntegrityValidatorFunctionlocalServiceRoleAEDFC322"
-          }
-        ],
-        "/uni-prop-local-properties/ContentIntegrityValidatorFunction-local/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContentIntegrityValidatorFunctionlocalServiceRoleDefaultPolicy97B5F059"
-          }
-        ],
-        "/uni-prop-local-properties/ContentIntegrityValidatorFunction-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ContentIntegrityValidatorFunctionlocal05E28B54"
-          }
-        ],
-        "/uni-prop-local-properties/SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueuniproplocalImagesBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/uni-prop-local-properties/ApprovalStateMachineLogGroup-local/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachineLogGrouplocalF9763D65"
-          }
-        ],
-        "/uni-prop-local-properties/StateMachineRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRole78EC082E"
-          }
-        ],
-        "/uni-prop-local-properties/StateMachineRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicy433448B5"
-          }
-        ],
-        "/uni-prop-local-properties/ApprovalStateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachine767589AA"
-          }
-        ],
-        "/uni-prop-local-properties/ApprovalStateMachine/EventsRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachineEventsRole83695FBF"
-          }
-        ],
-        "/uni-prop-local-properties/ApprovalStateMachine/EventsRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachineEventsRoleDefaultPolicy94B86841"
-          }
-        ],
-        "/uni-prop-local-properties/unicorn.properties-PublicationApprovalRequested/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "unicornpropertiesPublicationApprovalRequested1AA17865"
-          }
-        ],
-        "/uni-prop-local-properties/PublicationEvaluationCompletedSchema": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PublicationEvaluationCompletedSchema"
-          }
-        ],
-        "/uni-prop-local-properties/uni-prop-local-properties-EventSchemaSack/unicorn.properties": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "uniproplocalpropertiesEventSchemaSackunicornproperties94C67D84"
-          }
-        ],
-        "/uni-prop-local-properties/uni-prop-local-properties-EventSchemaSack/RegistryPolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "uniproplocalpropertiesEventSchemaSackRegistryPolicy15A5C8CD"
-          }
-        ],
-        "/uni-prop-local-properties/uni-prop-local-properties-SubscriptionsStack/ContractEventsBusPublishPolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "uniproplocalpropertiesSubscriptionsStackContractEventsBusPublishPolicy55ADE663"
-          }
-        ],
-        "/uni-prop-local-properties/ContractStatusTableName": [
+        "/uni-prop-local-properties-contracts/ContractStatusTableName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ContractStatusTableName"
           }
         ],
-        "/uni-prop-local-properties/ContractStatusChangedHandlerFunctionName": [
+        "/uni-prop-local-properties-contracts/--uni-prop--local--ContractStatusTableNameParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContractStatusChangedHandlerFunctionName"
+            "data": "uniproplocalContractStatusTableNameParameterF7AD1751"
           }
         ],
-        "/uni-prop-local-properties/ContractStatusChangedHandlerFunctionArn": [
+        "/uni-prop-local-properties-contracts/PropertiesServiceDlq/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContractStatusChangedHandlerFunctionArn"
+            "data": "PropertiesServiceDlq30F985E8"
           }
         ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunctionName": [
+        "/uni-prop-local-properties-contracts/ContractStatusChangedEventsDlq/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionName"
+            "data": "ContractStatusChangedEventsDlq804439A8"
           }
         ],
-        "/uni-prop-local-properties/PropertiesApprovalSyncFunctionArn": [
+        "/uni-prop-local-properties-contracts/ContractStatusChangedEventsDlq/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PropertiesApprovalSyncFunctionArn"
+            "data": "ContractStatusChangedEventsDlqPolicy14CE7065"
           }
         ],
-        "/uni-prop-local-properties/ContractExistsCheckerFunctionNName": [
+        "/uni-prop-local-properties-contracts/ContractStatusChangedHandlerFunctionLogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContractExistsCheckerFunctionNName"
+            "data": "ContractStatusChangedHandlerFunctionLogGroup4305EDF3"
           }
         ],
-        "/uni-prop-local-properties/ContractExistsCheckerFunctionArn": [
+        "/uni-prop-local-properties-contracts/ContractEventHandlerFunction-local/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContractExistsCheckerFunctionArn"
+            "data": "ContractEventHandlerFunctionlocalServiceRole1EB5415C"
           }
         ],
-        "/uni-prop-local-properties/ContentIntegrityValidatorFunctionNName": [
+        "/uni-prop-local-properties-contracts/ContractEventHandlerFunction-local/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContentIntegrityValidatorFunctionNName"
+            "data": "ContractEventHandlerFunctionlocalServiceRoleDefaultPolicy2230085D"
           }
         ],
-        "/uni-prop-local-properties/ContentIntegrityValidatorFunctionArn": [
+        "/uni-prop-local-properties-contracts/ContractEventHandlerFunction-local/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContentIntegrityValidatorFunctionArn"
+            "data": "ContractEventHandlerFunctionlocal38E947E4"
           }
         ],
-        "/uni-prop-local-properties/WaitForContractApprovalFunctionNName": [
+        "/uni-prop-local-properties-contracts/unicorn.properties-ContractStatusChanged/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WaitForContractApprovalFunctionNName"
+            "data": "unicornpropertiesContractStatusChanged15A011AE"
           }
         ],
-        "/uni-prop-local-properties/WaitForContractApprovalFunctionArn": [
+        "/uni-prop-local-properties-contracts/unicorn.properties-ContractStatusChanged/AllowEventRuleuniproplocalpropertiescontractsContractEventHandlerFunctionlocal4DA4134A": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WaitForContractApprovalFunctionArn"
+            "data": "unicornpropertiesContractStatusChangedAllowEventRuleuniproplocalpropertiescontractsContractEventHandlerFunctionlocal4DA4134A650C044F"
           }
         ],
-        "/uni-prop-local-properties/ApprovalStateMachineName": [
+        "/uni-prop-local-properties-contracts/ContractEventHandlerFunction": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachineName"
+            "data": "ContractEventHandlerFunction"
           }
         ],
-        "/uni-prop-local-properties/ApprovalStateMachineArn": [
+        "/uni-prop-local-properties-contracts/PropertiesApprovalSyncFunctionLogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachineArn"
+            "data": "PropertiesApprovalSyncFunctionLogGroupABE7E9A1"
           }
         ],
-        "/uni-prop-local-properties/UnicornPropertiesEventBusName": [
+        "/uni-prop-local-properties-contracts/PropertiesApprovalSyncFunction-local/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UnicornPropertiesEventBusName"
+            "data": "PropertiesApprovalSyncFunctionlocalServiceRole0C471955"
           }
         ],
-        "/uni-prop-local-properties/UnicornPropertiesCatchAllLogGroupArn": [
+        "/uni-prop-local-properties-contracts/PropertiesApprovalSyncFunction-local/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UnicornPropertiesCatchAllLogGroupArn"
+            "data": "PropertiesApprovalSyncFunctionlocalServiceRoleDefaultPolicy62DB4FC9"
           }
         ],
-        "/uni-prop-local-properties/ApprovalStateMachineLogGroupName": [
+        "/uni-prop-local-properties-contracts/PropertiesApprovalSyncFunction-local/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApprovalStateMachineLogGroupName"
+            "data": "PropertiesApprovalSyncFunctionlocal69C8A5CE"
           }
         ],
-        "/uni-prop-local-properties/CDKMetadata/Default": [
+        "/uni-prop-local-properties-contracts/PropertiesApprovalSyncFunction-local/DynamoDBEventSource:uniproplocalpropertiescontractsContractStatusTableEAF3CC44/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PropertiesApprovalSyncFunctionlocalDynamoDBEventSourceuniproplocalpropertiescontractsContractStatusTableEAF3CC446CF77ACA"
+          }
+        ],
+        "/uni-prop-local-properties-contracts/PropertiesApprovalSyncFunctionIamRoleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PropertiesApprovalSyncFunctionIamRoleArn"
+          }
+        ],
+        "/uni-prop-local-properties-contracts/--uni-prop--local--PropertiesApprovalSyncFunctionIamRoleArnParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "uniproplocalPropertiesApprovalSyncFunctionIamRoleArnParameter3EFCF838"
+          }
+        ],
+        "/uni-prop-local-properties-contracts/CDKMetadata/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata"
           }
         ],
-        "/uni-prop-local-properties/CDKMetadata/Condition": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadataAvailable"
-          }
-        ],
-        "/uni-prop-local-properties/BootstrapVersion": [
+        "/uni-prop-local-properties-contracts/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/uni-prop-local-properties/CheckBootstrapVersion": [
+        "/uni-prop-local-properties-contracts/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "uni-prop-local-properties"
+      "displayName": "uni-prop-local-properties-contracts"
+    },
+    "uni-prop-local-properties-approval.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "uni-prop-local-properties-approval.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "uni-prop-local-properties-approval": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://491085425146/eu-central-1",
+      "properties": {
+        "templateFile": "uni-prop-local-properties-approval.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "namespace": "unicorn.properties",
+          "project": "AWS Serverless Developer Experience",
+          "stage": "local"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-deploy-role-491085425146-eu-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-cfn-exec-role-491085425146-eu-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-491085425146-eu-central-1/5bc6b4cda9f7d18bf656515abe2df4a37f576313a6bff68f00c56c526d1af58f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "uni-prop-local-properties-approval.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-lookup-role-491085425146-eu-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "uni-prop-local-properties-contracts",
+        "uni-prop-local-properties-events",
+        "uni-prop-local-properties-approval.assets"
+      ],
+      "metadata": {
+        "/uni-prop-local-properties-approval": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "namespace",
+                "Value": "unicorn.properties"
+              },
+              {
+                "Key": "project",
+                "Value": "AWS Serverless Developer Experience"
+              },
+              {
+                "Key": "stage",
+                "Value": "local"
+              }
+            ]
+          }
+        ],
+        "/uni-prop-local-properties-approval/SsmParameterValue:--uni-prop--local--UnicornPropertiesEventBus:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalUnicornPropertiesEventBusC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-approval/SsmParameterValue:--uni-prop--local--ContractStatusTableName:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalContractStatusTableNameC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-approval/SsmParameterValue:--uni-prop--local--PropertiesApprovalSyncFunctionIamRoleArn:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalPropertiesApprovalSyncFunctionIamRoleArnC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-approval/taskResponseFunctionRole/workflowPermissions/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "taskResponseFunctionRoleworkflowPermissionsEA9B9BBA"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WaitForContractApprovalFunctionLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitForContractApprovalFunctionLogGroupE248A777"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WaitForContractApprovalFunction-local/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitForContractApprovalFunctionlocalServiceRole53F34F6C"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WaitForContractApprovalFunction-local/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitForContractApprovalFunctionlocalServiceRoleDefaultPolicy54D250C0"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WaitForContractApprovalFunction-local/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitForContractApprovalFunctionlocalB37F63DE"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WaitForContractApprovalFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitForContractApprovalFunctionName"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WaitForContractApprovalFunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitForContractApprovalFunctionArn"
+          }
+        ],
+        "/uni-prop-local-properties-approval/SsmParameterValue:--uni-prop--local--ImagesBucket:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalImagesBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachineLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachineLogGroup753A8F54"
+          }
+        ],
+        "/uni-prop-local-properties-approval/StateMachineRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRole78EC082E"
+          }
+        ],
+        "/uni-prop-local-properties-approval/StateMachineRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicy433448B5"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachine767589AA"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachine/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachineEventsRole83695FBF"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachine/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachineEventsRoleDefaultPolicy94B86841"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WorkflowEventsDlq/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkflowEventsDlq0B51C5BE"
+          }
+        ],
+        "/uni-prop-local-properties-approval/WorkflowEventsDlq/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkflowEventsDlqPolicy5BA46882"
+          }
+        ],
+        "/uni-prop-local-properties-approval/unicorn.properties-PublicationApprovalRequested/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornpropertiesPublicationApprovalRequested1AA17865"
+          }
+        ],
+        "/uni-prop-local-properties-approval/PublicationEvaluationCompletedSchema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicationEvaluationCompletedSchema"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachineLogGroupName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachineLogGroupName"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachineName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachineName"
+          }
+        ],
+        "/uni-prop-local-properties-approval/ApprovalStateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApprovalStateMachineArn"
+          }
+        ],
+        "/uni-prop-local-properties-approval/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/uni-prop-local-properties-approval/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/uni-prop-local-properties-approval/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "uni-prop-local-properties-approval"
+    },
+    "uni-prop-local-properties-integration-with-contracts.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "uni-prop-local-properties-integration-with-contracts.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "uni-prop-local-properties-integration-with-contracts": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://491085425146/eu-central-1",
+      "properties": {
+        "templateFile": "uni-prop-local-properties-integration-with-contracts.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "namespace": "unicorn.properties",
+          "project": "AWS Serverless Developer Experience",
+          "stage": "local"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-deploy-role-491085425146-eu-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-cfn-exec-role-491085425146-eu-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-491085425146-eu-central-1/a67cd6ea6a2b485dcbcde90c770a88d07b99c7cb678f02f4ee6ae972d14ef36a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "uni-prop-local-properties-integration-with-contracts.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-lookup-role-491085425146-eu-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "uni-prop-local-properties-approval",
+        "uni-prop-local-properties-integration-with-contracts.assets"
+      ],
+      "metadata": {
+        "/uni-prop-local-properties-integration-with-contracts": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "namespace",
+                "Value": "unicorn.properties"
+              },
+              {
+                "Key": "project",
+                "Value": "AWS Serverless Developer Experience"
+              },
+              {
+                "Key": "stage",
+                "Value": "local"
+              }
+            ]
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/SsmParameterValue:--uni-prop--local--UnicornPropertiesEventBus:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalUnicornPropertiesEventBusC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/unicorn-properties-ContractStatusChangedSubscription/unicorn.contracts-ContractStatusChanged/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornpropertiesContractStatusChangedSubscriptionunicorncontractsContractStatusChanged1978E2D7"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/unicorn-properties-ContractStatusChangedSubscription/unicorn.contracts-ContractStatusChanged/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornpropertiesContractStatusChangedSubscriptionunicorncontractsContractStatusChangedEventsRole2214B720"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/unicorn-properties-ContractStatusChangedSubscription/unicorn.contracts-ContractStatusChanged/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornpropertiesContractStatusChangedSubscriptionunicorncontractsContractStatusChangedEventsRoleDefaultPolicy914967C0"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-contracts/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "uni-prop-local-properties-integration-with-contracts"
+    },
+    "uni-prop-local-properties-integration-with-web.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "uni-prop-local-properties-integration-with-web.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "uni-prop-local-properties-integration-with-web": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://491085425146/eu-central-1",
+      "properties": {
+        "templateFile": "uni-prop-local-properties-integration-with-web.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "namespace": "unicorn.properties",
+          "project": "AWS Serverless Developer Experience",
+          "stage": "local"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-deploy-role-491085425146-eu-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-cfn-exec-role-491085425146-eu-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-491085425146-eu-central-1/cf00f03fbfa8ee27abd9a69df91eed9b1cbfea8f5e3a76a0574c7b009c626a4e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "uni-prop-local-properties-integration-with-web.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::491085425146:role/cdk-hnb659fds-lookup-role-491085425146-eu-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "uni-prop-local-properties-approval",
+        "uni-prop-local-properties-integration-with-web.assets"
+      ],
+      "metadata": {
+        "/uni-prop-local-properties-integration-with-web": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "namespace",
+                "Value": "unicorn.properties"
+              },
+              {
+                "Key": "project",
+                "Value": "AWS Serverless Developer Experience"
+              },
+              {
+                "Key": "stage",
+                "Value": "local"
+              }
+            ]
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/SsmParameterValue:--uni-prop--local--UnicornPropertiesEventBus:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueuniproplocalUnicornPropertiesEventBusC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/unicorn.properies-PublicationApprovalRequestedSubscription/unicorn.web-PublicationApprovalRequested/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornproperiesPublicationApprovalRequestedSubscriptionunicornwebPublicationApprovalRequested0F29B1BA"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/unicorn.properies-PublicationApprovalRequestedSubscription/unicorn.web-PublicationApprovalRequested/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornproperiesPublicationApprovalRequestedSubscriptionunicornwebPublicationApprovalRequestedEventsRole453C1479"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/unicorn.properies-PublicationApprovalRequestedSubscription/unicorn.web-PublicationApprovalRequested/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unicornproperiesPublicationApprovalRequestedSubscriptionunicornwebPublicationApprovalRequestedEventsRoleDefaultPolicy677AB177"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/uni-prop-local-properties-integration-with-web/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "uni-prop-local-properties-integration-with-web"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -493,5 +840,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.0"
 }

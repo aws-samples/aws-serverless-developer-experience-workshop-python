@@ -1,0 +1,15 @@
+[project]
+name = "cdk"
+version = "0.1.0"
+description = "Add your description here"
+
+requires-python = ">=3.13"
+dependencies = [
+    "cdk-nag>=2.35.7",
+    "aws-cdk-lib>=2.201.0",
+    "constructs>=10.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

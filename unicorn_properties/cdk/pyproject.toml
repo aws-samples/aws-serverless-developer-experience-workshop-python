@@ -1,0 +1,8 @@
+[project]
+name = "cdk"
+version = "0.0.0"
+dependencies = [
+    "cdk-nag>=2.35.7",
+    "aws-cdk-lib>=2.167.0",
+    "constructs>=10.0.0,<11.0.0"
+]

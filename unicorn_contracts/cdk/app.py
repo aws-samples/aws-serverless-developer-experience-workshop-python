@@ -1,16 +1,27 @@
 #!/usr/bin/env python3
-from cdk_nag import AwsSolutionsChecks
-from unicorn_shared import STAGE
-from aws_cdk import Tags, App, Stack
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+import os
+import aws_cdk as cdk
+# from cdk_nag import AwsSolutionsChecks, Aspects
 
-from unicorn_contracts_stack import UnicornConstractsStack
+from lib.helper import get_stage_from_context
+from app.unicorn_contracts_stack import UnicornContractsStack
 
-app = App()
-#cdk.Aspects.of(app).add(AwsSolutionsChecks())
+env = cdk.Environment(
+    account=os.environ.get("CDK_DEFAULT_ACCOUNT"),
+    region=os.environ.get("CDK_DEFAULT_REGION")
+)
 
-unicorn_contracts = UnicornConstractsStack(app, f'uni-prop-{STAGE.local.value}-contracts', stage=STAGE.local)
-Tags.of(unicorn_contracts).add("stage", STAGE.local.value)
-Tags.of(unicorn_contracts).add("project", "AWS_Serverless_Developer_Experience")
-Tags.of(unicorn_contracts).add("namespace", "unicorn_shared")
+app = cdk.App()
+# Aspects.of(app).add(AwsSolutionsChecks(verbose=True))
+
+stage = get_stage_from_context(app)
+
+UnicornContractsStack(app, f"uni-prop-{stage.name}-contracts",
+    description="Unicorn Contracts Service. Manage contract information for property listings.",
+    stage=stage,
+    env=env
+)
 
 app.synth()
