@@ -32,3 +32,6 @@ delete-images: ## Deletes all shared images stacks
 					--stack-name "uni-prop-$$env-images"; \
 			fi; \
 		done
+
+list-parameters: ## Lists all parameters in the Unicorn Properties namespace
+	aws ssm get-parameters-by-path --path "/uni-prop" --recursive --with-decryption --query 'Parameters[*].[Name,Value,Type]' --output table
