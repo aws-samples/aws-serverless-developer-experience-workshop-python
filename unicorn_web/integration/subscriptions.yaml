@@ -23,7 +23,7 @@ Resources:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
       EventPattern:
         source:
-          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         detail-type:
           - PublicationEvaluationCompleted
       State: ENABLED

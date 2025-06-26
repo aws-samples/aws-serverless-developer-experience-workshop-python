@@ -157,7 +157,7 @@ Resources:
             EventBusName: !Ref UnicornWebEventBus
             Pattern:
               source:
-                - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+                - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
               detail-type:
                 - PublicationEvaluationCompleted
 
@@ -362,7 +362,7 @@ Resources:
           - !Ref AWS::AccountId
         source:
           - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
-          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
           - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:

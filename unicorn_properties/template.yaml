@@ -54,19 +54,19 @@ Globals:
       Variables:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
         EVENT_BUS: !Ref UnicornPropertiesEventBus
-        SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+        SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         POWERTOOLS_LOGGER_CASE: PascalCase
-        POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+        POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
         POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
         POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+        POWERTOOLS_METRICS_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
         LOG_LEVEL: INFO # Log level for Logger
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
-      namespace: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+      namespace: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
 
 Resources:
   #### SSM PARAMETERS
@@ -261,7 +261,7 @@ Resources:
         TableName: !Ref ContractStatusTable
         ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         EventBusName: !GetAtt UnicornPropertiesEventBus.Name
-        ServiceName: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+        ServiceName: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
 
   # Store ApprovalStateMachineLogGroup workflow execution logs
   ApprovalStateMachineLogGroup:
@@ -285,7 +285,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -301,7 +301,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -324,7 +324,7 @@ Resources:
         - Key: project
           Value: !FindInMap [Constants, ProjectName, Value]
         - Key: namespace
-          Value: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          Value: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         - Key: stage
           Value: !Ref Stage
 
@@ -355,7 +355,7 @@ Resources:
         Condition:
           StringEquals:
             events:source:
-              - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+              - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
 
   # Catchall rule used for development purposes. Logs all events matching any of the services to CloudWatch Logs
   UnicornPropertiesCatchAllRule:
@@ -371,7 +371,7 @@ Resources:
           - !Ref AWS::AccountId
         source:
           - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
-          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
           - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
@@ -387,7 +387,7 @@ Resources:
       LogGroupName: !Sub
         - "/aws/events/${Stage}/${NS}-catchall"
         - Stage: !Ref Stage
-          NS: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          NS: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Permissions to allow EventBridge to send logs to CloudWatch
