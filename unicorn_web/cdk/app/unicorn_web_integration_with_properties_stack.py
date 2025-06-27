@@ -24,8 +24,8 @@ class WebToPropertiesIntegrationStackProps:
     description: str
     stage: STAGE
     env: dict
-    event_bus_name_parameter: str
-    properties_event_bus_arn_param: str
+    event_bus_name_parameter: str  # Name of SSM Parameter containing this service's Event Bus name
+    properties_event_bus_arn_param: str  # SSM parameter name containing the Properties service EventBus ARN
 
 
 class WebToPropertiesIntegrationStack(cdk.Stack):
@@ -39,8 +39,21 @@ class WebToPropertiesIntegrationStack(cdk.Stack):
     - Service discovery using SSM parameters
     - Loose coupling through event subscriptions
     - Domain event filtering
+
+    Example:
+    ```python
+    app = cdk.App()
+    integration_stack = WebToPropertiesIntegrationStack(app, 'WebPropertiesIntegration',
+        props=WebToPropertiesIntegrationStackProps(
+            stage=STAGE.DEV,
+            properties_event_bus_arn_param='/uni-prop/dev/PropertiesEventBusArn',
+            # other required properties
+        )
+    )
+    ```
     """
 
+    # Current deployment stage of the application
     def __init__(
         self,
         scope: Construct,
@@ -57,6 +70,11 @@ class WebToPropertiesIntegrationStack(cdk.Stack):
         - id: The scoped construct ID
         - props: Stack configuration properties
 
+        This stack creates:
+        - Event subscription from Properties service to Web service
+        - Routes PublicationEvaluationCompleted events to the Web service
+
+        Remarks:
         This stack creates:
         - Event subscription from Properties service to Web service
         - Routes PublicationEvaluationCompleted events to the Web service

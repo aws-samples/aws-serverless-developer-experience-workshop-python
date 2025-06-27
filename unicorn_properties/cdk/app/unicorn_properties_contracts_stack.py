@@ -34,13 +34,32 @@ class PropertyContractsStack(Stack):
     handling contract status changes and property approval synchronization.
     """
 
+    # create constructor comment
+
     def __init__(self, scope: Construct, id: str, *, stage: STAGE, event_bus_name_parameter: str, **kwargs):
+        """
+        Creates a new PropertyContractsStack
+        
+        Parameters:
+            scope: The scope in which to define this construct
+            id: The scoped construct ID
+            props: Configuration properties
+        
+        This stack creates:
+        - DynamoDB table for contract status tracking with stream enabled
+        - Dead Letter Queues for error handling
+        - Lambda function to handle ContractStatusChange events from EventBridge
+        - Lambda function to sync property approvals based on DynamoDB stream events
+        - EventBridge rule for routing ContractStatusChanged events
+        - Associated IAM roles and permissions
+        """
         super().__init__(scope, id, **kwargs)
 
         self.contract_status_table_name_parameter = "ContractStatusTableName"
         self.property_approval_sync_function_iam_role_arn_parameter = "PropertiesApprovalSyncFunctionIamRoleArn"
 
-        # Add standard tags
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -49,7 +68,8 @@ class PropertyContractsStack(Stack):
             },
         )
 
-        # Get reference to existing EventBus
+        # Retrieve the Properties service EventBus name from SSM Parameter Store
+        # and create a reference to the existing EventBus
         event_bus = events.EventBus.from_event_bus_name(
             self,
             "PropertiesEventBus",
@@ -59,7 +79,13 @@ class PropertyContractsStack(Stack):
             )
         )
 
-        # Create DynamoDB table
+        # -------------------------------------------------------------------------- 
+        #                                  STORAGE                                   
+        # -------------------------------------------------------------------------- 
+
+        # DynamoDB table for storing contract status data
+        # Uses property_id as partition key for efficient querying
+        # Includes stream configuration to trigger the PropertiesApprovalSync function
         table = dynamodb.TableV2(
             self,
             "ContractStatusTable",
@@ -72,7 +98,7 @@ class PropertyContractsStack(Stack):
             removal_policy=RemovalPolicy.DESTROY  # be careful with this in production
         )
 
-        # Create output for table name
+        # CloudFormation output for Contracts table name
         StackHelper.create_output(
             self,
             {
@@ -84,7 +110,12 @@ class PropertyContractsStack(Stack):
             },
         )
 
-        # Create Dead Letter Queues
+        # --------------------------------------------------------------------------
+        #                            LAMBDA FUNCTIONS                                
+        # --------------------------------------------------------------------------
+
+        # Dead Letter Queue for the Properties service
+        # Handles failed event processing
         properties_service_dlq = sqs.Queue(
             self,
             "PropertiesServiceDlq",
@@ -94,6 +125,7 @@ class PropertyContractsStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
+        # DLQ for failed EventBridge event delivery to ContractEventHandlerFunction
         contract_status_changed_events_dlq = sqs.Queue(
             self,
             "ContractStatusChangedEventsDlq",
@@ -103,35 +135,13 @@ class PropertyContractsStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
-        # Create Lambda function for contract status changes
-        # contract_status_changed_function = nodejs.NodejsFunction(
-        #     self,
-        #     f"ContractEventHandlerFunction-{stage.value}",
-        #     entry=os.path.join(
-        #         os.path.dirname(__file__),
-        #         "../../src/properties_service/contractStatusChangedEventHandler.ts"
-        #     ),
-        #     handler="handler",
-        #     runtime=lambda_.Runtime.NODEJS_18_X,
-        #     environment={
-        #         "TABLE_NAME": table.table_name,
-        #         "STAGE": stage.value,
-        #         "SERVICE_NAMESPACE": UNICORN_NAMESPACES.PROPERTIES,
-        #     },
-        #     dead_letter_queue=properties_service_dlq,
-        #     log_group=logs.LogGroup(
-        #         self,
-        #         "ContractStatusChangedHandlerFunctionLogGroup",
-        #         removal_policy=RemovalPolicy.DESTROY,
-        #         retention=get_default_logs_retention_period(stage.value),
-        #     ),
-        # )
         powertools_lambda_layer = lambda_.LayerVersion.from_layer_version_arn(
             self,
             'UnicornContractsLayer',
             layer_version_arn=f'arn:aws:lambda:{Aws.REGION}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:4'
         )
 
+        # Lambda function to handle ContractStatusChange events
         contract_status_changed_function = lambda_.Function(
             self,
             f"ContractEventHandlerFunction-{stage.value}",
@@ -155,7 +165,7 @@ class PropertyContractsStack(Stack):
             ]
         )
 
-        # Create EventBridge rule
+        # EventBridge rule for ContractStatusChange events
         events.Rule(
             self,
             "unicorn.properties-ContractStatusChanged",
@@ -176,20 +186,11 @@ class PropertyContractsStack(Stack):
             ],
         )
 
-        # Grant permissions
-        table.grant_read_write_data(contract_status_changed_function)
-
-        # Create output for contract handler function
-        StackHelper.create_output(
-            self,
-            {
-                "name": "ContractEventHandlerFunction",
-                "value": contract_status_changed_function.function_name,
-                "stage": stage.value,
-            },
-        )
-
-        # Create Lambda function for property approval sync
+        # Lambda function that processes DynamoDB stream events from ContractStatusTable
+        # to synchronize property approval states. This function:
+        # - Listens to changes in contract status
+        # - Processes the changes to update property approval workflows
+        # - Handles failures using a Dead Letter Queue
         properties_approval_sync_function = lambda_.Function(
             self,
             f"PropertiesApprovalSyncFunction-{stage.value}",
@@ -202,6 +203,8 @@ class PropertyContractsStack(Stack):
                 "SERVICE_NAMESPACE": UNICORN_NAMESPACES.PROPERTIES.value,
             },
             dead_letter_queue=properties_service_dlq,
+            # CloudWatch log group for the PropertiesApprovalSync function
+            # Configured with stage-appropriate retention period
             log_group=logs.LogGroup(
                 self,
                 "PropertiesApprovalSyncFunctionLogGroup",
@@ -213,28 +216,20 @@ class PropertyContractsStack(Stack):
             ]
         )
 
-        # Add DynamoDB Stream event source
-        properties_approval_sync_function.add_event_source(
-            event_sources.DynamoEventSource(
-                table,
-                starting_position=lambda_.StartingPosition.TRIM_HORIZON,
-                on_failure=event_sources.SqsDlq(properties_service_dlq),
-            )
-        )
-
-        # Grant permissions
+        # Allow Properties Approval Sync function to send messages to the Properties Service Dead Letter Queue
         properties_service_dlq.grant_send_messages(properties_approval_sync_function)
+        # Allow Properties Approval Sync function to read data and stream data from Contract Status DynamoDB table
         table.grant_read_data(properties_approval_sync_function)
         table.grant_stream_read(properties_approval_sync_function)
 
-        # Create output for sync function role
-        if properties_approval_sync_function.role:
-            StackHelper.create_output(
-                self,
-                {
-                    "name": self.property_approval_sync_function_iam_role_arn_parameter,
-                    "value": properties_approval_sync_function.role.role_arn,
-                    "stage": stage.value,
-                    "create_ssm_string_parameter": True,
-                },
-            )
+        # CloudFormation output for Contracts table name
+        StackHelper.create_output(
+            self,
+            {
+                "name": self.property_approval_sync_function_iam_role_arn_parameter,
+                "description": "Properties approvale sync function arn",
+                "value": properties_approval_sync_function.role.role_arn,
+                "stage": stage.value,
+                "create_ssm_string_parameter": True,
+            },
+        )

@@ -82,3 +82,7 @@
 # We ignore Python's requirements.txt as we use Poetry instead
 **/requirements.txt
 **/.aws-sam
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out

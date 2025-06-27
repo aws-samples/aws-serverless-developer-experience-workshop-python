@@ -36,10 +36,28 @@ class PropertiesToWebIntegrationStack(Stack):
         web_event_bus_arn_param: str,
         **kwargs,
     ):
-
+        """
+        Creates a new PropertiesToWebIntegrationStack
+        
+        Args:
+            scope: The scope in which to define this construct
+            id: The scoped construct ID
+            props: Stack configuration properties
+            
+        This stack creates:
+        - Event subscription from Web service to Properties service
+        - Routes PublicationApprovalRequested events to the Properties service
+        
+        Remarks:
+        This stack creates:
+        - Event subscription from Web service to Properties service
+        - Routes PublicationApprovalRequested events to the Properties service
+        """
         super().__init__(scope, id, **kwargs)
+        
 
-        # Add standard tags
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -48,7 +66,8 @@ class PropertiesToWebIntegrationStack(Stack):
             },
         )
 
-        # Get reference to existing EventBus
+        # Retrieve the Properties service EventBus name from SSM Parameter Store
+        # and create a reference to the existing EventBus
         event_bus = events.EventBus.from_event_bus_name(
             self,
             "PropertiesEventBus",
@@ -57,7 +76,13 @@ class PropertiesToWebIntegrationStack(Stack):
             ),
         )
 
-        # Create cross-service event subscription
+        # Cross-service event subscription
+        # Routes property evaluation events from Web service to Properties service
+        #
+        # Configuration:
+        # - Subscribes to PublicationApprovalRequested events
+        # - Source filtered to Web service namespace
+        # - Forwards events to Properties service event bus
         CrossUniPropServiceSubscriptionConstruct(
             self,
             "unicorn.properies-PublicationApprovalRequestedSubscription",

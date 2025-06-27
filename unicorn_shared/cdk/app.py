@@ -14,7 +14,7 @@ UnicornNamespacesStack(app, 'uni-prop-namespaces',
 
 stages = [STAGE.local, STAGE.dev, STAGE.prod]
 for stage in stages:
-    UnicornImagesStack(app, f'uni-prop-{stage.name}-shared',
+    UnicornImagesStack(app, f'uni-prop-{stage.value}-shared',
         description='Global namespaces for Unicorn Properties applications and services. This only needs to be deployed once.',
         stage=stage
     )

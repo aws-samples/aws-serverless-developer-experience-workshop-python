@@ -24,19 +24,40 @@ from lib.helper import (
 
 @dataclass
 class WebPropertySearchStackProps:
-    stage: STAGE
+    """Properties for the WebPropertySearchStack"""
+    
+    stage: STAGE  # Deployment stage of the application
     description: str
     env: dict
-    event_bus_name: str
-    table_name: str
-    rest_api_id: str
-    rest_api_root_resource_id: str
-    rest_api_url: str
+    event_bus_name: str  # Name of SSM Parameter that holds the EventBus for this service
+    table_name: str  # Name of SSM Parameter that holds the DynamoDB table tracking property status
+    rest_api_id: str  # Name of SSM Parameter that holds the RestApId of Web service's Rest Api
+    rest_api_root_resource_id: str  # Name of SSM Parameter that holds the RootResourceId of Web service's Rest Api
+    rest_api_url: str  # Name of SSM Parameter that holds the Url of Web service's Rest Api
     powertools_layer: lambda_.LayerVersion
 
 
 class WebPropertySearchStack(Stack):
-    """Stack that defines the Unicorn Web property search infrastructure"""
+    """
+    Stack that defines the Unicorn Web property search infrastructure
+    
+    Example:
+    ```python
+    app = cdk.App()
+    WebPropertySearchStack(app, 'WebPropertySearchStack',
+        props=WebPropertySearchStackProps(
+            stage=STAGE.DEV,
+            env={
+                'account': os.environ.get('CDK_DEFAULT_ACCOUNT'),
+                'region': os.environ.get('CDK_DEFAULT_REGION')
+            }
+            # other required properties
+        )
+    )
+    ```
+    """
+    
+    # Current deployment stage of the application
 
     def __init__(
         self,
@@ -52,10 +73,20 @@ class WebPropertySearchStack(Stack):
         Parameters:
         - scope: The scope in which to define this construct
         - id: The scoped construct ID
+        - props: Configuration properties
+        
+        Remarks:
+        This stack creates:
+        - DynamoDB table for data storage
+        - API Gateway REST API
+        - Lambda function for property search
+        - API endpoints for property search and details
+        - Associated IAM roles and permissions
         """
         super().__init__(scope, id, **kwargs)
 
-        # Add standard tags to the CloudFormation stack
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -65,6 +96,7 @@ class WebPropertySearchStack(Stack):
         )
 
         # Import resources based on details from SSM Parameter Store
+        # Create CDK references to these existing resources
         table = dynamodb.TableV2.from_table_name(
             self,
             "webTable",
@@ -88,6 +120,8 @@ class WebPropertySearchStack(Stack):
             ),
         )
 
+        # Lambda function for property search
+        # Handles API requests to search for properties by location
         search_function = lambda_.Function(
             self,
             f"SearchFunction-{props.stage.value}",
@@ -143,6 +177,7 @@ class WebPropertySearchStack(Stack):
         )
 
         # API Gateway resources
+        # IAM role for API Gateway to Lambda integration
         api_integration_role = iam.Role(
             self,
             f"WebApiSearchIntegrationRole-{props.stage.value}",
@@ -151,6 +186,7 @@ class WebPropertySearchStack(Stack):
         search_function.grant_invoke(api_integration_role)
 
         # Base search endpoint
+        # Root endpoint for property search API
         search_resource = api.root.add_resource(
             "search",
             default_integration=apigateway.LambdaIntegration(
@@ -171,9 +207,11 @@ class WebPropertySearchStack(Stack):
         )
 
         # Country-level search endpoint
+        # Path: /search/{country}
         list_properties_by_country = search_resource.add_resource("{country}")
 
         # City-level search endpoint
+        # Path: /search/{country}/{city}
         list_properties_by_city = list_properties_by_country.add_resource("{city}")
         list_properties_by_city.add_method(
             "GET",
@@ -207,6 +245,7 @@ class WebPropertySearchStack(Stack):
         )
 
         # Street-level search endpoint
+        # Path: /search/{country}/{city}/{street}
         list_properties_by_street = list_properties_by_city.add_resource("{street}")
         list_properties_by_street.add_method("GET")
 
@@ -222,12 +261,14 @@ class WebPropertySearchStack(Stack):
         )
 
         # Property details resource hierarchy
+        # Creates nested resources for property details API
         properties_resource = api.root.add_resource("properties")
         property_by_country = properties_resource.add_resource("{country}")
         property_by_city = property_by_country.add_resource("{city}")
         property_by_street = property_by_city.add_resource("{street}")
 
         # Individual property endpoint
+        # Path: /properties/{country}/{city}/{street}/{number}
         property_by_street.add_resource(
             "{number}",
             default_integration=apigateway.LambdaIntegration(search_function),
@@ -245,6 +286,7 @@ class WebPropertySearchStack(Stack):
         )
 
         # Create deployment
+        # Deploys the API Gateway configuration to the specified stage
         deployment = apigateway.Deployment(
             self,
             "deployment",

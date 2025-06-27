@@ -56,9 +56,28 @@ class PropertyApprovalStack(Stack):
         property_approval_sync_function_iam_role_arn: str,
         **kwargs,
     ):
+        """
+        Creates a new UnicornPropertiesStack
+        
+        Args:
+            scope: The scope in which to define this construct
+            id: The scoped construct ID
+            stage: Deployment stage of the application
+            event_bus_name: Name of SSM Parameter containing this service's Event Bus name
+            contract_status_table_name: Name of SSM Parameter containing the DynamoDB table
+            property_approval_sync_function_iam_role_arn: Name of SSM Parameter containing the IAM role ARN
+            
+        Remarks:
+        This stack creates:
+        - EventBridge event bus through Events Construct
+        - Contracts Construct with associated DynamoDB table
+        - Property Approval Construct integrated with Contracts
+        - Associated IAM roles and permissions
+        """
         super().__init__(scope, id, **kwargs)
 
-        # Add standard tags
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -67,7 +86,8 @@ class PropertyApprovalStack(Stack):
             },
         )
 
-        # Import existing resources
+        # Import resources based on details from SSM Parameter Store
+        # Create CDK references to these existing resources.
         event_bus = events.EventBus.from_event_bus_name(
             self,
             "PropertiesEventBus",
@@ -102,6 +122,13 @@ class PropertyApprovalStack(Stack):
             layer_version_arn=f'arn:aws:lambda:{Aws.REGION}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:4'
         )
 
+        # --------------------------------------------------------------------------
+        #                              LAMBDA FUNCTION
+        # --------------------------------------------------------------------------
+
+        # Lambda function to handle contract approval workflow
+        # Updates the Property Item in DynamoDB Table with the
+        # Step Function Task Token used to resume workflow.
         wait_for_contract_approval_function = lambda_.Function(
             self,
             f"WaitForContractApprovalFunction-{stage.value}",
@@ -127,7 +154,8 @@ class PropertyApprovalStack(Stack):
         # Grant permissions
         table.grant_read_write_data(wait_for_contract_approval_function)
 
-        # Create outputs for Lambda function
+        # CloudFormation outputs for Lambda function details
+        # Useful for cross-stack references and operational monitoring
         StackHelper.create_output(
             self,
             {
@@ -145,12 +173,33 @@ class PropertyApprovalStack(Stack):
             },
         )
 
-        # Get images bucket name
+        # --------------------------------------------------------------------------
+        #                              STATE MACHINE
+        # --------------------------------------------------------------------------
+
+        # Step Functions state machine for property approval workflow
+        #
+        # Implements a complex approval workflow demonstrating:
+        # - Content moderation using AI services (Rekognition, Comprehend)
+        # - Human approval task integration
+        # - Parallel processing of approval tasks
+        # - Error handling and recovery
+        # - Event-driven status updates
+        #
+        # The workflow coordinates:
+        # - Image analysis and moderation
+        # - Text content review
+        # - Contract status verification
+        # - Manual approval processes
+        # - Status event publication
+
+        # Looks up the existing bucket containing our images's bucket name
         images_bucket_name = ssm.StringParameter.value_for_typed_string_parameter_v2(
             self, f"/uni-prop/{stage.value}/ImagesBucket", ssm.ParameterValueType.STRING
         )
 
-        # Create log group for state machine
+        # CloudWatch log group for Step Functions state machine
+        # Captures execution logs for debugging and monitoring
         state_machine_log_group = logs.LogGroup(
             self,
             "ApprovalStateMachineLogGroup",
@@ -159,7 +208,8 @@ class PropertyApprovalStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
-        # Create Step Functions state machine
+        # Step Functions state machine for property approval workflow
+        # Orchestrates the end-to-end approval process
         state_machine = sfn.StateMachine(
             self,
             "ApprovalStateMachine",
@@ -235,7 +285,12 @@ class PropertyApprovalStack(Stack):
         event_bus.grant_put_events_to(state_machine)
         wait_for_contract_approval_function.grant_invoke(state_machine)
 
-        # Create DLQ for workflow events
+        # --------------------------------------------------------------------------
+        #                              EVENT HANDLING
+        # --------------------------------------------------------------------------
+
+        # Dead Letter Queue for failed EventBridge to Step Functions workflow events
+        # Captures events that fail to be delivered to the state machine
         workflow_events_dlq = sqs.Queue(
             self,
             "WorkflowEventsDlq",
@@ -245,7 +300,8 @@ class PropertyApprovalStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
-        # Create EventBridge rule
+        # EventBridge rule for publication approval requests
+        # Triggers the approval workflow state machine
         events.Rule(
             self,
             "unicorn.properties-PublicationApprovalRequested",
@@ -266,7 +322,15 @@ class PropertyApprovalStack(Stack):
             ],
         )
 
-        # Create event schema
+        # Publication Evaluation Completed Event Schema
+        #
+        # Defines the contract for property publication workflow events:
+        # - Ensures consistent event structure
+        # - Enables strong typing for consumers
+        # - Facilitates service integration testing
+        #
+        # This schema is used to validate events at runtime and generate
+        # type-safe code bindings for consumers.
         with open(
             os.path.join(
                 os.path.dirname(__file__),
@@ -285,7 +349,8 @@ class PropertyApprovalStack(Stack):
             content=json.dumps(publication_evaluation_completed_event_schema),
         )
 
-        # Create outputs for state machine
+        # CloudFormation outputs for state machine resources
+        # Enables operational monitoring and cross-stack references
         StackHelper.create_output(
             self,
             {

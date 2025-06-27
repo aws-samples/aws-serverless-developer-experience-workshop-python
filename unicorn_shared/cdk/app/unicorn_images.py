@@ -10,12 +10,12 @@ class UnicornImagesStack(Stack):
 
         images_infra = ImagesInfraConstruct(
             self,
-            f'ImagesInfra-{stage.name}',
-            stage=stage.name
+            f'ImagesInfra-{stage.value}',
+            stage=stage.value
         )
 
         # Images infrastructure Output
-        CfnOutput(self, f'ImageUploadBucketName-{stage.name}',
-            description=f'S3 bucket for property images ({stage.name})',
+        CfnOutput(self, f'ImageUploadBucketName-{stage.value}',
+            description=f'S3 bucket for property images ({stage.value})',
             value=images_infra.images_bucket.bucket_name
         )

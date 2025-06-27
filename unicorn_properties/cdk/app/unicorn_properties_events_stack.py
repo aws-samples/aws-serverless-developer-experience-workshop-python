@@ -31,14 +31,47 @@ class PropertiesEventStack(Stack):
     - Event schema management and validation
     - Development-time event logging
     - Cross-service event routing
+    
+    Example:
+    ```python
+    app = cdk.App()
+    PropertiesEventStack(app, 'PropertiesEventStack', 
+        stage=STAGE.DEV,
+        env={
+            'account': os.environ.get('CDK_DEFAULT_ACCOUNT'),
+            'region': os.environ.get('CDK_DEFAULT_REGION')
+        }
+    )
+    ```
     """
 
     def __init__(self, scope: Construct, id: str, *, stage: STAGE, **kwargs) -> None:
+        """
+        Creates a new PropertiesEventStack
+        
+        Parameters:
+            scope: The scope in which to define this construct
+            id: The scoped construct ID
+            stage: Deployment stage of the application (local, dev, prod)
+            **kwargs: Additional keyword arguments passed to the parent Stack
+        
+        This stack creates:
+        - Custom EventBridge event bus for the Properties service's domain events
+        - Event bus resource policies for cross-account access
+        - Event schema registry for maintaining event contract definitions
+        - SSM parameters for service discovery
+        - Development environment logging infrastructure
+        - Event schemas for property publication workflow
+        """
         super().__init__(scope, id, **kwargs)
         
+        # Current deployment stage of the application
+        self.stage = stage
+        # Name of SSM Parameter that holds the EventBus for this service
         self.event_bus_name_parameter = "UnicornPropertiesEventBus"
 
-        # Add standard tags to the CloudFormation stack
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -47,14 +80,20 @@ class PropertiesEventStack(Stack):
             },
         )
 
-        # Create EventBridge event bus
+        # --------------------------------------------------------------------------
+        #                                 EVENT BUS                                 
+        # --------------------------------------------------------------------------
+
+        # Custom EventBridge event bus for the application
+        # Handles all application-specific events and enables event-driven architecture
         event_bus = events.EventBus(
             self,
             f"UnicornPropertiesBus-{stage.value}",
             event_bus_name=f"UnicornPropertiesBus-{stage.value}",
         )
 
-        # Add resource policy for subscribers
+        # Resource policy allowing subscribers to create rules and targets
+        # Enables other services to subscribe to events from this bus
         event_bus.add_to_resource_policy(
             iam.PolicyStatement(
                 sid=f"AllowSubscribersToCreateSubscriptionRules-properties-{stage.value}",
@@ -70,7 +109,8 @@ class PropertiesEventStack(Stack):
             )
         )
 
-        # Create event bus policy for publishing
+        # Event bus policy restricting event publishing permissions
+        # Only allows services from UnicornPropertiesNamespace to publish events
         events.CfnEventBusPolicy(
             self,
             "UnicornPropertiesEventsBusPublishPolicy",
@@ -86,13 +126,15 @@ class PropertiesEventStack(Stack):
             ).to_json(),
         )
 
-        # Create outputs for event bus
+        # CloudFormation output exposing the EventBus name
+        # Enables other stacks and services to reference this event bus
         StackHelper.create_output(
             self,
             {
                 "name": self.event_bus_name_parameter,
                 "value": event_bus.event_bus_name,
                 "stage": stage.value,
+                # Create an SSM Parameter to allow other services to discover the event bus
                 "create_ssm_string_parameter": True,
             },
         )
@@ -102,12 +144,26 @@ class PropertiesEventStack(Stack):
                 "name": f"{self.event_bus_name_parameter}Arn",
                 "value": event_bus.event_bus_arn,
                 "stage": stage.value,
+                # Create an SSM Parameter to allow other services to discover the event bus
                 "create_ssm_string_parameter": True,
             },
         )
 
-        # Development environment logging
+        # --------------------------------------------------------------------------
+        #                           DEVELOPMENT LOGGING                             
+        # --------------------------------------------------------------------------
+
+        # Development environment event logging infrastructure
+        #
+        # Demonstrates debugging patterns for event-driven architectures:
+        # - Captures all events for development visibility
+        # - Implements environment-specific logging
+        # - Provides audit trail for event flow
+        #
+        # Note: This logging is only enabled in local and dev environments
         if stage in [STAGE.LOCAL, STAGE.DEV]:
+            # CloudWatch log group for catching all events during development
+            # Helps with debugging and monitoring event flow
             catch_all_log_group = logs.LogGroup(
                 self,
                 "UnicornPropertiesCatchAllLogGroup",
@@ -116,6 +172,8 @@ class PropertiesEventStack(Stack):
                 retention=get_default_logs_retention_period(stage),
             )
 
+            # EventBridge rule to capture all events for development purposes
+            # Routes all events to CloudWatch logs for visibility
             events.Rule(
                 self,
                 "properties.catchall",
@@ -130,6 +188,8 @@ class PropertiesEventStack(Stack):
                 targets=[targets.CloudWatchLogGroup(catch_all_log_group)],
             )
 
+            # CloudFormation outputs for log group information
+            # Provides easy access to logging resources
             StackHelper.create_output(
                 self,
                 {
@@ -149,7 +209,12 @@ class PropertiesEventStack(Stack):
                 },
             )
 
-        # Create event schema registry
+        # --------------------------------------------------------------------------
+        #                              EVENTS SCHEMA                                
+        # --------------------------------------------------------------------------
+
+        # EventBridge Schema Registry for event schema management
+        # Stores and validates event schemas for the application
         registry = eventschemas.CfnRegistry(
             self,
             "EventRegistry",
@@ -157,6 +222,8 @@ class PropertiesEventStack(Stack):
             description=f"Event schemas for Unicorn Properties {stage.value}",
         )
 
+        # Registry access policy
+        # Controls who can access and use the event schemas
         eventschemas.CfnRegistryPolicy(
             self,
             "RegistryPolicy",

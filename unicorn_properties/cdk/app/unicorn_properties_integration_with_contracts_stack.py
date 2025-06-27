@@ -36,9 +36,22 @@ class PropertiesToContractsIntegrationStack(Stack):
         contracts_event_bus_arn: str,
         **kwargs,
     ):
+        """
+        Creates a new PropertiesToContractsIntegrationStack
+        
+        Args:
+            scope: The scope in which to define this construct
+            id: The scoped construct ID
+            props: Stack configuration properties
+            
+        This stack creates:
+        - Event subscription from Contracts service to Properties service
+        - Routes ContractStatusUpdated events to the Properties service
+        """
         super().__init__(scope, id, **kwargs)
 
-        # Add standard tags
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -47,7 +60,8 @@ class PropertiesToContractsIntegrationStack(Stack):
             },
         )
 
-        # Get reference to existing EventBus
+        # Retrieve the Properties service EventBus name from SSM Parameter Store
+        # and create a reference to the existing EventBus
         event_bus = events.EventBus.from_event_bus_name(
             self,
             "PropertiesEventBus",
@@ -56,7 +70,13 @@ class PropertiesToContractsIntegrationStack(Stack):
             ),
         )
 
-        # Create cross-service event subscription
+        # Cross-service event subscription
+        # Routes contract status events from Contracts service to Properties service
+        #
+        # Configuration:
+        # - Subscribes to ContractStatusUpdated events
+        # - Source filtered to Contracts service namespace
+        # - Forwards events to Properties service event bus
         CrossUniPropServiceSubscriptionConstruct(
             self,
             "unicorn-properties-ContractStatusChangedSubscription",

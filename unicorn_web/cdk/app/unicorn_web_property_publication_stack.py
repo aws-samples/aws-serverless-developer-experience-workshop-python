@@ -31,20 +31,37 @@ from lib.helper import (
 
 @dataclass
 class WebPropertyPublicationStackProps:
-    """Properties for the WebPropertyPublicationStack"""
+    """
+    Properties for the WebPropertyPublicationStack
+    """
 
     description: str
-    stage: STAGE
-    event_bus_name: str
-    table_name: str
-    rest_api_id: str
-    rest_api_root_resource_id: str
-    rest_api_url: str
+    stage: STAGE  # Deployment stage of the application
+    event_bus_name: str  # Name of SSM Parameter that holds the EventBus for this service
+    table_name: str  # Name of SSM Parameter that holds the DynamoDB table tracking property status
+    rest_api_id: str  # Name of SSM Parameter that holds the RestApId of Web service's Rest Api
+    rest_api_root_resource_id: str  # Name of SSM Parameter that holds the RootResourceId of Web service's Rest Api
+    rest_api_url: str  # Name of SSM Parameter that holds the Url of Web service's Rest Api
     powertools_layer: lambda_.LayerVersion
 
 
 class WebPropertyPublicationStack(Stack):
-    """Stack that defines the Unicorn Web property publication infrastructure"""
+    """
+    Stack that defines the Unicorn Web property publication infrastructure
+    
+    Example:
+    ```python
+    app = cdk.App()
+    WebPropertyPublicationStack(app, 'WebPropertyPublicationStack',
+        props=WebPropertyPublicationStackProps(
+            stage=STAGE.DEV,
+            # other required properties
+        )
+    )
+    ```
+    """
+    
+    # Current deployment stage of the application
 
     def __init__(
         self,
@@ -61,11 +78,21 @@ class WebPropertyPublicationStack(Stack):
         - scope: The scope in which to define this construct
         - id: The scoped construct ID
         - props: Configuration properties
+
+        Remarks:
+        This stack creates:
+        - DynamoDB table for data storage
+        - API Gateway REST API
+        - EventBridge event bus
+        - Property publication Construct
+        - Property eventing Construct
+        - Associated IAM roles and permissions
         """
         super().__init__(scope, id)
         self.stage = props.stage
 
-        # Add standard tags to the CloudFormation stack
+        # Add standard tags to the CloudFormation stack for resource organization
+        # and cost allocation
         StackHelper.add_stack_tags(
             self,
             {
@@ -75,6 +102,7 @@ class WebPropertyPublicationStack(Stack):
         )
 
         # Import resources based on details from SSM Parameter Store
+        # Create CDK references to these existing resources.
         event_bus = events.EventBus.from_event_bus_name(
             self,
             "WebEventBus",
@@ -106,9 +134,12 @@ class WebPropertyPublicationStack(Stack):
             ),
         )
 
-        # SQS QUEUES
+        # -------------------------------------------------------------------------- #
+        #                                SQS QUEUES                                    #
+        # -------------------------------------------------------------------------- #
 
         # Dead Letter Queue for failed ingestion messages
+        # Store
         ingest_queue_dlq = sqs.Queue(
             self,
             "IngestDLQ",
@@ -120,6 +151,8 @@ class WebPropertyPublicationStack(Stack):
         )
 
         # Main approval request queue
+        # Handles incoming property approval requests
+        # Configured with DLQ for failed message handling
         approval_request_queue = sqs.Queue(
             self,
             f"ApprovalRequestQueue-{props.stage.value}",
@@ -146,9 +179,12 @@ class WebPropertyPublicationStack(Stack):
             },
         )
 
-        # IAM ROLES
+        # -------------------------------------------------------------------------- #
+        #                                IAM ROLES                                     #
+        # -------------------------------------------------------------------------- #
 
         # IAM role for API Gateway to SQS integration
+        # Allows API Gateway to send messages to the approval request queue
         api_integration_role = iam.Role(
             self,
             f"WebApiSqsIntegrationRole-{props.stage.value}",
@@ -156,7 +192,9 @@ class WebPropertyPublicationStack(Stack):
         )
         approval_request_queue.grant_send_messages(api_integration_role)
 
-        # EVENT SCHEMA
+        # -------------------------------------------------------------------------- #
+        #                               EVENT SCHEMA                                   #
+        # -------------------------------------------------------------------------- #
 
         # Load the schema from the JSON file
         schema_path = os.path.join(
@@ -166,7 +204,8 @@ class WebPropertyPublicationStack(Stack):
         with open(schema_path, "r") as schema_file:
             publication_approval_requested_event_schema = json.load(schema_file)
 
-        # Define and add the PublicationApprovalRequested event schema
+        # Define and add the PublicationApprovalRequested event schema to
+        # the Web's services EventBridge Schema Registry.
         eventschemas.CfnSchema(
             self,
             "PublicationApprovalRequestedEventSchema",
@@ -177,7 +216,9 @@ class WebPropertyPublicationStack(Stack):
             content=json.dumps(publication_approval_requested_event_schema),
         )
 
-        # LAMBDA FUNCTIONS
+        # -------------------------------------------------------------------------- #
+        #                            LAMBDA FUNCTIONS                                  #
+        # -------------------------------------------------------------------------- #
 
         # Dead Letter Queue for failed publication approval event handling
         publication_approvals_event_handler_dlq = sqs.Queue(
@@ -191,6 +232,7 @@ class WebPropertyPublicationStack(Stack):
         )
 
         # Lambda function to process queued API requests for property approval
+        # Processes messages from the ApprovalRequestQueue and publishes events to EventBridge
         approval_request_function = lambda_.Function(
             self,
             f"RequestApprovalFunction-{props.stage.value}",
@@ -229,6 +271,7 @@ class WebPropertyPublicationStack(Stack):
         table.grant_read_data(approval_request_function)
 
         # Configure SQS event source for the approval request function
+        # Processes messages in batches of 1 with maximum concurrency of 5
         approval_request_function.add_event_source(
             lambda_event_sources.SqsEventSource(
                 approval_request_queue,
@@ -238,6 +281,7 @@ class WebPropertyPublicationStack(Stack):
         )
 
         # Lambda function to handle approved publication events
+        # Processes PublicationEvaluationCompleted events and updates DynamoDB
         publication_approved_function = lambda_.Function(
             self,
             f"PublicationApprovedFunction-{props.stage.value}",
@@ -291,9 +335,12 @@ class WebPropertyPublicationStack(Stack):
             },
         )
 
-        # EVENT RULES
+        # -------------------------------------------------------------------------- #
+        #                                 EVENT RULES                                  #
+        # -------------------------------------------------------------------------- #
 
         # EventBridge rule for publication evaluation events
+        # Routes PublicationEvaluationCompleted events to the handler function
         events.Rule(
             self,
             "unicorn.web-PublicationEvaluationCompleted",
@@ -306,9 +353,12 @@ class WebPropertyPublicationStack(Stack):
             },
         ).add_target(targets.LambdaFunction(publication_approved_function))
 
-        # API GATEWAY INTEGRATION
+        # -------------------------------------------------------------------------- #
+        #                           API GATEWAY INTEGRATION                            #
+        # -------------------------------------------------------------------------- #
 
         # API Gateway integration with SQS
+        # Configures the REST API to send messages to the approval request queue
         sqs_integration = apigateway.AwsIntegration(
             service="sqs",
             integration_http_method="POST",
@@ -334,6 +384,8 @@ class WebPropertyPublicationStack(Stack):
         )
 
         # API Gateway method for requesting approval
+        # Path: POST /request_approval
+        # Integrates with SQS for asynchronous processing
         api.root.add_resource("request_approval").add_method(
             "POST",
             sqs_integration,

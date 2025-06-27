@@ -18,7 +18,7 @@ app = cdk.App()
 
 stage = get_stage_from_context(app)
 
-UnicornContractsStack(app, f"uni-prop-{stage.name}-contracts",
+UnicornContractsStack(app, f"uni-prop-{stage.value}-contracts",
     description="Unicorn Contracts Service. Manage contract information for property listings.",
     stage=stage,
     env=env
