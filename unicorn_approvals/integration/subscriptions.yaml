@@ -32,7 +32,7 @@ Resources:
       Targets:
         - Id: SendEventTo
           Arn:
-            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornApprovalsEventBusArn}}"
           RoleArn:
             Fn::GetAtt: [ UnicornPropertiesSubscriptionRole, Arn ]
 
@@ -55,13 +55,13 @@ Resources:
       Targets:
         - Id: SendEventTo
           Arn:
-            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+            Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornApprovalsEventBusArn}}"
           RoleArn:
             Fn::GetAtt: [ UnicornPropertiesSubscriptionRole, Arn ]
 
 
   # This IAM role allows EventBridge to assume the permissions necessary to send events 
-  # from the publishing event bus, to the subscribing event bus (UnicornPropertiesEventBusArn)
+  # from the publishing event bus, to the subscribing event bus (UnicornApprovalsEventBusArn)
   UnicornPropertiesSubscriptionRole:
     Type: AWS::IAM::Role
     DeletionPolicy: Delete
@@ -81,7 +81,7 @@ Resources:
               - Effect: Allow
                 Action: events:PutEvents
                 Resource:
-                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+                  Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornApprovalsEventBusArn}}"
 
 Outputs:
   ContractStatusChangedSubscription:

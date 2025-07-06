@@ -18,7 +18,7 @@ Resources:
     Properties: 
       Description: 'Event schemas for Unicorn Properties'
       RegistryName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}-${Stage}"
+        Fn::Sub: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}-${Stage}"
 
   EventRegistryPolicy:
     Type: AWS::EventSchemas::RegistryPolicy
@@ -52,7 +52,7 @@ Resources:
       RegistryName:
         Fn::GetAtt: EventRegistry.RegistryName
       SchemaName:
-        Fn::Sub: '{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}@PublicationEvaluationCompleted'
+        Fn::Sub: '{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}@PublicationEvaluationCompleted'
       Description: 'The schema for when a property evaluation is completed'
       Content:
         Fn::Sub: |

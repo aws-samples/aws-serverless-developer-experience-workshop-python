@@ -1,8 +1,8 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "uni-prop-local-properties"
-s3_prefix = "uni-prop-local-properties"
+stack_name = "uni-prop-local-approvals"
+s3_prefix = "uni-prop-local-approvals"
 resolve_s3 = true
 resolve_image_repositories = true
 

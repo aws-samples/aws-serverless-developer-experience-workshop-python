@@ -53,7 +53,7 @@ Globals:
     Environment:
       Variables:
         CONTRACT_STATUS_TABLE: !Ref ContractStatusTable
-        EVENT_BUS: !Ref UnicornPropertiesEventBus
+        EVENT_BUS: !Ref UnicornApprovalsEventBus
         SERVICE_NAMESPACE: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         POWERTOOLS_LOGGER_CASE: PascalCase
         POWERTOOLS_SERVICE_NAME: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
@@ -71,23 +71,23 @@ Globals:
 Resources:
   #### SSM PARAMETERS
   # Services share their event bus name and arn
-  UnicornPropertiesEventBusNameParam:
+  UnicornApprovalsEventBusNameParam:
     Type: AWS::SSM::Parameter
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
       Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBus
-      Value: !GetAtt UnicornPropertiesEventBus.Name
+      Name: !Sub /uni-prop/${Stage}/UnicornApprovalsEventBus
+      Value: !GetAtt UnicornApprovalsEventBus.Name
 
-  UnicornPropertiesEventBusArnParam:
+  UnicornApprovalsEventBusArnParam:
     Type: AWS::SSM::Parameter
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
       Type: String
-      Name: !Sub /uni-prop/${Stage}/UnicornPropertiesEventBusArn
-      Value: !GetAtt UnicornPropertiesEventBus.Arn
+      Name: !Sub /uni-prop/${Stage}/UnicornApprovalsEventBusArn
+      Value: !GetAtt UnicornApprovalsEventBus.Arn
 
   #### LAMBDA FUNCTIONS
   # Listens to ContractStatusChanged events from EventBridge
@@ -106,7 +106,7 @@ Resources:
           Type: EventBridgeRule
           Properties:
             RuleName: unicorn.properties-ContractStatusChanged
-            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+            EventBusName: !GetAtt UnicornApprovalsEventBus.Name
             Pattern:
               source:
                 - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
@@ -219,7 +219,7 @@ Resources:
         - S3ReadPolicy:
             BucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
         - EventBridgePutEventsPolicy:
-            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+            EventBusName: !GetAtt UnicornApprovalsEventBus.Name
         - Statement:
             - Effect: Allow
               Action:
@@ -244,7 +244,7 @@ Resources:
           Type: EventBridgeRule
           Properties:
             RuleName: unicorn.properties-PublicationApprovalRequested
-            EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+            EventBusName: !GetAtt UnicornApprovalsEventBus.Name
             Pattern:
               source:
                 - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
@@ -260,7 +260,7 @@ Resources:
         WaitForContractApprovalArn: !GetAtt WaitForContractApprovalFunction.Arn
         TableName: !Ref ContractStatusTable
         ImageUploadBucketName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ImagesBucket}}"
-        EventBusName: !GetAtt UnicornPropertiesEventBus.Name
+        EventBusName: !GetAtt UnicornApprovalsEventBus.Name
         ServiceName: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
 
   # Store ApprovalStateMachineLogGroup workflow execution logs
@@ -330,20 +330,20 @@ Resources:
 
   #### EVENT BUS
   # Event bus for Unicorn Properties Service, used to publish and consume events
-  UnicornPropertiesEventBus:
+  UnicornApprovalsEventBus:
     Type: AWS::Events::EventBus
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
       Name: !Sub UnicornPropertiesBus-${Stage}
 
-  # Event bus policy to restrict who can publish events (should only be services from UnicornPropertiesNamespace)
+  # Event bus policy to restrict who can publish events (should only be services from UnicornApprovalsNamespace)
   UnicornPropertiesEventsBusPublishPolicy:
     Type: AWS::Events::EventBusPolicy
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      EventBusName: !Ref UnicornPropertiesEventBus
+      EventBusName: !Ref UnicornApprovalsEventBus
       StatementId: !Sub OnlyPropertiesServiceCanPublishToEventBus-${Stage}
       Statement:
         Effect: Allow
@@ -351,7 +351,7 @@ Resources:
           AWS:
             - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
         Action: events:PutEvents
-        Resource: !GetAtt UnicornPropertiesEventBus.Arn
+        Resource: !GetAtt UnicornApprovalsEventBus.Arn
         Condition:
           StringEquals:
             events:source:
@@ -365,7 +365,7 @@ Resources:
     Properties:
       Name: properties.catchall
       Description: Catchall rule used for development purposes.
-      EventBusName: !Ref UnicornPropertiesEventBus
+      EventBusName: !Ref UnicornApprovalsEventBus
       EventPattern:
         account:
           - !Ref AWS::AccountId
@@ -436,7 +436,7 @@ Resources:
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     DependsOn:
-      - UnicornPropertiesEventBusNameParam
+      - UnicornApprovalsEventBusNameParam
     Properties:
       Location: "integration/subscriber-policies.yaml"
       Parameters:
@@ -448,7 +448,7 @@ Resources:
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     DependsOn:
-      - UnicornPropertiesEventBusArnParam
+      - UnicornApprovalsEventBusArnParam
     Properties:
       Location: "integration/subscriptions.yaml"
       Parameters:
@@ -484,7 +484,7 @@ Outputs:
 
   #### EVENT BRIDGE OUTPUTS
   UnicornPropertiesEventBusName:
-    Value: !GetAtt UnicornPropertiesEventBus.Name
+    Value: !GetAtt UnicornApprovalsEventBus.Name
 
   #### CLOUDWATCH LOGS OUTPUTS
   UnicornPropertiesCatchAllLogGroupArn:
