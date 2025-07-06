@@ -20,7 +20,7 @@ Resources:
       Name: unicorn.web-PublicationEvaluationCompleted
       Description: PublicationEvaluationCompleted subscription
       EventBusName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornPropertiesEventBusArn}}"
+        Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornApprovalsEventBusArn}}"
       EventPattern:
         source:
           - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"

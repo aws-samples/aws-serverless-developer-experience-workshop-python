@@ -35,7 +35,7 @@ Outputs:
     Description: Unicorn Contracts namespace parameter
     Value: !Ref UnicornContractsNamespaceParam
 
-  UnicornPropertiesNamespace:
+  UnicornApprovalsNamespace:
     Description: Unicorn Properties namespace parameter
     Value: !Ref UnicornApprovalsNamespaceParam
 
