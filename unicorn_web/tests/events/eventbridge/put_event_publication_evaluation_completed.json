@@ -1,6 +1,6 @@
 [
   {
-    "Source": "unicorn.properties",
+    "Source": "unicorn.approvals",
     "Detail": "{\"property_id\":\"usa/anytown/main-street/111\",\"evaluation_result\": \"APPROVED\"}",
     "DetailType": "PublicationEvaluationCompleted",
     "EventBusName": "UnicornWebBus-local"
