@@ -11,7 +11,7 @@ from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.metrics import Metrics, MetricUnit
 from aws_lambda_powertools.event_handler.exceptions import InternalServerError
 
-from schema.unicorn_properties.publicationevaluationcompleted import (
+from schema.unicorn_approvals.publicationevaluationcompleted import (
     AWSEvent,
     Marshaller,
     PublicationEvaluationCompleted,

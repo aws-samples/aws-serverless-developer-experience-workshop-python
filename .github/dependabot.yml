@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directories: 
       - "unicorn_contracts" # Location of package manifests
-      - "unicorn_properties"
+      - "unicorn_approvals"
       - "unicorn_web"
     schedule:
       interval: "weekly"

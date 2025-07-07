@@ -1,7 +1,7 @@
 import datetime
 import re
 import six
-import schema.unicorn_properties.publicationevaluationcompleted
+import schema.unicorn_approvals.publicationevaluationcompleted
 
 
 class Marshaller:
@@ -59,7 +59,7 @@ class Marshaller:
             if typeName in cls.NATIVE_TYPES_MAPPING:
                 typeName = cls.NATIVE_TYPES_MAPPING[typeName]
             else:
-                typeName = getattr(schema.unicorn_properties.publicationevaluationcompleted, typeName)
+                typeName = getattr(schema.unicorn_approvals.publicationevaluationcompleted, typeName)
 
         if typeName in cls.PRIMITIVE_TYPES:
             return cls.__unmarshall_primitive(data, typeName)
