@@ -147,11 +147,23 @@ class PropertyContractsStack(Stack):
             f"ContractEventHandlerFunction-{stage.value}",
             runtime=lambda_.Runtime.PYTHON_3_13,
             code=lambda_.Code.from_asset('src/'),
+            tracing=lambda_.Tracing.ACTIVE,
+            architecture=lambda_.Architecture.X86_64,
+            memory_size=128,
+            timeout=Duration.seconds(15),
             handler='properties_service.contract_status_changed_event_function.lambda_handler',
             environment={
-                "TABLE_NAME": table.table_name,
+                "CONTRACT_STATUS_TABLE": table.table_name,
                 "STAGE": stage.value,
                 "SERVICE_NAMESPACE": UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_LOGGER_CASE': 'PascalCase',
+                'POWERTOOLS_SERVICE_NAME': UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_TRACE_DISABLED': 'false',  # Explicitly disables tracing, default
+                'POWERTOOLS_LOGGER_LOG_EVENT': str(stage != STAGE.PROD).lower(),
+                'POWERTOOLS_LOGGER_SAMPLE_RATE': '0.1' if stage != STAGE.PROD else '0',  # Debug log sampling percentage
+                'POWERTOOLS_METRICS_NAMESPACE': UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_LOG_LEVEL': 'INFO',  # Log level for Logger (INFO, DEBUG, etc.), default
+                'LOG_LEVEL': 'INFO',  # Log level for Logger
             },
             dead_letter_queue=properties_service_dlq,
             log_group=logs.LogGroup(
@@ -164,6 +176,7 @@ class PropertyContractsStack(Stack):
                 powertools_lambda_layer
             ]
         )
+        table.grant_read_write_data(contract_status_changed_function)
 
         # EventBridge rule for ContractStatusChange events
         events.Rule(
@@ -196,11 +209,23 @@ class PropertyContractsStack(Stack):
             f"PropertiesApprovalSyncFunction-{stage.value}",
             runtime=lambda_.Runtime.PYTHON_3_13,
             code=lambda_.Code.from_asset('src/'),
+            tracing=lambda_.Tracing.ACTIVE,
+            architecture=lambda_.Architecture.X86_64,
+            memory_size=128,
+            timeout=Duration.seconds(15),
             handler='properties_service.properties_approval_sync_function.lambda_handler',
             environment={
-                "TABLE_NAME": table.table_name,
+                "CONTRACT_STATUS_TABLE": table.table_name,
                 "STAGE": stage.value,
                 "SERVICE_NAMESPACE": UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_LOGGER_CASE': 'PascalCase',
+                'POWERTOOLS_SERVICE_NAME': UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_TRACE_DISABLED': 'false',  # Explicitly disables tracing, default
+                'POWERTOOLS_LOGGER_LOG_EVENT': str(stage != STAGE.PROD).lower(),
+                'POWERTOOLS_LOGGER_SAMPLE_RATE': '0.1' if stage != STAGE.PROD else '0',  # Debug log sampling percentage
+                'POWERTOOLS_METRICS_NAMESPACE': UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_LOG_LEVEL': 'INFO',  # Log level for Logger (INFO, DEBUG, etc.), default
+                'LOG_LEVEL': 'INFO',  # Log level for Logger
             },
             dead_letter_queue=properties_service_dlq,
             # CloudWatch log group for the PropertiesApprovalSync function
@@ -221,6 +246,15 @@ class PropertyContractsStack(Stack):
         # Allow Properties Approval Sync function to read data and stream data from Contract Status DynamoDB table
         table.grant_read_data(properties_approval_sync_function)
         table.grant_stream_read(properties_approval_sync_function)
+
+        # add dynamoDB stream trigger to wait_for_contract_approval_function
+        properties_approval_sync_function.add_event_source(
+            event_sources.DynamoEventSource(
+                table=table,
+                starting_position=lambda_.StartingPosition.LATEST,
+                batch_size=1
+            )
+        )
 
         # CloudFormation output for Contracts table name
         StackHelper.create_output(

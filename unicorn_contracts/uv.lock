@@ -88,15 +88,15 @@ wheels = [
 
 [[package]]
 name = "aws-lambda-powertools"
-version = "3.14.0"
+version = "3.15.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/50/44/b9697966992dbf45fa208e50fe49132f5bf3445165c7e3054cf63d277479/aws_lambda_powertools-3.14.0.tar.gz", hash = "sha256:11e4d8a2c7855d1f3109a15c4ed6250465ae5e2e2762b42b99b67352cf246f1a", size = 675267 }
+sdist = { url = "https://files.pythonhosted.org/packages/a3/89/697575d2d2379863f62c28ca96d8291fd19120a4a69db3c55405ed1235c5/aws_lambda_powertools-3.15.1.tar.gz", hash = "sha256:31c19887e012287da539f8c319da04e3f50c5f37d7b7ea1f0cd1c011f7ff05a8", size = 683181 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/75/bd5c48c4f48786ab6e30263f82c0e5af3cadccc18ebfcf1fe3f9918426b9/aws_lambda_powertools-3.14.0-py3-none-any.whl", hash = "sha256:4a36dbf44b4e0648c5e0e097ecbde974f18524c3096f50ee0f1ce7dcf0d64ef0", size = 806770 },
+    { url = "https://files.pythonhosted.org/packages/12/9e/c4ea28734a614a7632dc5ddbfd949a61027bbfb737c4b1b39b20caa42f43/aws_lambda_powertools-3.15.1-py3-none-any.whl", hash = "sha256:673ccfb27087d2940e798b2618e9cb992981ccb1d0310bc17c4d1c69ebcbec11", size = 824101 },
 ]
 
 [package.optional-dependencies]
@@ -269,7 +269,7 @@ wheels = [
 [[package]]
 name = "contracts-service"
 version = "0.3.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aws-lambda-powertools", extra = ["aws-sdk"] },
     { name = "aws-xray-sdk" },
@@ -280,25 +280,33 @@ dependencies = [
 dev = [
     { name = "arnparse" },
     { name = "importlib-metadata" },
-    { name = "moto" },
-    { name = "pytest" },
     { name = "pyyaml" },
     { name = "requests" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "moto" },
+    { name = "pytest" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "arnparse", marker = "extra == 'dev'", specifier = ">=0.0.2" },
-    { name = "aws-lambda-powertools", extras = ["aws-sdk"], specifier = ">=3.3.0" },
-    { name = "aws-xray-sdk", specifier = ">=2.12.0" },
-    { name = "boto3", specifier = ">=1.35" },
-    { name = "importlib-metadata", marker = "extra == 'dev'", specifier = ">=6.8.0" },
-    { name = "moto", marker = "extra == 'dev'", specifier = ">=4.1.13" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
-    { name = "pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.1" },
-    { name = "requests", marker = "extra == 'dev'", specifier = ">=2.31.0" },
+    { name = "aws-lambda-powertools", extras = ["aws-sdk"], specifier = ">=3.15.0" },
+    { name = "aws-xray-sdk", specifier = ">=2.14.0" },
+    { name = "boto3", specifier = ">=1.38" },
+    { name = "importlib-metadata", marker = "extra == 'dev'", specifier = ">=8.7.0" },
+    { name = "pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.2" },
+    { name = "requests", marker = "extra == 'dev'", specifier = ">=2.32.0" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "moto", specifier = ">=5.1.6" },
+    { name = "pytest", specifier = ">=8.4.1" },
+]
 
 [[package]]
 name = "cryptography"
@@ -499,11 +507,11 @@ wheels = [
 
 [[package]]
 name = "pygments"
-version = "2.19.1"
+version = "2.19.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7c/2d/c3338d48ea6cc0feb8446d8e6937e1408088a72a39937982cc6111d17f84/pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f", size = 4968581 }
+sdist = { url = "https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887", size = 4968631 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/0b/9fcc47d19c48b59121088dd6da2488a49d5f72dacf8262e2790a1d2c7d15/pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c", size = 1225293 },
+    { url = "https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b", size = 1225217 },
 ]
 
 [[package]]

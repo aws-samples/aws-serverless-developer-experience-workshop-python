@@ -13,7 +13,6 @@ from aws_cdk import (
     aws_eventschemas as eventschemas,
     aws_events_targets as targets,
     aws_iam as iam,
-    aws_lambda_nodejs as nodejs,
     aws_logs as logs,
     aws_stepfunctions as sfn,
     aws_sqs as sqs,
@@ -129,16 +128,29 @@ class PropertyApprovalStack(Stack):
         # Lambda function to handle contract approval workflow
         # Updates the Property Item in DynamoDB Table with the
         # Step Function Task Token used to resume workflow.
+
         wait_for_contract_approval_function = lambda_.Function(
             self,
             f"WaitForContractApprovalFunction-{stage.value}",
             runtime=lambda_.Runtime.PYTHON_3_13,
             code=lambda_.Code.from_asset('src/'),
+            tracing=lambda_.Tracing.ACTIVE,
+            architecture=lambda_.Architecture.X86_64,
+            memory_size=128,
+            timeout=Duration.seconds(15),
             handler='properties_service.wait_for_contract_approval_function.lambda_handler',
             environment={
-                "TABLE_NAME": table.table_name,
+                "CONTRACT_STATUS_TABLE": table.table_name,
                 "STAGE": stage.value,
                 "SERVICE_NAMESPACE": UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_LOGGER_CASE': 'PascalCase',
+                'POWERTOOLS_SERVICE_NAME': UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_TRACE_DISABLED': 'false',  # Explicitly disables tracing, default
+                'POWERTOOLS_LOGGER_LOG_EVENT': str(stage != STAGE.PROD).lower(),
+                'POWERTOOLS_LOGGER_SAMPLE_RATE': '0.1' if stage != STAGE.PROD else '0',  # Debug log sampling percentage
+                'POWERTOOLS_METRICS_NAMESPACE': UNICORN_NAMESPACES.PROPERTIES.value,
+                'POWERTOOLS_LOG_LEVEL': 'INFO',  # Log level for Logger (INFO, DEBUG, etc.), default
+                'LOG_LEVEL': 'INFO',  # Log level for Logger
             },
             log_group=logs.LogGroup(
                 self,

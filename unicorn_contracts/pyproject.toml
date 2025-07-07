@@ -8,19 +8,17 @@ authors = [
 
 requires-python = ">=3.13"
 dependencies = [
-    "boto3>=1.35",
-    "aws-lambda-powertools[aws-sdk]>=3.3.0",
-    "aws-xray-sdk>=2.12.0",
+    "boto3>=1.38",
+    "aws-lambda-powertools[aws-sdk]>=3.15.0",
+    "aws-xray-sdk>=2.14.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "requests>=2.31.0",
-    "moto>=4.1.13",
-    "importlib-metadata>=6.8.0",
-    "pyyaml>=6.0.1",
-    "arnparse>=0.0.2"
+    "requests>=2.32.0",
+    "importlib-metadata>=8.7.0",
+    "pyyaml>=6.0.2",
+    "arnparse>=0.0.2",
 ]
 
 [tool.uv.workspace]
@@ -34,6 +32,17 @@ packages = ["contracts_service"]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
 testpaths = ["tests/unit", "tests/integration"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 150
+
+[dependency-groups]
+dev = [
+    "moto>=5.1.6",
+    "pytest>=8.4.1",
+]
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"

@@ -35,6 +35,18 @@ package-dir = {"approvals_service" = "src/approvals_service","search_service" = 
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
 testpaths = ["tests/unit"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 150
+
+[dependency-groups]
+dev = [
+    "moto>=5.1.6",
+    "pytest>=8.4.1",
+]
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+

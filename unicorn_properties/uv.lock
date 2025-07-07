@@ -448,7 +448,7 @@ wheels = [
 [[package]]
 name = "properties-service"
 version = "0.3.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aws-lambda-powertools", extra = ["aws-sdk"] },
     { name = "aws-xray-sdk" },
@@ -459,10 +459,14 @@ dependencies = [
 dev = [
     { name = "arnparse" },
     { name = "importlib-metadata" },
-    { name = "moto" },
-    { name = "pytest" },
     { name = "pyyaml" },
     { name = "requests" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "moto" },
+    { name = "pytest" },
 ]
 
 [package.metadata]
@@ -472,12 +476,16 @@ requires-dist = [
     { name = "aws-xray-sdk", specifier = ">=2.12.0" },
     { name = "boto3", specifier = ">=1.35" },
     { name = "importlib-metadata", marker = "extra == 'dev'", specifier = ">=6.8.0" },
-    { name = "moto", marker = "extra == 'dev'", specifier = ">=4.1.13" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
     { name = "pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.1" },
     { name = "requests", marker = "extra == 'dev'", specifier = ">=2.31.0" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "moto", specifier = ">=5.1.6" },
+    { name = "pytest", specifier = ">=8.4.1" },
+]
 
 [[package]]
 name = "publication"

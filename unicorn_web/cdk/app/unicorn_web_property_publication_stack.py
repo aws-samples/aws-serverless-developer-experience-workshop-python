@@ -4,6 +4,7 @@ import os
 from dataclasses import dataclass
 import json
 from aws_cdk import (
+    BundlingOptions,
     aws_apigateway as apigateway,
     aws_dynamodb as dynamodb,
     aws_events as events,
@@ -238,7 +239,7 @@ class WebPropertyPublicationStack(Stack):
             f"RequestApprovalFunction-{props.stage.value}",
             runtime=lambda_.Runtime.PYTHON_3_13,
             code=lambda_.Code.from_asset("src/"),
-            handler="approvals_service.request_aproval_function.lambda_handler",
+            handler="approvals_service.request_approval_function.lambda_handler",
             tracing=lambda_.Tracing.ACTIVE,
             log_group=logs.LogGroup(
                 self,
@@ -248,6 +249,7 @@ class WebPropertyPublicationStack(Stack):
             ),
             environment={
                 "DYNAMODB_TABLE": table.table_name,
+                "EVENT_BUS": event_bus.event_bus_name,
                 "SERVICE_NAMESPACE": UNICORN_NAMESPACES.WEB.value,
                 "POWERTOOLS_LOGGER_CASE": "PascalCase",
                 "POWERTOOLS_SERVICE_NAME": UNICORN_NAMESPACES.WEB.value,
@@ -286,8 +288,15 @@ class WebPropertyPublicationStack(Stack):
             self,
             f"PublicationApprovedFunction-{props.stage.value}",
             runtime=lambda_.Runtime.PYTHON_3_13,
-            code=lambda_.Code.from_asset("src/"),
-            handler="approvals_service.publication_approval_function.lambda_handler",
+            code=lambda_.Code.from_asset("src/", bundling=BundlingOptions(
+                image=lambda_.Runtime.PYTHON_3_13.bundling_image,
+                command=[
+                    "bash", "-c",
+                    "echo -e \"from setuptools import setup, find_packages\n\nsetup(\n    packages=find_packages()\n)\" > setup.py && " 
+                    "pip download -r requirements.txt -d /asset-output && cp -au . /asset-output"
+                ]
+                )),
+            handler="approvals_service.publication_approved_event_handler.lambda_handler",
             tracing=lambda_.Tracing.ACTIVE,
             log_group=logs.LogGroup(
                 self,
@@ -297,6 +306,7 @@ class WebPropertyPublicationStack(Stack):
             ),
             environment={
                 "DYNAMODB_TABLE": table.table_name,
+                "EVENT_BUS": event_bus.event_bus_name,
                 "SERVICE_NAMESPACE": UNICORN_NAMESPACES.WEB.value,
                 "POWERTOOLS_LOGGER_CASE": "PascalCase",
                 "POWERTOOLS_SERVICE_NAME": UNICORN_NAMESPACES.WEB.value,

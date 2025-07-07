@@ -56,16 +56,16 @@ wheels = [
 
 [[package]]
 name = "aws-cdk-cloud-assembly-schema"
-version = "44.7.0"
+version = "44.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jsii" },
     { name = "publication" },
     { name = "typeguard" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/8f/877b764dcb15cfce103e12d20ebb21eac6fe65289ce300781e19f24e69af/aws_cdk_cloud_assembly_schema-44.7.0.tar.gz", hash = "sha256:93fb209874fabc934dfdc6ca34a0be2e423e01cad676d595e68b76f3ac1fcf0a", size = 204707 }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/6f/c0387963d93fd2bec646d13ccdfb1885564ad72ae4f04bc70a2faa1661aa/aws_cdk_cloud_assembly_schema-44.8.0.tar.gz", hash = "sha256:31b88005f070dddc77a7fd10fa4eb1f366c97dd03461ce78db37bbbd07708466", size = 204693 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/31/7f/9a2fd3c5c49e1a7b9cf83bf0c22c3dbcb7cf7e2ad52f2ad720e8c781b768/aws_cdk_cloud_assembly_schema-44.7.0-py3-none-any.whl", hash = "sha256:4b74d45e529861835bb31b7a2ce65d8fb12bbd8a336871154397ea87779d60b9", size = 204341 },
+    { url = "https://files.pythonhosted.org/packages/e2/ea/fcbb08d95e8ba2a5fe18b7e47e535dca5ab3fe992c05bb22b25851b7e8d5/aws_cdk_cloud_assembly_schema-44.8.0-py3-none-any.whl", hash = "sha256:3d76cdb871918794941eab5292e7dc13acd1fced61e00c8aba47db257fae33a2", size = 204337 },
 ]
 
 [[package]]
@@ -176,7 +176,7 @@ requires-dist = [
 
 [[package]]
 name = "cdk-nag"
-version = "2.36.23"
+version = "2.36.30"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aws-cdk-lib" },
@@ -185,9 +185,9 @@ dependencies = [
     { name = "publication" },
     { name = "typeguard" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ba/a5/4a4d03396f395da4a5cf67149f8ac18e2fd14686b0b870e1902fd0fcb994/cdk_nag-2.36.23.tar.gz", hash = "sha256:f2e8962e98b8c9b8666344ac8cd8a19ac4b8b0660454268dbfbdfbfa9b53031c", size = 760581 }
+sdist = { url = "https://files.pythonhosted.org/packages/4f/a4/17ae9e5d9bfaaf5ad82667677f0017c45b3202eaf50772a804e3f89248df/cdk_nag-2.36.30.tar.gz", hash = "sha256:d6e71ae2cba4c2aa3462a30496344a936f902572920e6f2629588eace9bd2adc", size = 760637 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/7e/21d292013a8704b00b1e4f623d6221288d1ba639a5379a4856252c11d75f/cdk_nag-2.36.23-py3-none-any.whl", hash = "sha256:3e8dec9e1fef8a42946719e8f1b58f918e372b8fdbc8866de42d39a7742df245", size = 754614 },
+    { url = "https://files.pythonhosted.org/packages/2c/94/4f63a701bdaacca210a93514204564809557e752b1a90010e97f0e4fee27/cdk_nag-2.36.30-py3-none-any.whl", hash = "sha256:2c7836d47074653c39b3e0012694f600797067f525013123fb37b48d5d4eb556", size = 754625 },
 ]
 
 [[package]]
@@ -597,7 +597,7 @@ wheels = [
 [[package]]
 name = "unicorn-web"
 version = "0.3.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aws-lambda-powertools", extra = ["aws-sdk"] },
     { name = "aws-xray-sdk" },
@@ -615,6 +615,12 @@ dev = [
     { name = "pyyaml" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "moto" },
+    { name = "pytest" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "arnparse", marker = "extra == 'dev'", specifier = ">=0.0.2" },
@@ -629,6 +635,12 @@ requires-dist = [
     { name = "requests", specifier = "==2.31.0" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "moto", specifier = ">=5.1.6" },
+    { name = "pytest", specifier = ">=8.4.1" },
+]
 
 [[package]]
 name = "urllib3"

@@ -15,9 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
     "requests>=2.31.0",
-    "moto>=4.1.13",
     "importlib-metadata>=6.8.0",
     "pyyaml>=6.0.1",
     "arnparse>=0.0.2"
@@ -34,6 +32,17 @@ packages = ["contracts_service"]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
 testpaths = ["tests/unit", "tests/integration"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 150
+
+[dependency-groups]
+dev = [
+    "moto>=5.1.6",
+    "pytest>=8.4.1",
+]
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"

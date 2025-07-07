@@ -14,13 +14,13 @@ from .helper import load_event, return_env_vars_dict, create_ddb_table_propertie
 def test_contract_status_changed_event_handler(dynamodb, lambda_context):
     eventbridge_event = load_event('eventbridge/contract_status_changed')
 
-    from properties_service import contract_status_changed_event_handler
+    from properties_service import contract_status_changed_event_function
     # Reload is required to prevent function setup reuse from another test 
-    reload(contract_status_changed_event_handler)
+    reload(contract_status_changed_event_function)
 
     create_ddb_table_properties(dynamodb)
 
-    ret = contract_status_changed_event_handler.lambda_handler(eventbridge_event, lambda_context)
+    ret = contract_status_changed_event_function.lambda_handler(eventbridge_event, lambda_context)
 
     assert ret["statusCode"] == 200
 
@@ -29,13 +29,13 @@ def test_contract_status_changed_event_handler(dynamodb, lambda_context):
 def test_missing_property_id(dynamodb, lambda_context):
     eventbridge_event = {'detail': {}}
 
-    from properties_service import contract_status_changed_event_handler
+    from properties_service import contract_status_changed_event_function
     # Reload is required to prevent function setup reuse from another test 
-    reload(contract_status_changed_event_handler)
+    reload(contract_status_changed_event_function)
 
     create_ddb_table_properties(dynamodb)
 
     with pytest.raises(ClientError) as e:
-        contract_status_changed_event_handler.lambda_handler(eventbridge_event, lambda_context)
+        contract_status_changed_event_function.lambda_handler(eventbridge_event, lambda_context)
 
     assert 'ValidationException' in str(e.value)
