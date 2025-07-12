@@ -14,7 +14,7 @@ from .helper import load_event, return_env_vars_dict, create_ddb_table_propertie
 def test_contract_status_changed_event_handler(dynamodb, lambda_context):
     eventbridge_event = load_event("eventbridge/contract_status_changed")
 
-    from properties_service import contract_status_changed_event_handler
+    from approvals_service import contract_status_changed_event_handler
 
     # Reload is required to prevent function setup reuse from another test
     reload(contract_status_changed_event_handler)
@@ -30,7 +30,7 @@ def test_contract_status_changed_event_handler(dynamodb, lambda_context):
 def test_missing_property_id(dynamodb, lambda_context):
     eventbridge_event = {"detail": {}}
 
-    from properties_service import contract_status_changed_event_handler
+    from approvals_service import contract_status_changed_event_handler
 
     # Reload is required to prevent function setup reuse from another test
     reload(contract_status_changed_event_handler)

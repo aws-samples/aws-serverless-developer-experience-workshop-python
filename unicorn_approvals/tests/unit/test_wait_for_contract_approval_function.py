@@ -12,7 +12,7 @@ from .helper import load_event, return_env_vars_dict, create_ddb_table_contracts
 def test_handle_wait_for_contract_approval_function(dynamodb, lambda_context):
     stepfunctions_event = load_event("lambda/wait_for_contract_approval_function")
 
-    from properties_service import wait_for_contract_approval_function
+    from approvals_service import wait_for_contract_approval_function
 
     reload(wait_for_contract_approval_function)
 

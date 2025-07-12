@@ -12,7 +12,7 @@ from .helper import load_event, return_env_vars_dict
 def test_handle_status_changed_draft(stepfunction, lambda_context):
     ddbstream_event = load_event("ddb_stream_events/contract_status_changed_draft")
 
-    from properties_service import properties_approval_sync_function
+    from approvals_service import properties_approval_sync_function
 
     reload(properties_approval_sync_function)
 
@@ -27,7 +27,7 @@ def test_handle_status_changed_approved(caplog, stepfunction, lambda_context):
     pass
     # ddbstream_event = load_event('ddb_stream_events/status_approved_waiting_for_approval')
 
-    # from properties_service import properties_approval_sync_function
+    # from approvals_service import properties_approval_sync_function
     # reload(properties_approval_sync_function)
 
     # ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)

@@ -10,7 +10,7 @@ from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.event_handler.exceptions import InternalServerError
 from botocore.exceptions import ClientError
 
-from properties_service.exceptions import ContractStatusNotFoundException
+from approvals_service.exceptions import ContractStatusNotFoundException
 
 
 # Initialise Environment variables

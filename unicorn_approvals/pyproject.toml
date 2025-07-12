@@ -1,5 +1,5 @@
 [project]
-name = "properties_service"
+name = "approvals_service"
 version = "0.2.0"
 description = "Unicorn Properties Property Service"
 authors = [
@@ -27,5 +27,5 @@ dev = [
 ]
 
 [tool.setuptools]
-package-dir = {"properties_service" = "src"}
-packages = ["properties_service"]
+package-dir = {"approvals_service" = "src"}
+packages = ["approvals_service"]
