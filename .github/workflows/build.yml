@@ -48,7 +48,7 @@ jobs:
       - name: Install cfn-lint and plugins
         run: |
           pip install cfn-lint
-          pip install cfn-lint-serverless
+          pip install cfn-lint-serverless==0.3.2
 
       - name: Install yq
         run: |
