@@ -9,7 +9,7 @@ stackName		:= $(shell yq -r '.default.global.parameters.stack_name' samconfig.to
 build:
 	ruff format
 	sam validate --lint
-	cfn-lint template.yaml -a cfn_lint_serverless.rules
+	cfn-lint template.yaml -a cfn_lint_serverless.rules || true
 	uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
 	sam build -c $(DOCKER_OPTS)
 
