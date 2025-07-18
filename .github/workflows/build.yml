@@ -41,9 +41,6 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           version: 0.7.8
-          
-      - name: Install ruff
-        run: pip install ruff    
 
       - name: Install AWS SAM CLI
         uses: aws-actions/setup-sam@v2
@@ -62,7 +59,9 @@ jobs:
         working-directory: ./${{ matrix.service }}
 
       - name: Build ${{ matrix.display_name }}
-        run: make build
+        run: |
+          # Use uv run to ensure all commands run in the virtual environment
+          uv run make build
         working-directory: ./${{ matrix.service }}
         env:
           DOCKER_OPTS: --use-container
@@ -75,6 +74,6 @@ jobs:
           retention-days: 7
 
       - name: Clean up ${{ matrix.display_name }}
-        run: make clean
+        run: uv run make clean
         working-directory: ./${{ matrix.service }}
         if: always() 
