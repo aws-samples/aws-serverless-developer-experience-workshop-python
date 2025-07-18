@@ -45,9 +45,10 @@ jobs:
       - name: Install AWS SAM CLI
         uses: aws-actions/setup-sam@v2
 
-      - name: Install cfn-lint
+      - name: Install cfn-lint and plugins
         run: |
           pip install cfn-lint
+          pip install cfn-lint-serverless
 
       - name: Install yq
         run: |
