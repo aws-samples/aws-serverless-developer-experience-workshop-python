@@ -41,6 +41,9 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           version: 0.7.8
+          
+      - name: Install ruff
+        run: pip install ruff    
 
       - name: Install AWS SAM CLI
         uses: aws-actions/setup-sam@v2
