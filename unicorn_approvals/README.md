@@ -1,22 +1,15 @@
-# Developing Unicorn Properties
+# Developing Unicorn Approvals
 
-![Properties Approval Architecture](https://static.us-east-1.prod.workshops.aws/public/f273b5fc-17cd-406b-9e63-1d331b00589d/static/images/architecture-properties.png)
+![Properties Approval Architecture](https://static.us-east-1.prod.workshops.aws/public/f273b5fc-17cd-406b-9e63-1d331b00589d/static/images/architecture-approvals.png)
 
 ## Architecture overview
 
-Unicorn Properties is primarily responsible for approving property listings for Unicorn Web.
+**Unicorn Approvals** uses an AWS Step Functions state machine to approve property listings for Unicorn Web. The workflow checks for contract information, description sentiment and safe images, and verifies the contract is approved before approving the listing. It publishes the result via the `PublicationEvaluationCompleted` event.
 
-A core component of Unicorn Properties is the approvals workflow. The approvals workflow is implemented using an AWS Step Functions state machine. At a high level, the workflow will:
+A Unicorn Properties agent initiates the workflow by requesting to approve a listing, generating a `PublicationApprovalRequested` event with property information. To decouple from the Contracts Service, the Approval service maintains a local copy of contract status by consuming the ContractStatusChanged event.
 
-* Check whether or not it has any contract information for the property it needs to approve. If there is no contract information, the approval process cannot be completed.
-* Ensure the sentiment of the property description is positive and that there no unsafe images. All checks must pass for the listing to be made public.
-* Ensure that the contract is in an APPROVED state before it can approve the listing. This accounts for a situation where the property listings are created before the contract has been signed and the services for Unicorn Properties are paid for.
-* Publish the result of the workflow via the `PublicationEvaluationCompleted` event.
+The workflow checks the contract state. If the contract is in the WaitForContractApproval state, it updates the contract status for the property with its task token, triggering a DynamoDB stream event. The Property approvals sync function handles these events and passes the task token back to the state machine based on the contract state.
 
-The workflow is initiated by a request made by an Unicorn Properties **agent** to have the property approved for publication. Once they have created a property listing (added property details and photos), they initiate the request in Unicorn Web, which generates a `PublicationApprovalRequested` event. This event contains the property information which the workflow processes.
+If the workflow completes successfully, it emits a PublicationEvaluationCompleted event with an **approved** or **declined** evaluation result, which Unicorn Web listens to update its publication flag.
 
-In order process the approvals workflow successfully, the properties service needs to know the current status of a contract. To remain fully decoupled from the **Contracts Service**, it maintains a local copy of contract status by consuming the `ContractStatusChanged` event. This is eliminates the need for the Contracts service to expose an API that gives other services access to its database, and allows the Properties service to function autonomously.
-
-When the workflow is paused to check to see whether or not the contract is in an approved state, the `WaitForContractApproval` state will update a contract status for a specified property with its task token. This initiates a stream event on the DynamoDB table. The Property approvals sync function handles DynamoDB stream events. It determines whether or not to pass AWS Step Function task token back to the state machine based on the contract state.
-
-If workflow is completed successfully, it will emit a `PublicationEvaluationCompleted` event, with an evaluation result of `APPROVED` or `DECLINED`. This is what the Property Web will listen to in order to make the list available for publication.
+**Note:** Upon deleting the CloudFormation stack for this service, check if the `ApprovalStateMachine` StepFunction doesn't have any executions in `RUNNING` state. If there are, cancel those execution prior to deleting the CloudFormation stack.
