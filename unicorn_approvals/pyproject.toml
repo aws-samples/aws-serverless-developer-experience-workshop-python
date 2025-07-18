@@ -29,3 +29,13 @@ dev = [
 [tool.setuptools]
 package-dir = {"approvals_service" = "src"}
 packages = ["approvals_service"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -vv -W ignore::UserWarning"
+testpaths = ["tests/unit", "tests/integration"]
+pythonpath = ["."]
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"

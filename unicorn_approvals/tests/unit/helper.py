@@ -6,7 +6,7 @@ from pathlib import Path
 
 TABLE_NAME = "table1"
 EVENTBUS_NAME = "test-eventbridge"
-EVENTS_DIR = Path(__file__).parent / "events"
+EVENTS_DIR = Path(__file__).parent.parent / "events"
 
 
 def load_event(filename):
