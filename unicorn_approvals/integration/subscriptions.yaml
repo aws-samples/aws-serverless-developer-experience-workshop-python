@@ -19,7 +19,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      Name: unicorn.properties-ContractStatusChanged
+      Name: unicorn.approvals-ContractStatusChanged
       Description: Contract Status Changed subscription
       EventBusName:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsEventBusArn}}"
@@ -42,7 +42,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      Name: unicorn.properties-PublicationApprovalRequested
+      Name: unicorn.approvals-PublicationApprovalRequested
       Description: Publication evaluation completed subscription
       EventBusName:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornWebEventBusArn}}"
