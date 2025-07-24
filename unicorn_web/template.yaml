@@ -111,7 +111,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.request_approval_function.lambda_handler
+      Handler: publication_manager_service.request_approval_function.lambda_handler
       Policies:
         - EventBridgePutEventsPolicy:
             EventBusName: !Ref UnicornWebEventBus
@@ -141,7 +141,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.publication_approved_event_handler.lambda_handler
+      Handler: publication_manager_service.publication_approved_event_handler.lambda_handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref WebTable

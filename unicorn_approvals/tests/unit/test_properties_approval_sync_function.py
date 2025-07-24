@@ -27,7 +27,7 @@ def test_handle_status_changed_approved(caplog, stepfunction, lambda_context):
     pass
     # ddbstream_event = load_event('ddb_stream_events/status_approved_waiting_for_approval')
 
-    # from approvals_service import properties_approval_sync_function
+    # from publication_manager_service import properties_approval_sync_function
     # reload(properties_approval_sync_function)
 
     # ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
