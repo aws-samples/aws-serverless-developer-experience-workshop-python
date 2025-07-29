@@ -36,7 +36,3 @@ minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning"
 testpaths = ["tests/unit", "tests/integration"]
 pythonpath = ["."]
-
-[build-system]
-requires = ["uv_build"]
-build-backend = "uv_build"
