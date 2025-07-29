@@ -22,7 +22,7 @@ def test_valid_event(dynamodb, eventbridge, sqs, lambda_context):
     event = sqs_event([{"body": payload, "attributes": {"HttpMethod": "POST"}}])
 
     # Loading function here so that mocking works correctly.
-    from approvals_service import request_approval_function
+    from publication_manager_service import request_approval_function
 
     # Reload is required to prevent function setup reuse from another test
     reload(request_approval_function)
