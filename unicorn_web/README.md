@@ -10,7 +10,7 @@ Lambda functions handle API Gateway requests to:
 
 - Search approved property listings: The **Search function** retrieves property listings marked as APPROVED from the DynamoDB table using multiple search patterns.
 
-- Request property listing approval: The **Approval function** sends an EventBridge event requesting approval for a property listing specified in the payload.
+- Request property listing approval: The **Request Approval function** sends an EventBridge event requesting approval for a property listing specified in the payload.
 
 - Process approved listings: The **Publication Evaluation Event Handler function** processes `PublicationEvaluationCompleted` events from the Unicorn Approvals service and writes the evaluation result to the DynamoDB table.
 
