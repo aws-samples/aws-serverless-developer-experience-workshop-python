@@ -6,9 +6,9 @@
 
 **Unicorn Approvals** uses an AWS Step Functions state machine to approve property listings for Unicorn Web. The workflow checks for contract information, description sentiment and safe images, and verifies the contract is approved before approving the listing. It publishes the result via the `PublicationEvaluationCompleted` event.
 
-A Unicorn Properties agent initiates the workflow by requesting to approve a listing, generating a `PublicationApprovalRequested` event with property information. To decouple from the Contracts Service, the Approval service maintains a local copy of contract status by consuming the ContractStatusChanged event.
+A Unicorn Properties agent initiates the workflow by requesting to approve a listing, generating a `PublicationApprovalRequested` event with property information. To decouple from the Contracts Service, the Approvals service maintains a local copy of contract status by consuming the ContractStatusChanged event.
 
-The workflow checks the contract state. If the contract is in the WaitForContractApproval state, it updates the contract status for the property with its task token, triggering a DynamoDB stream event. The Property approvals sync function handles these events and passes the task token back to the state machine based on the contract state.
+The workflow checks the contract state. If the contract is in the WaitForContractApproval state, it updates the contract status for the property with its task token, triggering a DynamoDB stream event. The Property Approval Sync function handles these events and passes the task token back to the state machine based on the contract state.
 
 If the workflow completes successfully, it emits a PublicationEvaluationCompleted event with an **approved** or **declined** evaluation result, which Unicorn Web listens to update its publication flag.
 

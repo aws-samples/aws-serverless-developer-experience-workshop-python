@@ -16,7 +16,7 @@ The 6-8 hour workshop assumes your practical development skills in Python, TypeS
 
 ![AWS Serverless Developer Experience Workshop Reference Architecture](./docs/architecture.png)
 
-Real estate company **Unicorn Properties** needs to manage publishing of new property listings and sale contracts linked to individual properties, and provide a way for customers to view approved listings. They adopted a serverless, event-driven architecture with two primary domains: **Contracts** (managed by Contracts Service) and **Properties** (managed by Web and Approvals Services).
+Real estate company **Unicorn Properties** needs to manage publishing of new property listings and sale contracts linked to individual properties, and provide a way for customers to view approved listings. They adopted a serverless, event-driven architecture with two primary domains: **Contracts** (managed by the Contracts Service) and **Properties** (managed by the Web and Approvals Services).
 
 **Unicorn Contracts** (using the `Unicorn.Contracts` namespace) service manages contractual relationships between property sellers and Unicorn Approvals, defining properties for sale, terms, and engagement costs.
 
