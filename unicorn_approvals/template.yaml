@@ -4,7 +4,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::Serverless-2016-10-31
 Description: >
-  Unicorn Properties Service. Validate the content, images and contract of property listings.
+  Unicorn Approvals Service. Validate the content, images and contract of property listings.
 
 Metadata:
   cfn-lint:
@@ -288,7 +288,7 @@ Resources:
         - Key: stage
           Value: !Ref Stage
 
-  # Store failed INVOCATIONS to each Lambda function in Unicorn Properties Service
+  # Store failed INVOCATIONS to each Lambda function in Unicorn Approvals Service
   ApprovalsServiceDLQ:
     Type: AWS::SQS::Queue
     UpdateReplacePolicy: Delete
@@ -328,13 +328,13 @@ Resources:
           Value: !Ref Stage
 
   #### EVENT BUS
-  # Event bus for Unicorn Properties Service, used to publish and consume events
+  # Event bus for Unicorn Approvals Service, used to publish and consume events
   UnicornApprovalsEventBus:
     Type: AWS::Events::EventBus
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      Name: !Sub UnicornPropertiesBus-${Stage}
+      Name: !Sub UnicornApprovalsBus-${Stage}
 
   # Event bus policy to restrict who can publish events (should only be services from UnicornApprovalsNamespace)
   UnicornApprovalsEventsBusPublishPolicy:
@@ -419,7 +419,7 @@ Resources:
         }
 
   #### CLOUDFORMATION NESTED STACKS
-  # CloudFormation Stack with the Properties Service Event Registry and Schemas
+  # CloudFormation Stack with the Approvals Service Event Registry and Schemas
   EventSchemasStack:
     Type: AWS::Serverless::Application
     UpdateReplacePolicy: Delete
@@ -429,7 +429,7 @@ Resources:
       Parameters:
         Stage: !Ref Stage
 
-  # CloudFormation Stack with the Cross-service EventBus policy for Properties Service
+  # CloudFormation Stack with the Cross-service EventBus policy for Approvals Service
   SubscriberPoliciesStack:
     Type: AWS::Serverless::Application
     UpdateReplacePolicy: Delete
@@ -441,7 +441,7 @@ Resources:
       Parameters:
         Stage: !Ref Stage
 
-  # CloudFormation Stack with the Cross-service EventBus Rules for Properties Service
+  # CloudFormation Stack with the Cross-service EventBus Rules for Approvals Service
   SubscriptionsStack:
     Type: AWS::Serverless::Application
     UpdateReplacePolicy: Delete
@@ -482,7 +482,7 @@ Outputs:
     Value: !Ref ApprovalStateMachine
 
   #### EVENT BRIDGE OUTPUTS
-  UnicornPropertiesEventBusName:
+  UnicornApprovalsEventBusName:
     Value: !GetAtt UnicornApprovalsEventBus.Name
 
   #### CLOUDWATCH LOGS OUTPUTS

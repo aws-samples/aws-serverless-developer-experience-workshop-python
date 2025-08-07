@@ -15,7 +15,6 @@ Metadata:
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
         - W3002  # Rule disabled as nested templates are being packaged 
-        - E3030  # Rule disabled due to using cfn-lint-serverless rules v0.3
 
 Parameters:
   Stage:
@@ -462,7 +461,7 @@ Outputs:
     Description: "GET request to list all properties in a given street"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}/{street}"
   ApiPropertyApproval:
-    Description: "POST request to add a property to the database"
+    Description: "POST request approval to allow property to be searchable"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/request_approval"
   ApiPropertyDetails:
     Description: "GET request to get the full details of a single property"
