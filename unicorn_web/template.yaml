@@ -15,7 +15,6 @@ Metadata:
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
         - W3002  # Rule disabled as nested templates are being packaged 
-        - E3030  # Rule disabled due to using cfn-lint-serverless rules v0.3
 
 Parameters:
   Stage:
@@ -111,7 +110,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.request_approval_function.lambda_handler
+      Handler: publication_manager_service.request_approval_function.lambda_handler
       Policies:
         - EventBridgePutEventsPolicy:
             EventBusName: !Ref UnicornWebEventBus
@@ -141,7 +140,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: approvals_service.publication_approved_event_handler.lambda_handler
+      Handler: publication_manager_service.publication_approved_event_handler.lambda_handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref WebTable
@@ -157,7 +156,7 @@ Resources:
             EventBusName: !Ref UnicornWebEventBus
             Pattern:
               source:
-                - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+                - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
               detail-type:
                 - PublicationEvaluationCompleted
 
@@ -362,7 +361,7 @@ Resources:
           - !Ref AWS::AccountId
         source:
           - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
-          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
           - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:
@@ -462,7 +461,7 @@ Outputs:
     Description: "GET request to list all properties in a given street"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/search/{country}/{city}/{street}"
   ApiPropertyApproval:
-    Description: "POST request to add a property to the database"
+    Description: "POST request approval to allow property to be searchable"
     Value: !Sub "https://${UnicornWebApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}/request_approval"
   ApiPropertyDetails:
     Description: "GET request to get the full details of a single property"

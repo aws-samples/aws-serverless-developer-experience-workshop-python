@@ -24,7 +24,7 @@
 #     eventbridge_event = load_event('events/property_approved.json')
 #     property_id = eventbridge_event['detail']['property_id']
 
-#     import  approvals_service.publication_approved_event_handler as app
+#     import  publication_manager_service.publication_approved_event_handler as app
 #     reload(app) # Reload is required to prevent function setup reuse from another test
 
 #     create_ddb_table_property_web(dynamodb)
