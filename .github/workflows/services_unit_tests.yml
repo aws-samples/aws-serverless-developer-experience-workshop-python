@@ -3,13 +3,13 @@ on:
     branches: [develop, main]
     paths:
       - 'unicorn_contracts/**'
-      - 'unicorn_properties/**'
+      - 'unicorn_approvals/**'
       - 'unicorn_web/**'
   pull_request:
     branches: [develop, main]
     paths:
       - 'unicorn_contracts/**'
-      - 'unicorn_properties/**'
+      - 'unicorn_approvals/**'
       - 'unicorn_web/**'
   
 jobs:
@@ -18,10 +18,10 @@ jobs:
     with:
       service_directory: unicorn_contracts
 
-  unicorn_properties:
+  unicorn_approvals:
     uses: ./.github/workflows/reusable_unit_tests.yml
     with:
-      service_directory: unicorn_properties
+      service_directory: unicorn_approvals
 
   unicorn_web:
     uses: ./.github/workflows/reusable_unit_tests.yml

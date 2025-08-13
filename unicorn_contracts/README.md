@@ -4,13 +4,22 @@
 
 ## Architecture overview
 
-Unicorn Contract manages the contractual relationship between the customers and the Unicorn Properties agency. It's primary function is to allow Unicorn Properties agents to create a new contract for a property listing, and to have the contract approved once it's ready.
+The **Unicorn Contracts** service manages contractual relationships between customers and Unicorn Properties agency. The service handles standard terms and conditions, property service rates, fees, and additional services.
 
-The architecture is fairly straight forward. An API exposes the create contract and update contract methods. This information is recorded in a Amazon DynamoDB table which will contain all latest information about the contract and it's status.
+Each property can have only one active contract. Properties use their address as a unique identifier instead of a GUID, which correlates across services.
 
-Each time a new contract is created or updated, Unicorn Contracts publishes a `ContractStatusChanged` event to Amazon EventBridge signalling changes to the contract status. These events are consumed by **Unicorn Properties**, so it can track changes to contracts, without needing to take a direct dependency on Unicorn Contracts and it's database.
+For example: `usa/anytown/main-street/111`.
 
-Here is an example of an event that is published to EventBridge:
+The contract workflow operates as follows:
+
+1. Agents submit contract creation/update commands through the Contracts API
+1. The API sends requests to Amazon SQS
+1. A Contracts function processes the queue messages and updates Amazon DynamoDB
+1. DynamoDB Streams captures contract changes
+1. Amazon EventBridge Pipes transforms the DynamoDB records into ContractStatusChanged events
+1. Unicorn Approvals consumes these events to track contract changes without direct database dependencies
+
+An example of `ContractStatusChanged` event:
 
 ```json
 {

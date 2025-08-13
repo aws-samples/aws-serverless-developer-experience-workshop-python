@@ -1,0 +1,80 @@
+name: Build Python Services
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'unicorn_contracts/**'
+      - 'unicorn_approvals/**'
+      - 'unicorn_web/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'unicorn_contracts/**'
+      - 'unicorn_approvals/**'
+      - 'unicorn_web/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [unicorn_contracts, unicorn_approvals, unicorn_web]
+        include:
+          - service: unicorn_contracts
+            display_name: Unicorn Contracts Service
+          - service: unicorn_approvals
+            display_name: Unicorn Approvals Service
+          - service: unicorn_web
+            display_name: Unicorn Web Service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: 0.7.8
+
+      - name: Install AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Install cfn-lint and plugins
+        run: |
+          pip install cfn-lint
+          pip install cfn-lint-serverless
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+      - name: Initialize dependencies for ${{ matrix.display_name }}
+        run: make ci_init
+        working-directory: ./${{ matrix.service }}
+
+      - name: Build ${{ matrix.display_name }}
+        run: |
+          # Use uv run to ensure all commands run in the virtual environment
+          uv run make build
+        working-directory: ./${{ matrix.service }}
+        env:
+          DOCKER_OPTS: --use-container
+
+      - name: Upload build artifacts for ${{ matrix.display_name }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service }}-build-artifacts
+          path: ${{ matrix.service }}/.aws-sam/
+          retention-days: 7
+
+      - name: Clean up ${{ matrix.display_name }}
+        run: uv run make clean
+        working-directory: ./${{ matrix.service }}
+        if: always() 

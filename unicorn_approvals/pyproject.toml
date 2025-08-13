@@ -1,0 +1,37 @@
+[project]
+name = "approvals_service"
+version = "0.2.0"
+description = "Unicorn Properties Property Service"
+authors = [
+    {name = "Amazon Web Services"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "aws-lambda-powertools[tracer]>=3.18.0",
+    "aws-xray-sdk>=2.14.0",
+    "boto3>=1.40.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "aws-lambda-powertools[all]>=3.18.0",
+    "requests>=2.32.3",
+    "moto[dynamodb,events,sqs]>=5.1.9",
+    "importlib-metadata>=8.4.0",
+    "pyyaml>=6.0.2",
+    "arnparse>=0.0.2",
+    "pytest>=8.4.1",
+    "ruff>=0.12.7",
+]
+
+[tool.setuptools]
+package-dir = {"approvals_service" = "src"}
+packages = ["approvals_service"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -vv -W ignore::UserWarning"
+testpaths = ["tests/unit", "tests/integration"]
+pythonpath = ["."]

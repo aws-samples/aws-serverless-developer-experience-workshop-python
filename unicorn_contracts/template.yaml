@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::Serverless-2016-10-31
 Description: >
@@ -15,9 +15,7 @@ Metadata:
         - WS2001 # Rule disabled because check does not support !ToJsonString transform
         - ES1001 # Rule disabled because our Lambda functions don't need DestinationConfig.OnFailure
         - W3002  # Rule disabled as nested templates are being packaged
-        - E3030  # Rule disabled due to using cfn-lint-serverless rules v0.3
-        - E3002  # Rule disabled due to using cfn-lint-serverless rules v0.3
-        
+
 Parameters:
   Stage:
     Type: String
@@ -293,7 +291,7 @@ Resources:
           - !Ref AWS::AccountId
         source:
           - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
-          - "{{resolve:ssm:/uni-prop/UnicornPropertiesNamespace}}"
+          - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
           - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
       State: ENABLED #You may want to disable this rule in production
       Targets:

@@ -14,12 +14,12 @@ Resources:
       Name: !Sub /uni-prop/UnicornContractsNamespace
       Value: "unicorn.contracts"
 
-  UnicornPropertiesNamespaceParam: 
+  UnicornApprovalsNamespaceParam: 
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: !Sub /uni-prop/UnicornPropertiesNamespace
-      Value: "unicorn.properties"
+      Name: !Sub /uni-prop/UnicornApprovalsNamespace
+      Value: "unicorn.approvals"
 
   UnicornWebNamespaceParam: 
     Type: AWS::SSM::Parameter
@@ -35,9 +35,9 @@ Outputs:
     Description: Unicorn Contracts namespace parameter
     Value: !Ref UnicornContractsNamespaceParam
 
-  UnicornPropertiesNamespace:
+  UnicornApprovalsNamespace:
     Description: Unicorn Properties namespace parameter
-    Value: !Ref UnicornPropertiesNamespaceParam
+    Value: !Ref UnicornApprovalsNamespaceParam
 
   UnicornWebNamespace:
     Description: Unicorn Web namespace parameter
@@ -49,7 +49,7 @@ Outputs:
 
   UnicornPropertiesNamespaceValue:
     Description: Unicorn Properties namespace parameter value
-    Value: !GetAtt UnicornPropertiesNamespaceParam.Value
+    Value: !GetAtt UnicornApprovalsNamespaceParam.Value
 
   UnicornWebNamespaceValue:
     Description: Unicorn Web namespace parameter value
