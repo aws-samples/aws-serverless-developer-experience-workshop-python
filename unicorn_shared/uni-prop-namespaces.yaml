@@ -47,7 +47,7 @@ Outputs:
     Description: Unicorn Contracts namespace parameter value
     Value: !GetAtt UnicornContractsNamespaceParam.Value
 
-  UnicornPropertiesNamespaceValue:
+  UnicornApprovalsNamespaceValue:
     Description: Unicorn Properties namespace parameter value
     Value: !GetAtt UnicornApprovalsNamespaceParam.Value
 

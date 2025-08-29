@@ -22,7 +22,7 @@ Resources:
       EventBusName:
         Fn::Sub: "{{resolve:ssm:/uni-prop/${Stage}/UnicornApprovalsEventBus}}"
       StatementId:
-        Fn::Sub: "OnlyRulesForPropertiesServiceEvents-${Stage}"
+        Fn::Sub: "OnlyRulesForApprovalServiceEvents-${Stage}"
       Statement:
         Effect: Allow
         Principal:
