@@ -3,7 +3,7 @@ labelPRBasedOnFilePath:
   service/contracts:
     - Unicorn.Contracts
   service/properties:
-    - Unicorn.Properties
+    - Unicorn.Approvals
   service/web:
     - Unicorn.Web
 
