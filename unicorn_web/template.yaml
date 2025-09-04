@@ -136,7 +136,7 @@ Resources:
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   # Respond to PublicationEvaluationCompleted events from Unicorn Web EventBus
-  PublicationApprovedEventHandlerFunction:
+  PublicationEvaluationEventHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
@@ -160,13 +160,13 @@ Resources:
               detail-type:
                 - PublicationEvaluationCompleted
 
-  # Log group for the PublicationApprovedEventHandlerFunction
-  PublicationApprovedEventHandlerFunctionLogGroup:
+  # Log group for the PublicationEvaluationEventHandlerFunction
+  PublicationEvaluationEventHandlerFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     UpdateReplacePolicy: Delete
     DeletionPolicy: Delete
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${PublicationApprovedEventHandlerFunction}"
+      LogGroupName: !Sub "/aws/lambda/${PublicationEvaluationEventHandlerFunction}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### API GATEWAY REST API
@@ -484,9 +484,9 @@ Outputs:
   RequestApprovalFunctionArn:
     Description: Approval function ARN
     Value: !GetAtt RequestApprovalFunction.Arn
-  PublicationApprovedEventHandlerFunctionArn:
+  PublicationEvaluationEventHandlerFunctionArn:
     Description: Publication evaluation event handler function ARN
-    Value: !GetAtt PublicationApprovedEventHandlerFunction.Arn
+    Value: !GetAtt PublicationEvaluationEventHandlerFunction.Arn
 
   #### EVENT BRIDGE OUTPUTS
   UnicornWebEventBusName:

@@ -79,6 +79,6 @@
 **/*.lnk
 
 ### requirements.txt ###
-# We ignore Python's requirements.txt as we use Poetry instead
+# We ignore Python's requirements.txt as we use UV instead
 **/requirements.txt
 **/.aws-sam
