@@ -148,6 +148,7 @@ Resources:
         DestinationConfig:
           OnFailure:
             Type: SQS
+            Destination: !GetAtt PublicationEvaluationEventHandlerDLQ.Arn
       Events:
         ApprovalEvent:
           Type: EventBridgeRule
@@ -285,6 +286,23 @@ Resources:
       SqsManagedSseEnabled: true
       MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
       QueueName: !Sub UnicornWebIngestDLQ-${Stage}
+      Tags:
+        - Key: stage
+          Value: !Ref Stage
+        - Key: project
+          Value: !FindInMap [Constants, ProjectName, Value]
+        - Key: namespace
+          Value: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
+
+  # DeadLetterQueue for PublicationEvaluationEventHandler. Contains messages that failed to be processed
+  PublicationEvaluationEventHandlerDLQ:
+    Type: AWS::SQS::Queue
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600 # Maximum value, 1,209,600 (14days)
+      QueueName: !Sub PublicationEvaluationEventHandlerDLQ-${Stage}
       Tags:
         - Key: stage
           Value: !Ref Stage
