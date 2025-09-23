@@ -23,7 +23,7 @@ Resources:
     Type: AWS::EventSchemas::Schema
     Properties:
       Type: "OpenApi3"
-      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsSchemaRegistryName}}"
+      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ContractsSchemaRegistryName}}"
       SchemaName: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}@ContractStatusChanged"
       Description: >
         EventBridge schema for ContractStatusChanged events published by the Unicorn Contracts Service 

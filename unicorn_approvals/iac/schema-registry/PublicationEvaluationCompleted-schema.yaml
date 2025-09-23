@@ -22,7 +22,7 @@ Resources:
     Type: AWS::EventSchemas::Schema
     Properties:
       Type: "OpenApi3"
-      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornApprovalsSchemaRegistryName}}"
+      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsSchemaRegistryName}}"
       SchemaName: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}@PublicationEvaluationCompleted"
       Description: The EventBridge schema for when a property publication evaluation is completed.
       Content: |

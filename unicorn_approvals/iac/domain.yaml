@@ -237,7 +237,7 @@ Resources:
               - schemas:SearchSchemas
             Resource:
               - !GetAtt ApprovalsSchemaRegistry.RegistryArn
-              - !Sub "arn:${AWS::Partition}:schemas:${AWS::Region}:${AWS::AccountId}:schema/$ApprovalsSchemaRegistry.RegistryName}*"
+              - !Sub "arn:${AWS::Partition}:schemas:${AWS::Region}:${AWS::AccountId}:schema/${ApprovalsSchemaRegistry.RegistryName}*"
 
 Outputs:
   ApprovalsEventBusName:
