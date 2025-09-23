@@ -74,7 +74,7 @@ Note: This template provides the foundation for event-driven integrations for al
 #### Lambda Functions
 
 - **ContractEventHandlerFunction**: Processes contract requests from SQS queue
-  - Runtime: .NET 8
+  - Runtime: Python 3.13
   - Memory: 512MB, Timeout: 15s
   - Integrated with AWS Powertools for observability
 
@@ -206,7 +206,7 @@ All templates accept a `Stage` parameter with allowed values:
 
 1. **SSM Parameter Dependencies**: Ensure domain template is deployed first
 2. **API Definition**: Verify `api.yaml` exists in the correct location
-3. **Lambda Code**: Ensure ContractsService directory contains compiled code
+3. **Lambda Code**: Ensure contracts service source code is available
 4. **Permissions**: Verify IAM capabilities are included in deployment commands
 
 ### Monitoring
