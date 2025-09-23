@@ -5,7 +5,7 @@ STAGE ?= local
 REGION ?= ap-southeast-2
 STACK_PREFIX = uni-prop-$(STAGE)
 
-.PHONY: help build deploy deploy-domain deploy-schema deploy-subscriptions deploy-web-service test lint clean delete
+.PHONY: help build deploy deploy-domain deploy-schema deploy-subscriptions deploy-web-service test lint format clean delete
 
 help: ## Show available commands
 	@echo "Unicorn Web Service Infrastructure"
@@ -15,11 +15,8 @@ help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
 build: ## Build the application
-	@echo "Building .NET application..."
-	@dotnet restore PublicationManagerService/PublicationManagerService.csproj
-	@dotnet restore SearchService/SearchService.csproj
-	@dotnet build PublicationManagerService/PublicationManagerService.csproj
-	@dotnet build SearchService/SearchService.csproj
+	@echo "Building Python application..."
+	@uv sync --dev
 	@sam build --template-file iac/web-service.yaml
 
 deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
@@ -74,20 +71,29 @@ deploy: deploy-domain deploy-schema deploy-subscriptions deploy-web-service ## D
 
 test: ## Run tests
 	@echo "Running tests..."
-	@dotnet test PublicationManagerService.Test/PublicationManagerService.Tests.csproj
-	@dotnet test SearchService.Test/SearchService.Tests.csproj
+	@uv run pytest
 
-lint: ## Lint CloudFormation templates
+lint: ## Lint Python code and CloudFormation templates
+	@echo "Linting Python code..."
+	@uv run ruff check .
+	@uv run ruff format --check .
 	@echo "Linting CloudFormation templates..."
 	@cfn-lint iac/web-service.yaml -a cfn_lint_serverless.rules
 	@cfn-lint iac/domain.yaml
 	@cfn-lint iac/schema-registry/PublicationApprovalRequested-schema.yaml
 	@cfn-lint iac/subscriptions/unicorn-approvals-subscriptions.yaml
 
+format: ## Format Python code
+	@echo "Formatting Python code..."
+	@uv run ruff format .
+	@uv run ruff check --fix .
+
 clean: ## Clean build artifacts
 	@echo "Cleaning build artifacts..."
 	@rm -rf .aws-sam/
-	@dotnet clean
+	@rm -rf .pytest_cache/
+	@rm -rf .ruff_cache/
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 delete: ## Delete all stacks
 	@echo "Deleting stacks in reverse order..."
