@@ -1,0 +1,51 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Establishes cross-service event flow by creating an EventBridge rule that facilitates 
+  bus-to-bus communication (subscription rule), routing ContractStatusChanged events from the Unicorn Contracts 
+  event bus to the Unicorn Approvals event bus for downstream processing.
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+  #### UNICORN CONTRACTS EVENT SUBSCRIPTIONS
+
+  # EventBridge rule that subscribes to ContractStatusChanged events from Contracts service
+  # and forwards them to Approvals event bus for processing approval workflows.
+  ContractStatusChangedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}-ContractStatusChanged"
+      Description: >
+        Subscription rule for ContractStatusChanged event targeting the Unicorn 
+        Approvals event bus for processing approval workflows.
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ContractsEventBusArn}}"
+      EventPattern:
+        source:
+          - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
+        detail-type:
+          - ContractStatusChanged
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBusArn}}"
+          RoleArn:
+            Fn::ImportValue:
+              Fn::Sub: "uni-prop-${Stage}-contracts-domain-EventBridgeRoleArn"
+      Tags:
+        - Key: service-namespace
+          Value: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
+
+Outputs:
+  ContractStatusChangedSubscription:
+    Description: Rule ARN for Contract service event subscription
+    Value:
+      Fn::GetAtt: [ContractStatusChangedSubscriptionRule, Arn]

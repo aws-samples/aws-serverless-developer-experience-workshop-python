@@ -1,0 +1,52 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Establishes cross-service event flow by creating an EventBridge rule that facilitates 
+  bus-to-bus communication (subscription rule), routing PublicationEvaluationCompleted events from the Unicorn Approvals 
+  event bus to the Unicorn Web event bus for downstream processing.
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+  #### UNICORN PROPERTIES EVENT SUBSCRIPTIONS
+  
+  # EventBridge rule that subscribes to PublicationEvaluationCompleted events from the Unicorn Approvals service
+  # and forwards them to the Unicorn Web event bus for processing publication approval results
+  PublicationEvaluationCompletedSubscriptionRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}-PublicationEvaluationCompleted"
+      Description: > 
+        Subscription rule for the PublicationEvaluationCompleted events from the Unicorn 
+        Approvals service and forwards them to the Unicorn Web event bus for processing 
+        publication approval results
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBusArn}}"
+      EventPattern:
+        source:
+          - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
+        detail-type:
+          - PublicationEvaluationCompleted
+      State: ENABLED
+      Targets:
+        - Id: SendEventTo
+          Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/WebEventBusArn}}"
+          RoleArn: 
+            Fn::ImportValue: 
+              Fn::Sub: "uni-prop-${Stage}-approvals-domain-EventBridgeRoleArn"
+      Tags:
+        - Key: service-namespace
+          Value: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
+
+Outputs:
+  PublicationEvaluationCompletedSubscription:
+    Description: Rule ARN for Property service event subscription
+    Value:
+      Fn::GetAtt: [ PublicationEvaluationCompletedSubscriptionRule, Arn ]

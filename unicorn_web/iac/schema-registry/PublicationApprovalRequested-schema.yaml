@@ -1,7 +1,8 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Event Schemas for use by the Web Service'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  EventBridge schema definition for PublicationApprovalRequested events.
 
 Parameters:
   Stage:
@@ -13,49 +14,18 @@ Parameters:
       - prod
 
 Resources:
-  EventRegistry:
-    Type: AWS::EventSchemas::Registry
-    Properties: 
-      Description: 'Event schemas for Unicorn Web'
-      RegistryName:
-        Fn::Sub: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}-${Stage}"
 
-  EventRegistryPolicy:
-    Type: AWS::EventSchemas::RegistryPolicy
-    Properties: 
-      RegistryName:
-        Fn::GetAtt: EventRegistry.RegistryName
-      Policy:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: AllowExternalServices
-            Effect: Allow
-            Principal:
-              AWS:
-                - Ref: AWS::AccountId
-            Action:
-              - schemas:DescribeCodeBinding
-              - schemas:DescribeRegistry
-              - schemas:DescribeSchema
-              - schemas:GetCodeBindingSource
-              - schemas:ListSchemas
-              - schemas:ListSchemaVersions
-              - schemas:SearchSchemas
-            Resource:
-              - Fn::GetAtt: EventRegistry.RegistryArn
-              - Fn::Sub: "arn:${AWS::Partition}:schemas:${AWS::Region}:${AWS::AccountId}:schema/${EventRegistry.RegistryName}*"
-
+  # EventBridge schema definition for PublicationApprovalRequested events
+  # This schema validates the structure of events published when property publication approval is requested
+  # and enables type-safe event handling across consuming services.
   PublicationApprovalRequested:
     Type: AWS::EventSchemas::Schema
     Properties:
-      Type: 'OpenApi3'
-      RegistryName:
-        Fn::GetAtt: EventRegistry.RegistryName
-      SchemaName:
-        Fn::Sub: '{{resolve:ssm:/uni-prop/UnicornWebNamespace}}@PublicationApprovalRequested'
-      Description: 'The schema for a request to publish a property'
-      Content:
-        Fn::Sub: |
+      Type: "OpenApi3"
+      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/WebSchemaRegistryName}}"
+      SchemaName: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}@PublicationApprovalRequested"
+Description: The EventBridge schema for when a property publication approval is requested.
+      Content: |
           {
             "openapi": "3.0.0",
             "info": {
@@ -79,7 +49,7 @@ Resources:
                     "account"
                   ],
                   "x-amazon-events-detail-type": "PublicationApprovalRequested",
-                  "x-amazon-events-source": "${EventRegistry.RegistryName}",
+                  "x-amazon-events-source": "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}",
                   "properties": {
                     "detail": {
                       "$ref": "#/components/schemas/PublicationApprovalRequested"

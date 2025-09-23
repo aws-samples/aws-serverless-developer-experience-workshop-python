@@ -1,36 +1,35 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Global namespaces for Unicorn Properties applications and services. 
-  This only needs to be deployed once.
-
+  Shared namespace configuration for the Unicorn Properties microservices architecture.
+  This template establishes centralized namespace parameters stored in AWS Systems Manager
+  Parameter Store, enabling consistent service identification and cross-service communication
+  across the Contracts, Approvals, and Web services. Deploy this template once per environment
+  before deploying individual microservices to ensure proper namespace resolution.
 
 Resources:
-
-  UnicornContractsNamespaceParam: 
+  UnicornContractsNamespaceParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /uni-prop/UnicornContractsNamespace
-      Value: "unicorn.contracts"
+      Value: "unicorn-contracts"
 
-  UnicornApprovalsNamespaceParam: 
+  UnicornApprovalsNamespaceParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /uni-prop/UnicornApprovalsNamespace
-      Value: "unicorn.approvals"
+      Value: "unicorn-approvals"
 
-  UnicornWebNamespaceParam: 
+  UnicornWebNamespaceParam:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Name: !Sub /uni-prop/UnicornWebNamespace
-      Value: "unicorn.web"
+      Value: "unicorn-web"
 
-  
 Outputs:
-
   UnicornContractsNamespace:
     Description: Unicorn Contracts namespace parameter
     Value: !Ref UnicornContractsNamespaceParam

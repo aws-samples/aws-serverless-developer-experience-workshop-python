@@ -1,0 +1,120 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  EventBridge schema definition for ContractStatusChanged events.
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+
+  # This schema defines the structure for ContractStatusChanged events that are published
+  # to EventBridge when contract status updates occur in the Unicorn Contracts Service.
+  # Other services can use this schema to validate incoming events and ensure proper
+  # event handling across the Unicorn Properties application.
+  ContractStatusChangedEventSchema:
+    Type: AWS::EventSchemas::Schema
+    Properties:
+      Type: "OpenApi3"
+      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsSchemaRegistryName}}"
+      SchemaName: "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}@ContractStatusChanged"
+      Description: >
+        EventBridge schema for ContractStatusChanged events published by the Unicorn Contracts Service 
+        when a contract is updated.
+      Content: |
+        {
+          "openapi": "3.0.0",
+          "info": {
+            "version": "2.0.0",
+            "title": "ContractStatusChanged"
+          },
+          "paths": {},
+          "components": {
+            "schemas": {
+              "AWSEvent": {
+                "type": "object",
+                "required": [
+                  "detail-type",
+                  "resources",
+                  "detail",
+                  "id",
+                  "source",
+                  "time",
+                  "region",
+                  "version",
+                  "account"
+                ],
+                "x-amazon-events-detail-type": "ContractStatusChanged",
+                "x-amazon-events-source": "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}",
+                "properties": {
+                  "detail": {
+                    "$ref": "#/components/schemas/ContractStatusChanged"
+                  },
+                  "account": {
+                    "type": "string"
+                  },
+                  "detail-type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                }
+              },
+              "ContractStatusChanged": {
+                "type": "object",
+                "required": [
+                  "contract_last_modified_on",
+                  "contract_last_modified_by",
+                  "contract_id",
+                  "contract_status",
+                  "property_id"
+                ],
+                "properties": {
+                  "contract_id": {
+                    "type": "string"
+                  },
+                  "contract_last_modified_by": {
+                    "type": "string"
+                  },
+                  "contract_last_modified_on": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "contract_status": {
+                    "type": "string"
+                  },
+                  "property_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
