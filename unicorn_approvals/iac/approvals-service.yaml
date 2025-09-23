@@ -84,7 +84,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: publication_manager_service.contract_status_changed_event_handler.lambda_handler
+      Handler: approvals_service.contract_status_changed_event_handler.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ContractStatusTable
@@ -127,7 +127,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: publication_manager_service.properties_approval_sync_function.lambda_handler
+      Handler: approvals_service.properties_approval_sync_function.lambda_handler
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref ContractStatusTable
@@ -175,7 +175,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
-      Handler: publication_manager_service.wait_for_contract_approval_function.lambda_handler
+      Handler: approvals_service.wait_for_contract_approval_function.lambda_handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ContractStatusTable
