@@ -24,131 +24,131 @@ Resources:
       Type: "OpenApi3"
       RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/WebSchemaRegistryName}}"
       SchemaName: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}@PublicationApprovalRequested"
-Description: The EventBridge schema for when a property publication approval is requested.
+      Description: The EventBridge schema for when a property publication approval is requested.
       Content: |
-          {
-            "openapi": "3.0.0",
-            "info": {
-              "version": "1.0.0",
-              "title": "PublicationApprovalRequested"
-            },
-            "paths": {},
-            "components": {
-              "schemas": {
-                "AWSEvent": {
-                  "type": "object",
-                  "required": [
-                    "detail-type",
-                    "resources",
-                    "detail",
-                    "id",
-                    "source",
-                    "time",
-                    "region",
-                    "version",
-                    "account"
-                  ],
-                  "x-amazon-events-detail-type": "PublicationApprovalRequested",
-                  "x-amazon-events-source": "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}",
-                  "properties": {
-                    "detail": {
-                      "$ref": "#/components/schemas/PublicationApprovalRequested"
-                    },
-                    "account": {
-                      "type": "string"
-                    },
-                    "detail-type": {
-                      "type": "string"
-                    },
-                    "id": {
-                      "type": "string"
-                    },
-                    "region": {
-                      "type": "string"
-                    },
-                    "resources": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "source": {
-                      "type": "string"
-                    },
-                    "time": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "version": {
+        {
+          "openapi": "3.0.0",
+          "info": {
+            "version": "1.0.0",
+            "title": "PublicationApprovalRequested"
+          },
+          "paths": {},
+          "components": {
+            "schemas": {
+              "AWSEvent": {
+                "type": "object",
+                "required": [
+                  "detail-type",
+                  "resources",
+                  "detail",
+                  "id",
+                  "source",
+                  "time",
+                  "region",
+                  "version",
+                  "account"
+                ],
+                "x-amazon-events-detail-type": "PublicationApprovalRequested",
+                "x-amazon-events-source": "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}",
+                "properties": {
+                  "detail": {
+                    "$ref": "#/components/schemas/PublicationApprovalRequested"
+                  },
+                  "account": {
+                    "type": "string"
+                  },
+                  "detail-type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
                       "type": "string"
                     }
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "version": {
+                    "type": "string"
                   }
-                },
-                "PublicationApprovalRequested": {
-                  "type": "object",
-                  "required": [
-                    "images",
-                    "address",
-                    "listprice",
-                    "contract",
-                    "description",
-                    "currency",
-                    "property_id",
-                    "status"
-                  ],
-                  "properties": {
-                    "address": {
-                      "$ref": "#/components/schemas/Address"
-                    },
-                    "contract": {
-                      "type": "string"
-                    },
-                    "currency": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "images": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "listprice": {
-                      "type": "string"
-                    },
-                    "property_id": {
-                      "type": "string"
-                    },
-                    "status": {
+                }
+              },
+              "PublicationApprovalRequested": {
+                "type": "object",
+                "required": [
+                  "images",
+                  "address",
+                  "listprice",
+                  "contract",
+                  "description",
+                  "currency",
+                  "property_id",
+                  "status"
+                ],
+                "properties": {
+                  "address": {
+                    "$ref": "#/components/schemas/Address"
+                  },
+                  "contract": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
                       "type": "string"
                     }
+                  },
+                  "listprice": {
+                    "type": "string"
+                  },
+                  "property_id": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
                   }
-                },
-                "Address": {
-                  "type": "object",
-                  "required": [
-                    "country",
-                    "number",
-                    "city",
-                    "street"
-                  ],
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    },
-                    "country": {
-                      "type": "string"
-                    },
-                    "number": {
-                      "type": "string"
-                    },
-                    "street": {
-                      "type": "string"
-                    }
+                }
+              },
+              "Address": {
+                "type": "object",
+                "required": [
+                  "country",
+                  "number",
+                  "city",
+                  "street"
+                ],
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
                   }
                 }
               }
             }
           }
+        }
