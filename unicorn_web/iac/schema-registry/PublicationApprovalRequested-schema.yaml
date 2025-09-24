@@ -98,7 +98,7 @@ Resources:
                 ],
                 "properties": {
                   "address": {
-                    "$ref": "#/components/schemas/Address"
+                    "$ref": "#/components/schemas/address"
                   },
                   "contract": {
                     "type": "string"
@@ -126,7 +126,7 @@ Resources:
                   }
                 }
               },
-              "Address": {
+              "address": {
                 "type": "object",
                 "required": [
                   "country",

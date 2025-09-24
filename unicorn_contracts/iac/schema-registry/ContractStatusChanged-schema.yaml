@@ -32,7 +32,7 @@ Resources:
         {
           "openapi": "3.0.0",
           "info": {
-            "version": "2.0.0",
+            "version": "1.0.0",
             "title": "ContractStatusChanged"
           },
           "paths": {},
@@ -91,16 +91,12 @@ Resources:
                 "type": "object",
                 "required": [
                   "contract_last_modified_on",
-                  "contract_last_modified_by",
                   "contract_id",
                   "contract_status",
                   "property_id"
                 ],
                 "properties": {
                   "contract_id": {
-                    "type": "string"
-                  },
-                  "contract_last_modified_by": {
                     "type": "string"
                   },
                   "contract_last_modified_on": {

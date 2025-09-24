@@ -87,14 +87,14 @@ Resources:
                 "PublicationEvaluationCompleted": {
                   "type": "object",
                   "required": [
-                    "PropertyId",
-                    "EvaluationResult"
+                    "property_id",
+                    "evaluation_result"
                   ],
                   "properties": {
-                    "PropertyId": {
+                    "property_id": {
                       "type": "string"
                     },
-                    "EvaluationResult": {
+                    "evaluation_result": {
                       "type": "string"
                     }
                   }
