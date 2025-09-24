@@ -17,6 +17,7 @@ help: ## Show available commands
 build: ## Build the application
 	@echo "Building Python application..."
 	@uv sync --dev
+	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
 	@sam build --template-file iac/approvals-service.yaml
 
 deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
