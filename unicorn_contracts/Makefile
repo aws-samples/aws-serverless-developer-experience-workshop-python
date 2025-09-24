@@ -90,3 +90,4 @@ delete: ## Delete all stacks
 	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-contracts-contracts-service --region $(REGION) || true
 	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-contracts-schema-ContractStatusChanged --region $(REGION) || true
 	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-contracts-domain --region $(REGION) || true
+	@echo "All stacks deleted"
