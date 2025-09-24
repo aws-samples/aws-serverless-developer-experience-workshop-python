@@ -5,7 +5,7 @@ STAGE ?= local
 REGION ?= ap-southeast-2
 STACK_PREFIX = uni-prop-$(STAGE)
 
-.PHONY: help build deploy deploy-domain deploy-service deploy-schema deploy-subscriptions test lint format clean delete
+.PHONY: help build deploy deploy-domain deploy-service deploy-schema deploy-contracts-subscriptions test lint format clean delete
 
 help: ## Show available commands
 	@echo "Unicorn Approvals Service Infrastructure"
@@ -55,7 +55,9 @@ deploy-schema: ## Deploy event schema
 		--no-confirm-changeset \
 		--no-fail-on-empty-changeset
 
-deploy-subscriptions: ## Deploy event subscriptions
+deploy-subscriptions: deploy-contracts-subscriptions deploy-web-subscriptions ## Deploy event subscriptions
+
+deploy-contracts-subscriptions: ## Deploy contracts event subscriptions
 	@echo "Deploying contracts subscriptions..."
 	@sam deploy \
 		--template-file iac/subscriptions/unicorn-contracts-subscriptions.yaml \
@@ -66,6 +68,8 @@ deploy-subscriptions: ## Deploy event subscriptions
 		--resolve-s3 \
 		--no-confirm-changeset \
 		--no-fail-on-empty-changeset
+
+deploy-web-subscriptions: ## Deploy web event subscriptions
 	@echo "Deploying web subscriptions..."
 	@sam deploy \
 		--template-file iac/subscriptions/unicorn-web-subscriptions.yaml \
