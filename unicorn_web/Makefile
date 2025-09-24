@@ -5,7 +5,7 @@ STAGE ?= local
 REGION ?= ap-southeast-2
 STACK_PREFIX = uni-prop-$(STAGE)
 
-.PHONY: help build deploy deploy-domain deploy-schema deploy-subscriptions deploy-web-service test lint format clean delete
+.PHONY: help build deploy deploy-domain deploy-schema deploy-subscriptions deploy-service test lint format clean delete
 
 help: ## Show available commands
 	@echo "Unicorn Web Service Infrastructure"
@@ -55,7 +55,7 @@ deploy-subscriptions: ## Deploy event subscriptions
 		--no-confirm-changeset \
 		--no-fail-on-empty-changeset
 
-deploy-web-service: build ## Deploy web service
+deploy-service: build ## Deploy web service
 	@echo "Deploying web service..."
 	@sam deploy \
 		--template-file iac/web-service.yaml \
@@ -67,7 +67,7 @@ deploy-web-service: build ## Deploy web service
 		--no-confirm-changeset \
 		--no-fail-on-empty-changeset
 
-deploy: deploy-domain deploy-schema deploy-subscriptions deploy-web-service ## Deploy all infrastructure and application
+deploy: deploy-domain deploy-schema deploy-subscriptions deploy-service ## Deploy all infrastructure and application
 
 test: ## Run tests
 	@echo "Running tests..."
