@@ -184,8 +184,7 @@ Resources:
     DependsOn:
       - EventBusInfoLoggingDelivery
     Properties:
-      DeliverySourceName:
-        Ref: EventBusErrorDeliverySource # Links to the error log source
+      DeliverySourceName: !Ref EventBusErrorDeliverySource # Links to the error log source
       DeliveryDestinationArn: !GetAtt EventBusDeliveryDestination.Arn # Routes to our destination
 
   # Delivery configuration that routes INFO logs from source to destination

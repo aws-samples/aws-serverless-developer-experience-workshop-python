@@ -183,8 +183,7 @@ Resources:
     DependsOn:
       - EventBusInfoLoggingDelivery
     Properties:
-      DeliverySourceName:
-        Ref: EventBusErrorDeliverySource # Links to the contract error log source
+      DeliverySourceName: !Ref EventBusErrorDeliverySource # Links to the contract error log source
       DeliveryDestinationArn: !GetAtt EventBusDeliveryDestination.Arn # Routes to our destination
 
   # Delivery configuration that routes INFO logs from source to destination
@@ -192,8 +191,7 @@ Resources:
   EventBusInfoLoggingDelivery:
     Type: AWS::Logs::Delivery
     Properties:
-      DeliverySourceName:
-        Ref: EventBusInfoDeliverySource # Links to the contract info log source
+      DeliverySourceName: !Ref EventBusInfoDeliverySource # Links to the contract info log source
       DeliveryDestinationArn: !GetAtt EventBusDeliveryDestination.Arn # Routes to our destination
 
   # CloudWatch Log Group for storing Contracts EventBridge event bus logs
