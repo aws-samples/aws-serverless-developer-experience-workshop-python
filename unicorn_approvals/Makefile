@@ -5,7 +5,7 @@ STAGE ?= local
 REGION ?= ap-southeast-2
 STACK_PREFIX = uni-prop-$(STAGE)
 
-.PHONY: help build deploy deploy-domain deploy-service deploy-schema deploy-contracts-subscriptions test lint format clean delete
+.PHONY: help build deploy deploy-domain deploy-service deploy-schema deploy-subscriptions deploy-contracts-subscriptions deploy-web-subscriptions test lint format clean delete
 
 help: ## Show available commands
 	@echo "Unicorn Approvals Service Infrastructure"
@@ -81,7 +81,7 @@ deploy-web-subscriptions: ## Deploy web event subscriptions
 		--no-confirm-changeset \
 		--no-fail-on-empty-changeset
 
-deploy: deploy-domain deploy-service deploy-schema deploy-subscriptions ## Deploy all infrastructure and application
+deploy: deploy-domain deploy-service deploy-schema deploy-contracts-subscriptions ## Deploy all infrastructure and application
 
 test: ## Run tests
 	@echo "Running tests..."
