@@ -18,12 +18,12 @@ build: ## Build the application
 	@echo "Building Python application..."
 	@uv sync --dev
 	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
-	@sam build --template-file iac/approvals-service.yaml
+	@sam build --template-file infrastructure/approvals-service.yaml
 
 deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
 	@echo "Deploying domain resources..."
 	@sam deploy \
-		--template-file iac/domain.yaml \
+		--template-file infrastructure/domain.yaml \
 		--stack-name $(STACK_PREFIX)-approvals-domain \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -35,7 +35,7 @@ deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
 deploy-service: build ## Deploy service resources (Lambda, Step Functions, DynamoDB)
 	@echo "Deploying service resources..."
 	@sam deploy \
-		--template-file iac/approvals-service.yaml \
+		--template-file infrastructure/approvals-service.yaml \
 		--stack-name $(STACK_PREFIX)-approvals-service \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -47,7 +47,7 @@ deploy-service: build ## Deploy service resources (Lambda, Step Functions, Dynam
 deploy-schema: ## Deploy event schema
 	@echo "Deploying event schema..."
 	@sam deploy \
-		--template-file iac/schema-registry/PublicationEvaluationCompleted-schema.yaml \
+		--template-file infrastructure/schema-registry/PublicationEvaluationCompleted-schema.yaml \
 		--stack-name $(STACK_PREFIX)-approvals-schema-PublicationEvaluationCompleted \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM \
@@ -61,7 +61,7 @@ deploy-subscriptions: deploy-contracts-subscriptions deploy-web-subscriptions ##
 deploy-contracts-subscriptions: ## Deploy contracts event subscriptions
 	@echo "Deploying contracts subscriptions..."
 	@sam deploy \
-		--template-file iac/subscriptions/unicorn-contracts-subscriptions.yaml \
+		--template-file infrastructure/subscriptions/unicorn-contracts-subscriptions.yaml \
 		--stack-name $(STACK_PREFIX)-approvals-contracts-subscriptions \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM \
@@ -73,7 +73,7 @@ deploy-contracts-subscriptions: ## Deploy contracts event subscriptions
 deploy-web-subscriptions: ## Deploy web event subscriptions
 	@echo "Deploying web subscriptions..."
 	@sam deploy \
-		--template-file iac/subscriptions/unicorn-web-subscriptions.yaml \
+		--template-file infrastructure/subscriptions/unicorn-web-subscriptions.yaml \
 		--stack-name $(STACK_PREFIX)-approvals-web-subscriptions \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM \
@@ -107,11 +107,11 @@ lint: ## Lint Python code and CloudFormation templates
 	@uv run ruff check .
 	@uv run ruff format --check .
 	@echo "Linting CloudFormation templates..."
-	@cfn-lint iac/approvals-service.yaml -a cfn_lint_serverless.rules
-	@cfn-lint iac/domain.yaml
-	@cfn-lint iac/schema-registry/PublicationEvaluationCompleted-schema.yaml
-	@cfn-lint iac/subscriptions/unicorn-contracts-subscriptions.yaml
-	@cfn-lint iac/subscriptions/unicorn-web-subscriptions.yaml
+	@cfn-lint infrastructure/approvals-service.yaml -a cfn_lint_serverless.rules
+	@cfn-lint infrastructure/domain.yaml
+	@cfn-lint infrastructure/schema-registry/PublicationEvaluationCompleted-schema.yaml
+	@cfn-lint infrastructure/subscriptions/unicorn-contracts-subscriptions.yaml
+	@cfn-lint infrastructure/subscriptions/unicorn-web-subscriptions.yaml
 
 format: ## Format Python code
 	@echo "Formatting Python code..."

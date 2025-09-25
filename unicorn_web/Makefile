@@ -18,12 +18,12 @@ build: ## Build the application
 	@echo "Building Python application..."
 	@uv sync --dev
 	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
-	@sam build --template-file iac/web-service.yaml
+	@sam build --template-file infrastructure/web-service.yaml
 
 deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
 	@echo "Deploying domain resources..."
 	@sam deploy \
-		--template-file iac/domain.yaml \
+		--template-file infrastructure/domain.yaml \
 		--stack-name $(STACK_PREFIX)-web-domain \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -35,7 +35,7 @@ deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
 deploy-schema: ## Deploy event schema
 	@echo "Deploying event schema..."
 	@sam deploy \
-		--template-file iac/schema-registry/PublicationApprovalRequested-schema.yaml \
+		--template-file infrastructure/schema-registry/PublicationApprovalRequested-schema.yaml \
 		--stack-name $(STACK_PREFIX)-web-schema-PublicationApprovalRequested \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM \
@@ -47,7 +47,7 @@ deploy-schema: ## Deploy event schema
 deploy-subscriptions: ## Deploy event subscriptions
 	@echo "Deploying event subscriptions..."
 	@sam deploy \
-		--template-file iac/subscriptions/unicorn-approvals-subscriptions.yaml \
+		--template-file infrastructure/subscriptions/unicorn-approvals-subscriptions.yaml \
 		--stack-name $(STACK_PREFIX)-web-subscriptions-approvals \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -59,7 +59,7 @@ deploy-subscriptions: ## Deploy event subscriptions
 deploy-service: build ## Deploy web service
 	@echo "Deploying web service..."
 	@sam deploy \
-		--template-file iac/web-service.yaml \
+		--template-file infrastructure/web-service.yaml \
 		--stack-name $(STACK_PREFIX)-web-service \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -79,10 +79,10 @@ lint: ## Lint Python code and CloudFormation templates
 	@uv run ruff check .
 	@uv run ruff format --check .
 	@echo "Linting CloudFormation templates..."
-	@cfn-lint iac/web-service.yaml -a cfn_lint_serverless.rules
-	@cfn-lint iac/domain.yaml
-	@cfn-lint iac/schema-registry/PublicationApprovalRequested-schema.yaml
-	@cfn-lint iac/subscriptions/unicorn-approvals-subscriptions.yaml
+	@cfn-lint infrastructure/web-service.yaml -a cfn_lint_serverless.rules
+	@cfn-lint infrastructure/domain.yaml
+	@cfn-lint infrastructure/schema-registry/PublicationApprovalRequested-schema.yaml
+	@cfn-lint infrastructure/subscriptions/unicorn-approvals-subscriptions.yaml
 
 format: ## Format Python code
 	@echo "Formatting Python code..."

@@ -132,7 +132,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    ```bash
    sam deploy \
-   --template-file ./iac/domain.yaml \
+   --template-file ./infrastructure/domain.yaml \
    --stack-name uni-prop-local-approvals-domain \
    --parameter-overrides Stage=local \
    --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -144,7 +144,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    ```bash
    sam deploy \
-   --template-file ./iac/approvals-service.yaml \
+   --template-file ./infrastructure/approvals-service.yaml \
    --stack-name uni-prop-local-approvals-service \
    --parameter-overrides Stage=local \
    --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -156,7 +156,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    ```bash
    sam deploy \
-      --template-file ./iac/schema-registry/PublicationEvaluationCompleted-schema.yaml \
+      --template-file ./infrastructure/schema-registry/PublicationEvaluationCompleted-schema.yaml \
       --stack-name uni-prop-local-approvals-publication-evaluation-completed-schema \
       --parameter-overrides Stage=local \
       --capabilities CAPABILITY_IAM \
@@ -169,7 +169,7 @@ All templates accept a `Stage` parameter with allowed values:
    ```bash
    # Deploy Contracts subscriptions
    sam deploy \
-      --template-file ./iac/subscriptions/unicorn-contracts-subscriptions.yaml \
+      --template-file ./infrastructure/subscriptions/unicorn-contracts-subscriptions.yaml \
       --stack-name uni-prop-local-approvals-contracts-subscriptions \
       --parameter-overrides Stage=local \
       --capabilities CAPABILITY_IAM \
@@ -178,7 +178,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    # Deploy Web subscriptions
    sam deploy \
-      --template-file ./iac/subscriptions/unicorn-web-subscriptions.yaml \
+      --template-file ./infrastructure/subscriptions/unicorn-web-subscriptions.yaml \
       --stack-name uni-prop-local-approvals-web-subscriptions \
       --parameter-overrides Stage=local \
       --capabilities CAPABILITY_IAM \

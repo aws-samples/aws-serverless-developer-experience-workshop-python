@@ -123,7 +123,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    ```bash
    sam deploy \
-   --template-file ./iac/domain.yaml \
+   --template-file ./infrastructure/domain.yaml \
    --stack-name uni-prop-local-contracts-domain \
    --parameter-overrides Stage=local \
    --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -135,7 +135,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    ```bash
    sam deploy \
-   --template-file ./iac/contracts-service.yaml \
+   --template-file ./infrastructure/contracts-service.yaml \
    --stack-name uni-prop-local-contracts-service \
    --parameter-overrides Stage=local \
    --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
@@ -147,7 +147,7 @@ All templates accept a `Stage` parameter with allowed values:
 
    ```bash
    sam deploy \
-      --template-file ./iac/schema-registry/ContractStatusChanged-schema.yaml \
+      --template-file ./infrastructure/schema-registry/ContractStatusChanged-schema.yaml \
       --stack-name uni-prop-local-contracts-contract-status-changed-schema \
       --parameter-overrides Stage=local \
       --capabilities CAPABILITY_IAM \
