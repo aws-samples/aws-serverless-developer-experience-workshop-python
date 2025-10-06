@@ -33,15 +33,14 @@ Resources:
           - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
         detail-type:
           - ContractStatusChanged
-      State: ENABLED
       Targets:
         - Id: SendEventTo
           Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBusArn}}"
           RoleArn:
             Fn::ImportValue:
-              Fn::Sub: "uni-prop-${Stage}-contracts-domain-EventBridgeRoleArn"
+              Fn::Sub: "uni-prop-${Stage}-approvals-domain-EventBridgeRoleArn"
       Tags:
-        - Key: service-namespace
+        - Key: rule-owner-service-namespace
           Value: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
 
 Outputs:

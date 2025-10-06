@@ -34,15 +34,14 @@ Resources:
           - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
         detail-type:
           - PublicationEvaluationCompleted
-      State: ENABLED
       Targets:
         - Id: SendEventTo
           Arn: !Sub "{{resolve:ssm:/uni-prop/${Stage}/WebEventBusArn}}"
           RoleArn: 
             Fn::ImportValue: 
-              Fn::Sub: "uni-prop-${Stage}-approvals-domain-EventBridgeRoleArn"
+              Fn::Sub: "uni-prop-${Stage}-web-domain-EventBridgeRoleArn"
       Tags:
-        - Key: service-namespace
+        - Key: rule-owner-service-namespace
           Value: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
 
 Outputs:
