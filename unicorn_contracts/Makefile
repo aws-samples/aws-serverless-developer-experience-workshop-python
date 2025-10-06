@@ -38,7 +38,6 @@ deploy-schema: ## Deploy event schema
 		--template-file infrastructure/schema-registry/ContractStatusChanged-schema.yaml \
 		--stack-name $(STACK_PREFIX)-contracts-schema-ContractStatusChanged \
 		--parameter-overrides Stage=$(STAGE) \
-		--capabilities CAPABILITY_IAM \
 		--region $(REGION) \
 		--resolve-s3 \
 		--no-confirm-changeset \
