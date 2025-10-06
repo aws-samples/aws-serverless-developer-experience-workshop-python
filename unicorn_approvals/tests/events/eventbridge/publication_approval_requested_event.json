@@ -2,7 +2,7 @@
   "version": "0",
   "id": "f849f683-76e1-1c84-669d-544a9828dfef",
   "detail-type": "PublicationApprovalRequested",
-  "source": "unicorn.web",
+  "source": "unicorn-web",
   "account": "123456789012",
   "time": "2022-08-16T06:33:05Z",
   "region": "ap-southeast-2",

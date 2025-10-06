@@ -27,7 +27,7 @@ An example of `ContractStatusChanged` event:
   "account": "123456789012",
   "region": "us-east-1",
   "detail-type": "ContractStatusChanged",
-  "source": "unicorn.contracts",
+  "source": "unicorn-contracts",
   "time": "2022-08-14T22:06:31Z",
   "id": "c071bfbf-83c4-49ca-a6ff-3df053957145",
   "resources": [],

@@ -18,12 +18,12 @@ def return_env_vars_dict(k={}):
         "AWS_DEFAULT_REGION": "ap-southeast-2",
         "CONTRACT_STATUS_TABLE": TABLE_NAME,
         "EVENT_BUS": EVENTBUS_NAME,
-        "SERVICE_NAMESPACE": "unicorn.approvals",
-        "POWERTOOLS_SERVICE_NAME": "unicorn.approvals",
+        "SERVICE_NAMESPACE": "unicorn-approvals",
+        "POWERTOOLS_SERVICE_NAME": "unicorn-approvals",
         "POWERTOOLS_TRACE_DISABLED": "true",
         "POWERTOOLS_LOGGER_LOG_EVENT": "true",
         "POWERTOOLS_LOGGER_SAMPLE_RATE": "0.1",
-        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.approvals",
+        "POWERTOOLS_METRICS_NAMESPACE": "unicorn-approvals",
         "LOG_LEVEL": "INFO",
     }
     d.update(k)

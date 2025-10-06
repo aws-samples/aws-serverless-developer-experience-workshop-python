@@ -104,7 +104,7 @@ Resources:
         StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: unicorn.approvals-ContractStatusChanged
+            RuleName: unicorn-approvals-ContractStatusChanged
             EventBusName: !GetAtt UnicornApprovalsEventBus.Name
             Pattern:
               source:
@@ -242,7 +242,7 @@ Resources:
         PublicationApprovalRequestedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: unicorn.approvals-PublicationApprovalRequested
+            RuleName: unicorn-approvals-PublicationApprovalRequested
             EventBusName: !GetAtt UnicornApprovalsEventBus.Name
             Pattern:
               source:

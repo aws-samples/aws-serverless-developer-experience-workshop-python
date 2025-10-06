@@ -2,7 +2,7 @@
     "version": "0",
     "id": "a1b2c3d4-5678-90ab-cdef-EXAMPLEaaaaa",
     "detail-type": "PublicationEvaluationCompleted",
-    "source": "unicorn.approvals",
+    "source": "unicorn-approvals",
     "account": "111122223333",
     "time": "2022-12-01T01:01:01Z",
     "region": "ap-southeast-1",

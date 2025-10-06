@@ -2,7 +2,7 @@
     "version": "0",
     "id": "0301025e-92e5-c036-534f-f5adbf8cb867",
     "detail-type": "ContractStatusChanged",
-    "source": "unicorn.contracts",
+    "source": "unicorn-contracts",
     "account": "718758479978",
     "time": "2023-08-25T05:00:23Z",
     "region": "ap-southeast-2",

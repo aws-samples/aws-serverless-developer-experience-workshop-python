@@ -94,7 +94,7 @@ Resources:
         StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: unicorn.approvals-ContractStatusChanged
+            RuleName: unicorn-approvals-ContractStatusChanged
             EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBus}}"
             Pattern:
               source:
@@ -240,7 +240,7 @@ Resources:
         PublicationApprovalRequestedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: unicorn.approvals-PublicationApprovalRequested
+            RuleName: unicorn-approvals-PublicationApprovalRequested
             EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBus}}"
             Pattern:
               source:

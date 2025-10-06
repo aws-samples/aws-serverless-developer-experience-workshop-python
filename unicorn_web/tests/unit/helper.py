@@ -25,10 +25,10 @@ def return_env_vars_dict(k={}):
         "LOG_LEVEL": "INFO",
         "POWERTOOLS_LOGGER_LOG_EVENT": "true",
         "POWERTOOLS_LOGGER_SAMPLE_RATE": "0.1",
-        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.web",
-        "POWERTOOLS_SERVICE_NAME": "unicorn.web",
+        "POWERTOOLS_METRICS_NAMESPACE": "unicorn-web",
+        "POWERTOOLS_SERVICE_NAME": "unicorn-web",
         "POWERTOOLS_TRACE_DISABLED": "true",
-        "SERVICE_NAMESPACE": "unicorn.web",
+        "SERVICE_NAMESPACE": "unicorn-web",
     }
 
     env_dict |= k
