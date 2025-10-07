@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 ROOT_DIR="$(cd -- "$(dirname "$0")/../" >/dev/null 2>&1 ; pwd -P )"
 STACK_NAME="$(yq -ot '.default.global.parameters.stack_name' $ROOT_DIR/samconfig.toml)"
 
