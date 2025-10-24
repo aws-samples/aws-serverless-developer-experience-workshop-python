@@ -5,6 +5,7 @@ stack_name = "uni-prop-local-approvals"
 s3_prefix = "uni-prop-local-approvals"
 resolve_s3 = true
 resolve_image_repositories = true
+region = "ap-southeast-2"
 
 [default.build.parameters]
 cached = true
@@ -28,3 +29,37 @@ warm_containers = "EAGER"
 
 [default.local_start_lambda.parameters]
 warm_containers = "EAGER" 
+
+# ############################################## #
+
+[dev]
+[dev.global]
+[dev.global.parameters]
+stack_name = "uni-prop-dev-approvals"
+s3_prefix = "uni-prop-dev-approvals"
+resolve_s3 = true
+resolve_image_repositories = true
+
+[dev.deploy]
+[dev.deploy.parameters]
+template = "packaged-testing.yaml"
+fail_on_empty_changeset = false
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+parameter_overrides = "Stage=dev"
+
+# ############################################## #
+
+[prod]
+[prod.global]
+[prod.global.parameters]
+stack_name = "uni-prop-prod-approvals"
+s3_prefix = "uni-prop-prod-approvals"
+resolve_s3 = true
+resolve_image_repositories = true
+
+[prod.deploy]
+[prod.deploy.parameters]
+template = "packaged-prod.yaml"
+fail_on_empty_changeset = false
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+parameter_overrides = "Stage=prod"
