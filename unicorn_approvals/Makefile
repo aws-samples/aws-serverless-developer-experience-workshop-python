@@ -18,7 +18,7 @@ build: ## Build the application
 	@echo "Building Python application..."
 	@uv sync --dev
 	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
-	@sam build --template-file infrastructure/approvals-service.yaml
+	@sam build --template-file infrastructure/approvals-service/template.yaml
 
 deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
 	@echo "Deploying domain resources..."
@@ -35,7 +35,7 @@ deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
 deploy-service: build ## Deploy service resources (Lambda, Step Functions, DynamoDB)
 	@echo "Deploying service resources..."
 	@sam deploy \
-		--template-file infrastructure/approvals-service.yaml \
+		--template-file infrastructure/approvals-service/template.yaml \
 		--stack-name $(STACK_PREFIX)-approvals-service \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
