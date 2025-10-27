@@ -83,7 +83,7 @@ Resources:
   ContractStatusChangedHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../src/
+      CodeUri: ../../src/
       Handler: approvals_service.contract_status_changed_event_handler.lambda_handler
       Policies:
         - DynamoDBWritePolicy:
@@ -126,7 +126,7 @@ Resources:
   PropertiesApprovalSyncFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../src/
+      CodeUri: ../../src/
       Handler: approvals_service.properties_approval_sync_function.lambda_handler
       Policies:
         - DynamoDBReadPolicy:
@@ -174,7 +174,7 @@ Resources:
   WaitForContractApprovalFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../src/
+      CodeUri: ../../src/
       Handler: approvals_service.wait_for_contract_approval_function.lambda_handler
       Policies:
         - DynamoDBCrudPolicy:
@@ -202,7 +202,7 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       Name: !Sub "${AWS::StackName}-ApprovalStateMachine"
-      DefinitionUri: ./state-machine/property_approval.asl.yaml
+      DefinitionUri: property_approval.asl.yaml
       Tracing:
         Enabled: true
       Policies:
