@@ -1,0 +1,48 @@
+name: 'Configure Build Environment'
+description: 'A reusable action that configures the build environment'
+
+runs:
+  using: 'composite'
+  steps:
+    - run: echo "**** Setup Python ****"
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - run: python --version
+
+    - run: echo "**** Install Python based tooling ****"
+    - name: Install Python based tooling
+      run: pip install cfn-lint cfn-lint-serverless
+
+    - name: Setup NodeJS
+      uses: actions/setup-node@v5
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    - run: 'echo "NodeJS version: $(node --version)"'
+
+    - run: echo "**** Setup uv ****"
+    - uses: astral-sh/setup-uv@v6
+    - run: uv --version
+
+    - run: echo "**** Install application dependencies ****"
+    - name: Install application dependencies
+      run: |
+        uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
+        uv sync --extra dev
+      working-directory: ${{ gitea.workspace }}/${{ env.SERVICE_FOLDER }}
+
+    - run: echo "**** Install AWS CLI ****"
+    - name: Install AWS CLI
+      run: |
+        curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip -q awscliv2.zip
+        sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update > /dev/null 2>&1
+        aws --version
+
+    - run: echo "**** Install SAM CLI ****"
+    - name: Install SAM CLI
+      uses: aws-actions/setup-sam@v2
+      with:
+        use-installer: true
+    - run: sam --version

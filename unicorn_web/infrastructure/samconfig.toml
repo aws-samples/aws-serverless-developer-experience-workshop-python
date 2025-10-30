@@ -5,7 +5,6 @@ stack_name = "uni-prop-local-web"
 s3_prefix = "uni-prop-local-web"
 resolve_s3 = true
 resolve_image_repositories = true
-region = "ap-southeast-2"
 
 [default.build.parameters]
 cached = true
@@ -42,7 +41,7 @@ resolve_image_repositories = true
 
 [dev.deploy]
 [dev.deploy.parameters]
-template = "packaged-testing.yaml"
+template = ".aws-sam/packaged-dev-web-service.yaml"
 fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
 parameter_overrides = "Stage=dev"
@@ -59,7 +58,7 @@ resolve_image_repositories = true
 
 [prod.deploy]
 [prod.deploy.parameters]
-template = "packaged-prod.yaml"
+template = ".aws-sam/packaged-prod-web-service.yaml"
 fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
 parameter_overrides = "Stage=prod"
