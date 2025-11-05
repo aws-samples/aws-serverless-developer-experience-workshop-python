@@ -121,7 +121,7 @@ Resources:
             "events:creatorAccount": "${aws:PrincipalAccount}"
           StringEquals:
             "events:source":
-              - "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
+              - "{{resolve:ssm:/uni-prop/UnicornContractsNamespace}}"
           "Null":
             "events:source": "false"
 
