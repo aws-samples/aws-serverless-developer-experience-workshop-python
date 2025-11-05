@@ -90,6 +90,8 @@ Resources:
             TableName: !Ref ContractStatusTable
         - DynamoDBReadPolicy:
             TableName: !Ref ContractStatusTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ApprovalsServiceDLQ.QueueName
       Events:
         StatusChangedEvent:
           Type: EventBridgeRule
