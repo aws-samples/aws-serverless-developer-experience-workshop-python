@@ -42,6 +42,7 @@ resolve_image_repositories = true
 [dev.deploy]
 [dev.deploy.parameters]
 template = ".aws-sam/packaged-dev-web-service.yaml"
+confirm_changeset = false
 fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
 parameter_overrides = "Stage=dev"
@@ -59,6 +60,7 @@ resolve_image_repositories = true
 [prod.deploy]
 [prod.deploy.parameters]
 template = ".aws-sam/packaged-prod-web-service.yaml"
+confirm_changeset = false
 fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
 parameter_overrides = "Stage=prod"
