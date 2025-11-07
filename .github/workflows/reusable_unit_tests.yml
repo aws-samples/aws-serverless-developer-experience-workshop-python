@@ -22,10 +22,6 @@ jobs:
         with:
           version: 0.7.8
 
-      - name: Initialize and install dependencies
-        run: make ci_init
-        working-directory: ./${{ inputs.service_directory }}
-
       - name: Run Unit tests
-        run: make unit-test
+        run: make test
         working-directory: ./${{ inputs.service_directory }}

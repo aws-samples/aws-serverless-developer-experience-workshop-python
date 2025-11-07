@@ -55,14 +55,8 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
 
-      - name: Initialize dependencies for ${{ matrix.display_name }}
-        run: make ci_init
-        working-directory: ./${{ matrix.service }}
-
       - name: Build ${{ matrix.display_name }}
-        run: |
-          # Use uv run to ensure all commands run in the virtual environment
-          uv run make build
+        run: make build
         working-directory: ./${{ matrix.service }}
         env:
           DOCKER_OPTS: --use-container
@@ -75,6 +69,6 @@ jobs:
           retention-days: 7
 
       - name: Clean up ${{ matrix.display_name }}
-        run: uv run make clean
+        run: make clean
         working-directory: ./${{ matrix.service }}
         if: always() 
