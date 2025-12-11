@@ -6,6 +6,9 @@ on:
     types:
       - completed
 
+permissions:
+  pull-requests: write
+
 jobs:
   get_pr_details:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
