@@ -48,7 +48,7 @@ Conditions:
 
 Globals:
   Function:
-    Runtime: python3.12
+    Runtime: python3.13
     MemorySize: 512
     Timeout: 10
     Tracing: Active
@@ -96,7 +96,7 @@ Resources:
         StatusChangedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: unicorn-approvals-ContractStatusChanged
+            RuleName: unicorn-approvals-ContractStatusChanged-foo
             EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBus}}"
             Pattern:
               source:
@@ -242,7 +242,7 @@ Resources:
         PublicationApprovalRequestedEvent:
           Type: EventBridgeRule
           Properties:
-            RuleName: unicorn-approvals-PublicationApprovalRequested
+            RuleName: unicorn-approvals-PublicationApprovalRequested-foo
             EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBus}}"
             Pattern:
               source:
@@ -346,7 +346,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      Name: approvals.catchall
+      Name: approvals.catchall-foo
       Description: Catchall rule used for development purposes.
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBus}}"
       EventPattern:
@@ -367,7 +367,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub
-        - "/aws/events/${Stage}/${NS}-catchall"
+        - "/aws/events/${Stage}/${NS}-catchall-foo"
         - Stage: !Ref Stage
           NS: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}"
       RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
