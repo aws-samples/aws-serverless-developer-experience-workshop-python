@@ -16,13 +16,13 @@ runs:
       run: pip install cfn-lint cfn-lint-serverless
 
     - name: Setup NodeJS
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ env.NODE_VERSION }}
     - run: 'echo "NodeJS version: $(node --version)"'
 
     - run: echo "**** Setup uv ****"
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
     - run: uv --version
 
     - run: echo "**** Install application dependencies ****"
