@@ -22,6 +22,12 @@ jobs:
         with:
           version: 0.7.8
 
-      - name: Run Unit tests
-        run: make test
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
         working-directory: ./${{ inputs.service_directory }}
+
+      - name: Run Unit tests
+        run: make unit-test
+        working-directory: ./${{ inputs.service_directory }}
+        env:
+          AWS_DEFAULT_REGION: us-east-1
