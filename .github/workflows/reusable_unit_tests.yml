@@ -12,16 +12,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v4
-        with: { python-version: 3.12 }
+      - uses: actions/setup-python@v6
+        with: { python-version: 3.13 }
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
         with:
           version: 0.7.8
 
-      - name: Run Unit tests
-        run: make test
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
         working-directory: ./${{ inputs.service_directory }}
+
+      - name: Run Unit tests
+        run: make unit-test
+        working-directory: ./${{ inputs.service_directory }}
+        env:
+          AWS_DEFAULT_REGION: us-east-1

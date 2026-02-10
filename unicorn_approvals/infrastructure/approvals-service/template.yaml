@@ -48,7 +48,7 @@ Conditions:
 
 Globals:
   Function:
-    Runtime: python3.12
+    Runtime: python3.13
     MemorySize: 512
     Timeout: 10
     Tracing: Active

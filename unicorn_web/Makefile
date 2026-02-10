@@ -72,6 +72,10 @@ test: ## Run tests
 	@echo "Running tests..."
 	@uv run pytest
 
+unit-test: ## Run unit tests only
+	@echo "Running unit tests..."
+	@uv run pytest tests/unit -v
+
 lint: ## Lint Python code and CloudFormation templates
 	@echo "Linting Python code..."
 	@uv run ruff check .
