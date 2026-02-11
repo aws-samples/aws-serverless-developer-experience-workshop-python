@@ -19,6 +19,8 @@ jobs:
     needs: get_pr_details
     runs-on: ubuntu-latest
     if: needs.get_pr_details.outputs.prIsMerged == 'true'
+    permissions:
+      issues: write
     steps:
       - uses: actions/checkout@v6
       - name: "Label PR related issue for release"

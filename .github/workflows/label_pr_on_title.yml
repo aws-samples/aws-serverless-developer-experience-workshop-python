@@ -20,6 +20,8 @@ jobs:
   label_pr:
     needs: get_pr_details
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

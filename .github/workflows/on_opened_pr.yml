@@ -18,6 +18,8 @@ jobs:
   check_related_issue:
     needs: get_pr_details
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
       - name: "Ensure related issue is present"
@@ -35,6 +37,8 @@ jobs:
   check_acknowledge_section:
     needs: get_pr_details
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
       - name: "Ensure acknowledgement section is present"
