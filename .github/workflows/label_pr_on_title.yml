@@ -6,6 +6,9 @@ on:
     types:
       - completed
 
+permissions:
+  pull-requests: write
+
 jobs:
   get_pr_details:
     # Guardrails to only ever run if PR recording workflow was indeed
