@@ -1,7 +1,87 @@
+### macOS ###
 .DS_Store
-.idea/*
-.kiro/*
+Thumbs.db
+
+### IDE / Editor ###
+.idea/
+.vscode/
+
+### SAM ###
 **/.aws-sam/
-.vscode/*
-.vscode/settings.json
+
+### CDK ###
 **/cdk.out/
+
+### Python ###
+**/__pycache__/
+*.pyc
+.mypy_cache/
+
+### Terraform ###
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Ignore .tfvars by default (may contain secrets)
+*.tfvars
+*.tfvars.json
+# But keep the non-sensitive common and environment-specific configs
+!**/terraform.tfvars
+!**/envs/*.tfvars
+
+### AI Tools ###
+# Kiro
+.kiro/
+
+# Claude
+.claude/
+
+# Cursor
+.cursor/
+.cursorignore
+.cursorindexingignore
+.cursorrules
+
+# GitHub Copilot
+.copilot/
+.github/copilot-instructions.md
+
+# Windsurf / Codeium
+.windsurf/
+.codeium/
+
+# Aider
+.aider*
+.aider.tags.cache.v3/
+
+# Amazon Q Developer
+.amazonq/
+.qdeveloper/
+
+# Cline
+.cline/
+.clinerules
+
+# Roo Code
+.roo/
+.rooignore
+
+# Augment
+.augment/
+.augmentignore
+
+# Tabnine
+.tabnine_root
+
+# Continue
+.continue/
+.continuerc.json
