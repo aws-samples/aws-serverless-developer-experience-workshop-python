@@ -1,0 +1,32 @@
+categories:
+  - title: '🚀 Enhancements'
+    labels:
+      - feature
+      - enhancement
+  - title: '📚 Documentation Updates'
+    labels:
+      - docs
+  - title: '🐛 Bug Fixes'
+    labels:
+      - fix
+      - bugfix
+      - bug
+  - title: '🧰 Maintenance'
+    labels:
+      - chore
+
+template: |
+  ## Summary
+
+  _Human readable summary of changes_
+
+  ## Changes
+
+  $CHANGES
+
+  ## This release was made possible by the following contributors:
+
+  $CONTRIBUTORS
+
+exclude-labels:
+  - skip-changelog
