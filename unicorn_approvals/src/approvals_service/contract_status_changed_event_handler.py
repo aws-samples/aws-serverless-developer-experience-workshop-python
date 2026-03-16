@@ -2,20 +2,18 @@
 # SPDX-License-Identifier: MIT-0
 
 import os
-from datetime import datetime
 
 import boto3
 from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.metrics import Metrics
 from aws_lambda_powertools.tracing import Tracer
-from aws_lambda_powertools.event_handler.exceptions import InternalServerError
 from schema.unicorn_contracts.contractstatuschanged import AWSEvent, ContractStatusChanged, Marshaller
 
 # Initialise Environment variables
 if (SERVICE_NAMESPACE := os.environ.get("SERVICE_NAMESPACE")) is None:
-    raise InternalServerError("SERVICE_NAMESPACE environment variable is undefined")
+    raise EnvironmentError("SERVICE_NAMESPACE environment variable is undefined")
 if (CONTRACT_STATUS_TABLE := os.environ.get("CONTRACT_STATUS_TABLE")) is None:
-    raise InternalServerError("CONTRACT_STATUS_TABLE environment variable is undefined")
+    raise EnvironmentError("CONTRACT_STATUS_TABLE environment variable is undefined")
 
 # Initialise PowerTools
 logger: Logger = Logger()
@@ -25,10 +23,6 @@ metrics: Metrics = Metrics()
 # Initialise boto3 clients
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(CONTRACT_STATUS_TABLE)  # type: ignore
-
-# Get current date
-now = datetime.now()
-current_date = now.strftime("%d/%m/%Y %H:%M:%S")
 
 
 @logger.inject_lambda_context(log_event=True)  # type: ignore
