@@ -7,6 +7,8 @@ on:
       - completed
 
 permissions:
+  actions: read
+  contents: read
   issues: write
 
 jobs:
