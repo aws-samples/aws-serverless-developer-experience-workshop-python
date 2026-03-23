@@ -1,13 +1,12 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 import os
-
-# import json
+import json
 from importlib import reload
 
-# import pytest
+import pytest
 from unittest import mock
-# from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError
 
 from .event_generator import sqs_event
 from .helper import TABLE_NAME
@@ -53,85 +52,87 @@ def test_valid_event(dynamodb, eventbridge, sqs, lambda_context):
     assert res["Item"]["street"] == "Main Street"
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_broken_input_event(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/request_approval_bad_input.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_invalid_property_id_format(dynamodb, eventbridge, sqs, lambda_context):
+    # Property ID with uppercase letter does not match the regex
+    payload = {"property_id": "usa/anytown/Main-street/122"}
+    event = sqs_event([{"body": payload, "attributes": {"HttpMethod": "POST"}}])
 
-#     # Loading function here so that mocking works correctly.
-#     import publication_manager_service.request_approval_function as app
+    from publication_manager_service import request_approval_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(request_approval_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
+    create_test_eventbridge_bus(eventbridge)
+    create_test_sqs_ingestion_queue(sqs)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
-
-#     assert ret['statusCode'] == 400
-#     assert 'message' in data.keys()
-#     assert 'unable' in data['message'].lower()
-
-
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_invalid_property_id(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/request_invalid_property_id.json')
-
-#     # Loading function here so that mocking works correctly.
-#     import publication_manager_service.request_approval_function as app
-
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
-
-#     create_ddb_table_property_web(dynamodb)
-
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
-
-#     assert ret['statusCode'] == 400
-#     assert 'message' in data.keys()
-#     assert 'invalid' in data['message'].lower()
+    # get_keys_for_property returns ("", "") for invalid property_id,
+    # then get_property queries DynamoDB with empty PK which raises ClientError (ValidationException)
+    with pytest.raises((KeyError, ClientError)):
+        request_approval_function.lambda_handler(event, lambda_context)
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_already_approved(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/request_already_approved.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_already_approved_skips_eventbridge(dynamodb, eventbridge, sqs, lambda_context):
+    # property at main-street/124 has status APPROVED in the test table
+    payload = {"property_id": "usa/anytown/main-street/124"}
+    event = sqs_event([{"body": payload, "attributes": {"HttpMethod": "POST"}}])
 
-#     # Loading function here so that mocking works correctly.
-#     import publication_manager_service.request_approval_function as app
+    from publication_manager_service import request_approval_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(request_approval_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    table = create_ddb_table_property_web(dynamodb)
+    create_test_eventbridge_bus(eventbridge)
+    create_test_sqs_ingestion_queue(sqs)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    # Update the item to APPROVED status so the function skips
+    table.update_item(
+        Key={"PK": "PROPERTY#usa#anytown", "SK": "main-street#124"},
+        AttributeUpdates={"status": {"Value": "APPROVED", "Action": "PUT"}},
+    )
 
-#     assert ret['statusCode'] == 200
-#     assert 'result' in data.keys()
-#     assert 'already' in data['result'].lower()
+    # Should complete without error and without publishing to EventBridge
+    request_approval_function.lambda_handler(event, lambda_context)
+
+    # Verify the status in DDB is still APPROVED (not changed to PENDING)
+    res = dynamodb.Table(TABLE_NAME).get_item(
+        Key={"PK": "PROPERTY#usa#anytown", "SK": "main-street#124"}
+    )
+    assert res["Item"]["status"] == "APPROVED"
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_property_does_not_exist(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/request_non_existent_property.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_property_not_found(dynamodb, eventbridge, sqs, lambda_context):
+    # Property usa/anytown/main-street/999 does not exist in the test data
+    payload = {"property_id": "usa/anytown/main-street/999"}
+    event = sqs_event([{"body": payload, "attributes": {"HttpMethod": "POST"}}])
 
-#     # Loading function here so that mocking works correctly.
-#     import publication_manager_service.request_approval_function as app
+    from publication_manager_service import request_approval_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(request_approval_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
+    create_test_eventbridge_bus(eventbridge)
+    create_test_sqs_ingestion_queue(sqs)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    # get_property returns empty dict, then item.pop("status") raises KeyError
+    with pytest.raises(KeyError):
+        request_approval_function.lambda_handler(event, lambda_context)
 
-#     assert ret['statusCode'] == 404
-#     assert 'message' in data.keys()
-#     assert 'no property found' in data['message'].lower()
+
+@mock.patch.dict(os.environ, return_env_vars_dict({"EVENT_BUS": "nonexistent_bus"}), clear=True)
+def test_eventbridge_failure(dynamodb, eventbridge, sqs, lambda_context):
+    payload = load_event("request_approval_event")
+    event = sqs_event([{"body": payload, "attributes": {"HttpMethod": "POST"}}])
+
+    from publication_manager_service import request_approval_function
+
+    reload(request_approval_function)
+
+    create_ddb_table_property_web(dynamodb)
+    # Intentionally do NOT create the event bus so put_events fails
+    create_test_sqs_ingestion_queue(sqs)
+
+    with pytest.raises(Exception, match="Unable to send event to Event Bus|Error sending requests to Event Bus"):
+        request_approval_function.lambda_handler(event, lambda_context)

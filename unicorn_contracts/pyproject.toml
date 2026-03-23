@@ -23,6 +23,7 @@ dev = [
     "pyyaml>=6.0.3",
     "arnparse>=0.0.2",
     "pytest>=9.0.2",
+    "pytest-cov>=6.1.1",
     "ruff>=0.15.6",
     "tomli>=2.4.0",
 ]
@@ -33,6 +34,6 @@ packages = ["contracts_service"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -vv -W ignore::UserWarning"
+addopts = "-ra -vv -W ignore::UserWarning --cov=src --cov-report=term-missing --cov-fail-under=80"
 testpaths = ["tests/unit", "tests/integration"]
 pythonpath = ["."]

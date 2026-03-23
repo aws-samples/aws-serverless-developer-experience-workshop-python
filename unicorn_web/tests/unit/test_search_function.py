@@ -1,143 +1,121 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+import os
+import json
+from importlib import reload
 
-# import os
-# import json
+from unittest import mock
 
-# from unittest import mock
-# from importlib import reload
-
-# from .lambda_context import LambdaContext
-# from .helper import load_event, return_env_vars_dict, create_ddb_table_property_web
+from .helper import load_event, return_env_vars_dict, create_ddb_table_property_web
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_search_by_street(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/search_by_street_event.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_search_by_city(dynamodb, lambda_context):
+    apigw_event = load_event("search_by_city")
 
-#     # Loading function here so that mocking works correctly.
-#     import search_service.property_search_function as app
+    from search_service import property_search_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(property_search_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    ret = property_search_function.lambda_handler(apigw_event, lambda_context)
+    data = json.loads(ret["body"])
 
-#     assert ret['statusCode'] == 200
-#     assert type(data) == list
-#     assert len(data) == 1
-#     item = data[0]
-#     assert item['city'] == 'Anytown'
-#     assert item['number'] == '124'
+    assert ret["statusCode"] == 200
+    assert type(data) == list
+    # Only APPROVED items are returned; test data has 1 APPROVED item (main-street#124)
+    assert len(data) == 1
+    item = data[0]
+    assert item["city"] == "Anytown"
+    assert item["number"] == "124"
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_search_by_city(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/search_by_city.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_search_by_city_and_street(dynamodb, lambda_context):
+    apigw_event = load_event("search_by_street_event")
 
-#     # Loading function here so that mocking works correctly.
-#     import search_service.property_search_function as app
+    from search_service import property_search_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(property_search_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    ret = property_search_function.lambda_handler(apigw_event, lambda_context)
+    data = json.loads(ret["body"])
 
-#     assert ret['statusCode'] == 200
-#     assert type(data) == list
-#     assert len(data) == 1
-#     item = data[0]
-#     assert item['city'] == 'Anytown'
-#     assert item['number'] == '124'
+    assert ret["statusCode"] == 200
+    assert type(data) == list
+    # Only APPROVED items with SK beginning with "main-street#" are returned
+    assert len(data) == 1
+    item = data[0]
+    assert item["city"] == "Anytown"
+    assert item["number"] == "124"
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_search_full_address(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/search_by_full_address.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_property_details_happy_path(dynamodb, lambda_context):
+    apigw_event = load_event("search_by_full_address")
 
-#     # Loading function here so that mocking works correctly.
-#     import search_service.property_search_function as app
+    from search_service import property_search_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(property_search_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    ret = property_search_function.lambda_handler(apigw_event, lambda_context)
+    data = json.loads(ret["body"])
 
-#     assert ret['statusCode'] == 200
-#     assert data['city'] == 'Anytown'
-#     assert data['number'] == '124'
+    assert ret["statusCode"] == 200
+    assert data["city"] == "Anytown"
+    assert data["number"] == "124"
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_search_full_address_declined(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/search_by_full_address_declined.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_property_not_found_returns_404(dynamodb, lambda_context):
+    apigw_event = load_event("search_by_full_address_not_found")
 
-#     # Loading function here so that mocking works correctly.
-#     import search_service.property_search_function as app
+    from search_service import property_search_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(property_search_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    ret = property_search_function.lambda_handler(apigw_event, lambda_context)
 
-#     assert ret['statusCode'] == 404
-#     assert 'message' in data
-#     assert 'declined' in data['message'].lower()
+    assert ret["statusCode"] == 404
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_search_full_address_new(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/search_by_full_address_new.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_property_not_approved_returns_404(dynamodb, lambda_context):
+    # main-street/125 has status DECLINED in test data
+    apigw_event = load_event("search_by_full_address_declined")
 
-#     # Loading function here so that mocking works correctly.
-#     import search_service.property_search_function as app
+    from search_service import property_search_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(property_search_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    ret = property_search_function.lambda_handler(apigw_event, lambda_context)
 
-#     assert ret['statusCode'] == 404
-#     assert 'message' in data
-#     assert 'new' in data['message'].lower()
+    assert ret["statusCode"] == 404
 
 
-# @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-# def test_search_full_address_not_found(dynamodb, eventbridge, mocker):
-#     apigw_event = load_event('events/search_by_full_address_not_found.json')
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_non_get_method_returns_error(dynamodb, lambda_context):
+    apigw_event = load_event("search_by_city")
+    # Change method to POST which is not supported by any route
+    apigw_event["httpMethod"] = "POST"
+    apigw_event["requestContext"]["httpMethod"] = "POST"
 
-#     # Loading function here so that mocking works correctly.
-#     import search_service.property_search_function as app
+    from search_service import property_search_function
 
-#     # Reload is required to prevent function setup reuse from another test
-#     reload(app)
+    reload(property_search_function)
 
-#     create_ddb_table_property_web(dynamodb)
+    create_ddb_table_property_web(dynamodb)
 
-#     context = LambdaContext()
-#     ret = app.lambda_handler(apigw_event, context)  # type: ignore
-#     data = json.loads(ret['body'])
+    ret = property_search_function.lambda_handler(apigw_event, lambda_context)
 
-#     assert ret['statusCode'] == 404
-#     assert 'message' in data
-#     assert 'not found' in data['message'].lower()
+    # ApiGatewayResolver returns 404 for unmatched routes (no POST handler)
+    assert ret["statusCode"] in (400, 404, 405)

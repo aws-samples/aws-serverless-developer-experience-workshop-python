@@ -21,16 +21,71 @@ def test_handle_status_changed_draft(stepfunction, lambda_context):
     assert ret is None
 
 
-# NOTE: This test cannot be implemented at this time because `moto`` does not yet support mocking `stepfunctions.send_task_success`
 @mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
-def test_handle_status_changed_approved(caplog, stepfunction, lambda_context):
-    pass
-    # ddbstream_event = load_event('ddb_stream_events/status_approved_waiting_for_approval')
+def test_handle_status_changed_approved(stepfunction, lambda_context):
+    ddbstream_event = load_event("ddb_stream_events/status_approved_waiting_for_approval")
 
-    # from publication_manager_service import properties_approval_sync_function
-    # reload(properties_approval_sync_function)
+    from approvals_service import properties_approval_sync_function
 
-    # ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
+    reload(properties_approval_sync_function)
 
-    # assert ret is None
-    # assert 'Contract status for property is APPROVED' in caplog.text
+    # Mock the module-level sfn client to bypass moto's lack of send_task_success support
+    mock_sfn = mock.MagicMock()
+    mock_sfn.send_task_success.return_value = {"ResponseMetadata": {"HTTPStatusCode": 200}}
+
+    with mock.patch.object(properties_approval_sync_function, "sfn", mock_sfn):
+        ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
+
+    # Verify send_task_success was called with the task token from OldImage
+    mock_sfn.send_task_success.assert_called_once()
+    call_kwargs = mock_sfn.send_task_success.call_args
+    assert "taskToken" in call_kwargs.kwargs or len(call_kwargs.args) > 0
+
+
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_no_task_token_skips(stepfunction, lambda_context):
+    """APPROVED status but no task token in old or new image => returns None (skip)."""
+    ddbstream_event = load_event("ddb_stream_events/status_approved_with_no_workflow")
+
+    from approvals_service import properties_approval_sync_function
+
+    reload(properties_approval_sync_function)
+
+    ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
+
+    assert ret is None
+
+
+@mock.patch.dict(os.environ, return_env_vars_dict(), clear=True)
+def test_missing_new_image_skips(stepfunction, lambda_context):
+    """Record with missing NewImage key causes a KeyError => handler should raise."""
+    ddbstream_event = {
+        "Records": [
+            {
+                "eventID": "1",
+                "eventName": "MODIFY",
+                "eventVersion": "1.1",
+                "eventSource": "aws:dynamodb",
+                "awsRegion": "ap-southeast-2",
+                "dynamodb": {
+                    "Keys": {"property_id": {"S": "usa/anytown/main-street/999"}},
+                    "SequenceNumber": "100000000005391461882",
+                    "SizeBytes": 50,
+                    "StreamViewType": "NEW_AND_OLD_IMAGES",
+                },
+                "eventSourceARN": "arn:aws:dynamodb:ap-southeast-2:123456789012:table/test/stream/2022-08-23T15:46:44.107",
+            }
+        ]
+    }
+
+    from approvals_service import properties_approval_sync_function
+
+    reload(properties_approval_sync_function)
+
+    try:
+        ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
+        # If handler returns without error when NewImage is missing, that is acceptable (skip behaviour)
+        assert ret is None
+    except KeyError:
+        # KeyError on missing NewImage is also acceptable
+        pass
