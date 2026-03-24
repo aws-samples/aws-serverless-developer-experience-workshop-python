@@ -241,16 +241,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "arnparse", marker = "extra == 'dev'", specifier = ">=0.0.2" },
-    { name = "aws-lambda-powertools", extras = ["all"], marker = "extra == 'dev'", specifier = ">=3.24.0" },
-    { name = "aws-lambda-powertools", extras = ["tracer"], specifier = ">=3.24.0" },
+    { name = "aws-lambda-powertools", extras = ["all"], marker = "extra == 'dev'", specifier = ">=3.25.0" },
+    { name = "aws-lambda-powertools", extras = ["tracer"], specifier = ">=3.25.0" },
     { name = "aws-xray-sdk", specifier = ">=2.15.0" },
-    { name = "boto3", specifier = ">=1.42.43" },
+    { name = "boto3", specifier = ">=1.42.68" },
     { name = "importlib-metadata", marker = "extra == 'dev'", specifier = ">=8.7.1" },
-    { name = "moto", extras = ["dynamodb", "events", "sqs"], marker = "extra == 'dev'", specifier = ">=5.1.20" },
+    { name = "moto", extras = ["dynamodb", "events", "sqs"], marker = "extra == 'dev'", specifier = ">=5.1.22" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.2" },
     { name = "pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.3" },
     { name = "requests", marker = "extra == 'dev'", specifier = ">=2.32.5" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.6" },
     { name = "tomli", marker = "extra == 'dev'", specifier = ">=2.4.0" },
 ]
 provides-extras = ["dev"]
