@@ -74,7 +74,7 @@ def test_create_contract_already_exists(dynamodb, sqs, lambda_context):
     create_ddb_table_contracts_with_entry(dynamodb)
     create_test_sqs_ingestion_queue(sqs)
 
-    # Contract for property_id "usa/anytown/main-street/123" already exists in DRAFT status;
+    # Contract for property_id "usa/anytown/main-street/111" already exists in DRAFT status;
     # ConditionalCheckFailedException is caught and logged, not raised.
     contract_event_handler.lambda_handler(event, lambda_context)
 
@@ -98,12 +98,12 @@ def test_update_contract_not_in_draft(dynamodb, sqs, lambda_context):
     create_test_sqs_ingestion_queue(sqs)
     table.put_item(
         Item={
-            "property_id": "usa/anytown/main-street/123",
+            "property_id": "usa/anytown/main-street/111",
             "contract_created": "01/08/2022 20:36:30",
             "contract_last_modified_on": "01/08/2022 20:36:30",
             "contract_id": "11111111",
-            "address": {"country": "USA", "city": "Anytown", "street": "Main Street", "number": 123},
-            "seller_name": "John Smith",
+            "address": {"country": "USA", "city": "Anytown", "street": "Main Street", "number": 111},
+            "seller_name": "John Doe",
             "contract_status": "APPROVED",
         }
     )
