@@ -17,7 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "aws-lambda-powertools[all]>=3.25.0",
-    "requests>=2.32.5",
+    "requests>=2.33.1",
     "moto[dynamodb,events,sqs]>=5.1.22",
     "importlib-metadata>=8.7.1",
     "pyyaml>=6.0.3",
