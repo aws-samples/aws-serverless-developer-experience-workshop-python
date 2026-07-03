@@ -9,23 +9,23 @@ readme = "README.md"
 requires-python = ">=3.13"
 
 dependencies = [
-    "aws-lambda-powertools[tracer]>=3.25.0",
+    "aws-lambda-powertools[tracer]>=3.31.0",
     "aws-xray-sdk>=2.15.0",
-    "boto3>=1.42.68",
+    "boto3>=1.43.40",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "aws-lambda-powertools[all]>=3.25.0",
-    "requests>=2.32.5",
-    "moto[dynamodb,events,sqs]>=5.1.22",
-    "importlib-metadata>=8.7.1",
+    "aws-lambda-powertools[all]>=3.31.0",
+    "requests>=2.34.2",
+    "moto[dynamodb,events,sqs]>=5.2.2",
+    "importlib-metadata>=9.0.0",
     "pyyaml>=6.0.3",
     "arnparse>=0.0.2",
-    "pytest>=9.0.2",
+    "pytest>=9.1.1",
     "pytest-cov>=6.1.1",
-    "ruff>=0.15.6",
-    "tomli>=2.4.0",
+    "ruff>=0.15.20",
+    "tomli>=2.4.1",
 ]
 
 [tool.setuptools]
