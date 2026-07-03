@@ -36,4 +36,4 @@ packages = ["contracts_service"]
 minversion = "7.0"
 addopts = "-ra -vv -W ignore::UserWarning --cov=src --cov-report=term-missing --cov-fail-under=80"
 testpaths = ["tests/unit", "tests/integration"]
-pythonpath = ["."]
+pythonpath = ["src"]
