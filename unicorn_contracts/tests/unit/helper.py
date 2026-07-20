@@ -61,12 +61,12 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     )
     table.meta.client.get_waiter("table_exists").wait(TableName=TABLE_NAME)
     contract = {
-        "property_id": "usa/anytown/main-street/123",  # PK
+        "property_id": "usa/anytown/main-street/111",  # PK
         "contract_created": "01/08/2022 20:36:30",
         "contract_last_modified_on": "01/08/2022 20:36:30",
         "contract_id": "11111111",
-        "address": {"country": "USA", "city": "Anytown", "street": "Main Street", "number": 123},
-        "seller_name": "John Smith",
+        "address": {"country": "USA", "city": "Anytown", "street": "Main Street", "number": 111},
+        "seller_name": "John Doe",
         "contract_status": "DRAFT",
     }
     table.put_item(Item=contract)
