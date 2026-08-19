@@ -253,8 +253,7 @@ Resources:
               MaximumRetryAttempts: 5
               MaximumEventAgeInSeconds: 900
             DeadLetterConfig:
-              Type: SQS
-              Destination: !GetAtt ApprovalsServiceDLQ.Arn
+              Arn: !GetAtt ApprovalsServiceDLQ.Arn
       DefinitionSubstitutions:
         WaitForContractApprovalArn: !GetAtt WaitForContractApprovalFunction.Arn
         TableName: !Ref ContractStatusTable
