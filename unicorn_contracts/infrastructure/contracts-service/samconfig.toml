@@ -41,7 +41,6 @@ resolve_image_repositories = true
 
 [dev.deploy]
 [dev.deploy.parameters]
-template = ".aws-sam/packaged-dev-contracts-service.yaml"
 confirm_changeset = false
 fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
@@ -59,7 +58,6 @@ resolve_image_repositories = true
 
 [prod.deploy]
 [prod.deploy.parameters]
-template = ".aws-sam/packaged-prod-contracts-service.yaml"
 confirm_changeset = false
 fail_on_empty_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"

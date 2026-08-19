@@ -189,7 +189,7 @@ Resources:
       Tags:
         stage: !Ref Stage
         project: !FindInMap [Constants, ProjectName, Value]
-        namespace: Unicorn Web Service
+        namespace: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
 
   # API GW CloudWatch Logs Group, logs all requests from API Gateway
   UnicornWebApiLogGroup:

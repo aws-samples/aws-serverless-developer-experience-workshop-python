@@ -345,7 +345,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      Name: approvals.catchall
+      Name: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}-CatchAllEvents"
       Description: Catchall rule used for development purposes.
       EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsEventBus}}"
       EventPattern:

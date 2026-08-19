@@ -42,7 +42,7 @@ Outputs:
     Description: Unicorn Web namespace parameter
     Value: !Ref UnicornWebNamespaceParam
 
-  UnicornContractsNamespaceVale:
+  UnicornContractsNamespaceValue:
     Description: Unicorn Contracts namespace parameter value
     Value: !GetAtt UnicornContractsNamespaceParam.Value
 
