@@ -336,6 +336,74 @@ Resources:
         - Key: stage
           Value: !Ref Stage
 
+  #################################################################################################
+  #### EVENT BRIDGE CATCH-ALL
+  #### Development and debugging visibility for all Web domain events
+  #################################################################################################
+
+  # Development and debugging rule that captures all web domain events
+  # Useful for monitoring event flow and troubleshooting integration issues
+  UnicornWebCatchAllRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}-CatchAllEvents"
+      Description: Catch all events published by the Web service.
+      EventBusName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/WebEventBus}}"
+      EventPattern:
+        account:
+          - !Ref AWS::AccountId
+        source:
+          - "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
+      State: ENABLED #You may want to disable this rule in production
+      Targets:
+        - Arn: !GetAtt UnicornWebCatchAllLogGroup.Arn
+          Id: !Sub UnicornWebCatchAllLogGroupTarget-${Stage}
+
+  # CloudWatch log group for the catchall rule - stores all web events for debugging
+  UnicornWebCatchAllLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub
+        - "/aws/events/${Stage}/${NS}-catchall"
+        - Stage: !Ref Stage
+          NS: "{{resolve:ssm:/uni-prop/UnicornWebNamespace}}"
+      RetentionInDays: !FindInMap
+        - LogsRetentionPeriodMap
+        - !Ref Stage
+        - Days
+
+  # Resource policy that grants EventBridge permission to write to CloudWatch Logs
+  # Required for the catchall rule to function properly
+  EventBridgeCloudWatchLogGroupPolicy:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyName: !Sub EvBToCWLogs-${AWS::StackName}
+      # Note: PolicyDocument has to be established this way. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-resourcepolicy.html#cfn-logs-resourcepolicy-policydocument
+      PolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "delivery.logs.amazonaws.com",
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${UnicornWebCatchAllLogGroup.Arn}"
+              ]
+            }
+          ]
+        }
+
 Outputs:
   #### API GATEWAY OUTPUTS
   BaseUrl:
@@ -378,5 +446,10 @@ Outputs:
     Value: !GetAtt RequestApprovalFunction.Arn
   PublicationEvaluationEventHandlerFunctionArn:
     Description: Publication evaluation event handler function ARN
-    Value: "PublicationEvaluationEventHandlerFunction"
+    Value: !GetAtt PublicationEvaluationEventHandlerFunction.Arn
+
+  #### CLOUDWATCH LOGS OUTPUTS
+  UnicornWebCatchAllLogGroupArn:
+    Description: Log all events on the service's EventBridge Bus
+    Value: !GetAtt UnicornWebCatchAllLogGroup.Arn
     

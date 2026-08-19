@@ -232,3 +232,8 @@ components:
           schema:
             title: "Empty Schema"
             type: "object"
+
+x-amazon-apigateway-request-validators:
+  Validate body:
+    validateRequestParameters: false
+    validateRequestBody: true
