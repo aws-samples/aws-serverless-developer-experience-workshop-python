@@ -107,7 +107,7 @@ lint: ## Lint Python code and CloudFormation templates
 	@uv run ruff check .
 	@uv run ruff format --check .
 	@echo "Linting CloudFormation templates..."
-	@cfn-lint infrastructure/approvals-service.yaml -a cfn_lint_serverless.rules
+	@cfn-lint infrastructure/approvals-service/template.yaml -a cfn_lint_serverless.rules
 	@cfn-lint infrastructure/domain.yaml
 	@cfn-lint infrastructure/schema-registry/PublicationEvaluationCompleted-schema.yaml
 	@cfn-lint infrastructure/subscriptions/unicorn-contracts-subscriptions.yaml
