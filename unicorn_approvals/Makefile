@@ -92,7 +92,10 @@ delete-web-subscriptions: ## Deploy web event subscriptions
 	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-approvals-web-subscriptions --region $(REGION) || true
 	@echo "Done"
 
-deploy: deploy-domain deploy-service deploy-schema deploy-contracts-subscriptions ## Deploy all infrastructure and application
+# deploy-web-subscriptions depends on the Web service's domain stack (WebEventBusArn SSM
+# parameter); deploy that first if running this standalone rather than as part of the full
+# workshop deployment order.
+deploy: deploy-domain deploy-service deploy-schema deploy-contracts-subscriptions deploy-web-subscriptions ## Deploy all infrastructure and application
 
 test: ## Run tests
 	@echo "Running tests..."
