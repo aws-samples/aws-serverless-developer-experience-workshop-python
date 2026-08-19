@@ -47,7 +47,8 @@ def list_properties_by_city(country, city):
     The list of Unicorn properties for this country/city combination
     """
     logger.info(f"List properties by city: country = {country}; city = {city}")
-    key_condition = Key("PK").eq(f"PROPERTY#{country}#{city}")
+    pk_details = f"{country}#{city}".replace(" ", "-").lower()
+    key_condition = Key("PK").eq(f"PROPERTY#{pk_details}")
 
     return query_dynamodb(key_condition)
 
@@ -68,7 +69,9 @@ def list_properties_by_street(country, city, street):
     The list of Unicorn properties for this country/city/street combination
     """
     logger.info(f"List properties by street: country = {country}; city = {city}; street = {street}")
-    key_condition = Key("PK").eq(f"PROPERTY#{country}#{city}") & Key("SK").begins_with(f"{street}#")
+    pk_details = f"{country}#{city}".replace(" ", "-").lower()
+    sk_prefix = f"{street}#".replace(" ", "-").lower()
+    key_condition = Key("PK").eq(f"PROPERTY#{pk_details}") & Key("SK").begins_with(sk_prefix)
 
     return query_dynamodb(key_condition)
 
@@ -113,10 +116,12 @@ def property_details(country, city, street, number):
     One specific property item related to the specified address
     """
     logger.info(f"Get property details for: country = {country}; city = {city}; street = {street}; number = {number}")
+    pk_details = f"{country}#{city}".replace(" ", "-").lower()
+    sk_details = f"{street}#{number}".replace(" ", "-").lower()
     response = table.get_item(
         Key={
-            "PK": f"PROPERTY#{country}#{city}",
-            "SK": f"{street}#{number}",
+            "PK": f"PROPERTY#{pk_details}",
+            "SK": sk_details,
         }
     )
     if "Item" not in response:
