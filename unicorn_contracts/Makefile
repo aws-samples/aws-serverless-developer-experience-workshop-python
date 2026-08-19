@@ -46,7 +46,6 @@ deploy-schema: ## Deploy event schema
 deploy-service: build ## Deploy service resources (Lambda, API Gateway, DynamoDB)
 	@echo "Deploying service resources..."
 	@sam deploy \
-		--template-file infrastructure/contracts-service/template.yaml \
 		--stack-name $(STACK_PREFIX)-contracts-contracts-service \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \

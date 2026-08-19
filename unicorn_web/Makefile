@@ -57,7 +57,6 @@ deploy-subscriptions: ## Deploy event subscriptions
 deploy-service: build ## Deploy web service
 	@echo "Deploying web service..."
 	@sam deploy \
-		--template-file infrastructure/web-service/template.yaml \
 		--stack-name $(STACK_PREFIX)-web-service \
 		--parameter-overrides Stage=$(STAGE) \
 		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
