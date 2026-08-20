@@ -4,133 +4,45 @@ import re  # noqa: F401
 
 import six
 from enum import Enum
+from schema.unicorn_web.publicationapprovalrequested.Address import Address  # noqa: F401,E501
 
 
 class PublicationApprovalRequested(object):
     _types = {
-        "city": "str",
-        "contract": "str",
-        "country": "str",
-        "currency": "str",
-        "description": "str",
-        "images": "list[str]",
-        "listprice": "float",
-        "number": "float",
         "property_id": "str",
-        "street": "str",
+        "status": "str",
+        "description": "str",
+        "address": "Address",
+        "images": "list[str]",
     }
 
     _attribute_map = {
-        "city": "city",
-        "contract": "contract",
-        "country": "country",
-        "currency": "currency",
-        "description": "description",
-        "images": "images",
-        "listprice": "listprice",
-        "number": "number",
         "property_id": "property_id",
-        "street": "street",
+        "status": "status",
+        "description": "description",
+        "address": "address",
+        "images": "images",
     }
 
     def __init__(
         self,
-        city=None,
-        contract=None,
-        country=None,
-        currency=None,
-        description=None,
-        images=None,
-        listprice=None,
-        number=None,
         property_id=None,
-        street=None,
+        status=None,
+        description=None,
+        address=None,
+        images=None,
     ):  # noqa: E501
-        self._city = None
-        self._contract = None
-        self._country = None
-        self._currency = None
-        self._description = None
-        self._images = None
-        self._listprice = None
-        self._number = None
         self._property_id = None
-        self._street = None
+        self._status = None
+        self._description = None
+        self._address = None
+        self._images = None
         self.discriminator = None
-        self.city = city
-        self.contract = contract
-        self.country = country
-        self.currency = currency
-        self.description = description
-        self.images = images
-        self.listprice = listprice
-        self.number = number
         self.property_id = property_id
-        self.street = street
-
-    @property
-    def city(self):
-        return self._city
-
-    @city.setter
-    def city(self, city):
-        self._city = city
-
-    @property
-    def contract(self):
-        return self._contract
-
-    @contract.setter
-    def contract(self, contract):
-        self._contract = contract
-
-    @property
-    def country(self):
-        return self._country
-
-    @country.setter
-    def country(self, country):
-        self._country = country
-
-    @property
-    def currency(self):
-        return self._currency
-
-    @currency.setter
-    def currency(self, currency):
-        self._currency = currency
-
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, description):
-        self._description = description
-
-    @property
-    def images(self):
-        return self._images
-
-    @images.setter
-    def images(self, images):
-        self._images = images
-
-    @property
-    def listprice(self):
-        return self._listprice
-
-    @listprice.setter
-    def listprice(self, listprice):
-        self._listprice = listprice
-
-    @property
-    def number(self):
-        return self._number
-
-    @number.setter
-    def number(self, number):
-        self._number = number
+        self.status = status
+        self.description = description
+        self.address = address
+        self.images = images
 
     @property
     def property_id(self):
@@ -141,12 +53,36 @@ class PublicationApprovalRequested(object):
         self._property_id = property_id
 
     @property
-    def street(self):
-        return self._street
+    def status(self):
+        return self._status
 
-    @street.setter
-    def street(self, street):
-        self._street = street
+    @status.setter
+    def status(self, status):
+        self._status = status
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        self._description = description
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, address):
+        self._address = address
+
+    @property
+    def images(self):
+        return self._images
+
+    @images.setter
+    def images(self, images):
+        self._images = images
 
     def to_dict(self):
         result = {}

@@ -4,7 +4,7 @@ import re  # noqa: F401
 
 import six
 from enum import Enum
-from schema.unicorn_properties_web.publicationapprovalrequested.PublicationApprovalRequested import (
+from schema.unicorn_web.publicationapprovalrequested.PublicationApprovalRequested import (
     PublicationApprovalRequested,
 )  # noqa: F401,E501
 

@@ -89,22 +89,13 @@ Resources:
                 "required": [
                   "images",
                   "address",
-                  "listprice",
-                  "contract",
                   "description",
-                  "currency",
                   "property_id",
                   "status"
                 ],
                 "properties": {
                   "address": {
                     "$ref": "#/components/schemas/address"
-                  },
-                  "contract": {
-                    "type": "string"
-                  },
-                  "currency": {
-                    "type": "string"
                   },
                   "description": {
                     "type": "string"
@@ -114,9 +105,6 @@ Resources:
                     "items": {
                       "type": "string"
                     }
-                  },
-                  "listprice": {
-                    "type": "string"
                   },
                   "property_id": {
                     "type": "string"
@@ -142,7 +130,7 @@ Resources:
                     "type": "string"
                   },
                   "number": {
-                    "type": "string"
+                    "type": "integer"
                   },
                   "street": {
                     "type": "string"

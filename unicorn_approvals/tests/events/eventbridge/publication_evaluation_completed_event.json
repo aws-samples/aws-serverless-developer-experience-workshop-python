@@ -9,7 +9,6 @@
   "resources": [],
   "detail": {
     "property_id": "usa/anytown/main-street/111",
-    "evaluation_result": "APPROVED|DECLINED",
-    "result_reason": "UNSAFE_IMAGE_DETECTED|BAD_SENTIMENT_DETECTED|..."
+    "evaluation_result": "APPROVED|DECLINED"
   }
 }
