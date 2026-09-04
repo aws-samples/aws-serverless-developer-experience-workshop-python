@@ -37,3 +37,35 @@ terraform.rc
 # But keep the non-sensitive common and environment-specific configs
 !**/terraform.tfvars
 !**/envs/*.tfvars
+
+### AI Tools ###
+# Kiro: track steering + the mcp placeholder, keep everything else local
+.kiro/*
+!.kiro/steering/
+!.kiro/settings/
+.kiro/settings/*
+!.kiro/settings/mcp.json
+
+# Other AI assistants stay local
+.claude/
+.cursor/
+.cursorignore
+.cursorindexingignore
+.cursorrules
+.copilot/
+.github/copilot-instructions.md
+.windsurf/
+.codeium/
+.aider*
+.aider.tags.cache.v3/
+.amazonq/
+.qdeveloper/
+.cline/
+.clinerules
+.roo/
+.rooignore
+.augment/
+.augmentignore
+.tabnine_root
+.continue/
+.continuerc.json
