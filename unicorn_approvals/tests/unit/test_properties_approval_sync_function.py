@@ -34,7 +34,7 @@ def test_handle_status_changed_approved(stepfunction, lambda_context):
     mock_sfn.send_task_success.return_value = {"ResponseMetadata": {"HTTPStatusCode": 200}}
 
     with mock.patch.object(properties_approval_sync_function, "sfn", mock_sfn):
-        ret = properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
+        properties_approval_sync_function.lambda_handler(ddbstream_event, lambda_context)
 
     # Verify send_task_success was called with the task token from OldImage
     mock_sfn.send_task_success.assert_called_once()

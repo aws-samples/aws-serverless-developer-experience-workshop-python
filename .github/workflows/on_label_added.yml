@@ -1,14 +1,19 @@
 name: On Label added
 
 on:
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers] reads PR details only; never runs PR code
     workflows: ["Record PR details"]
     types:
       - completed
 
+permissions: {}
+
 jobs:
   get_pr_details:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read # download the PR details artifact
+      contents: read
     uses: ./.github/workflows/reusable_export_pr_details.yml
     with:
       record_pr_workflow_id: ${{ github.event.workflow_run.id }}
@@ -19,14 +24,19 @@ jobs:
   split-large-pr:
     needs: get_pr_details
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
+      contents: read
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
-      # Maintenance: Persist state per PR as an artifact to avoid spam on label add
-      - name: "Suggest split large Pull Request"
-        uses: actions/github-script@v7
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Maintenance: persist state per PR as an artifact to avoid spam on label add
+      - name: Suggest splitting large pull request
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_NUMBER: ${{ needs.get_pr_details.outputs.prNumber }}
           PR_ACTION: ${{ needs.get_pr_details.outputs.prAction }}

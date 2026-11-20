@@ -55,7 +55,7 @@ def publish_event(detail_type, resources, detail):
     except ClientError as e:
         error_msg = f"Unable to send event to Event Bus: {e}"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise Exception(error_msg) from e
 
     failed_count = response["FailedEntryCount"]
 

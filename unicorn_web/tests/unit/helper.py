@@ -14,7 +14,7 @@ def load_event(filename) -> dict:
     return json.load(open(EVENTS_DIR / f"{filename}.json", "r"))
 
 
-def return_env_vars_dict(k={}):
+def return_env_vars_dict(k=None):
     if k is None:
         k = {}
 

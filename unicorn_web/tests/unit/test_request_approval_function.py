@@ -1,7 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 import os
-import json
 from importlib import reload
 
 import pytest
@@ -96,9 +95,7 @@ def test_already_approved_skips_eventbridge(dynamodb, eventbridge, sqs, lambda_c
     request_approval_function.lambda_handler(event, lambda_context)
 
     # Verify the status in DDB is still APPROVED (not changed to PENDING)
-    res = dynamodb.Table(TABLE_NAME).get_item(
-        Key={"PK": "PROPERTY#usa#anytown", "SK": "main-street#124"}
-    )
+    res = dynamodb.Table(TABLE_NAME).get_item(Key={"PK": "PROPERTY#usa#anytown", "SK": "main-street#124"})
     assert res["Item"]["status"] == "APPROVED"
 
 

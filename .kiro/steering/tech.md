@@ -39,23 +39,28 @@ make deploy-service         # Lambda, API Gateway, DynamoDB (service template)
 make test                   # Run all tests (pytest)
 make unit-test              # Unit tests only
 make format                 # ruff format + ruff check --fix
-make lint                   # ruff check/format + cfn-lint on templates
+make lint                   # ruff check/format (report only) + cfn-lint on templates
+make ci                     # Everything CI runs: lint, unit-test, build (no AWS credentials)
 make clean                  # Remove .aws-sam/, caches
 make delete                 # Delete stacks in reverse dependency order
 ```
 
 `unicorn_shared/` has its own targets: `deploy-namespaces`, `deploy-images` (per-stage variants), `deploy`, `list-parameters`, and reverse-order `delete` targets. Deploy shared namespaces before any service.
 
+### Before you open a pull request
+
+Run `make ci` in every service directory you changed. It runs exactly the checks the `Build` GitHub Actions workflow runs for that service: ruff (check and format, reporting only), cfn-lint, the pytest unit tests with the 80% coverage gate, then `sam build`. It needs no AWS credentials or AWS access. The `Build / <service>` check on the pull request runs the same command.
+
 ### Runtime Commands
 
 Inside a service directory, the make targets invoke uv commands you can also run directly:
 
 ```bash
-uv sync --dev               # Install dependencies (incl. dev extras)
-uv run pytest               # All tests (config in pyproject.toml)
-uv run pytest tests/unit -v # Unit tests only
-uv run ruff check .         # Lint
-uv run ruff format .        # Format
+uv sync --extra dev         # Install dependencies (incl. the dev extra)
+uv run --extra dev pytest               # All tests (config in pyproject.toml)
+uv run --extra dev pytest tests/unit -v # Unit tests only
+uv run --extra dev ruff check --no-fix . # Lint (report only)
+uv run --extra dev ruff format .        # Format
 ```
 
 `make build` exports the locked dependencies to `src/requirements.txt` for SAM packaging — do not edit that file by hand.
