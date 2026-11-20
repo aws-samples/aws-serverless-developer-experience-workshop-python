@@ -13,7 +13,10 @@ def load_event(filename):
     return json.load(open(EVENTS_DIR / f"{filename}.json", "r"))
 
 
-def return_env_vars_dict(k={}):
+def return_env_vars_dict(k=None):
+    if k is None:
+        k = {}
+
     d = {
         "AWS_DEFAULT_REGION": "ap-southeast-2",
         "CONTRACT_STATUS_TABLE": TABLE_NAME,

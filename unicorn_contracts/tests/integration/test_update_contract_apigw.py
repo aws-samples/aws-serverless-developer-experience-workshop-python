@@ -55,8 +55,8 @@ class TestUpdateContract(TestCase):
                 e["detail"]["contract_status"] for e in get_cw_logs_values(self.eb_log_group, payload["property_id"])
             ]
             events_contract_statuses.sort()
-        except Exception:
-            raise Exception(f"Unable to get EventBridge Event from CloudWatch Logs group {self.eb_log_group}")
+        except Exception as err:
+            raise Exception(f"Unable to get EventBridge Event from CloudWatch Logs group {self.eb_log_group}") from err
 
         # self.assertTrue("APPROVED" in events_contract_statuses)
         self.assertListEqual(events_contract_statuses, ["APPROVED", "DRAFT"])

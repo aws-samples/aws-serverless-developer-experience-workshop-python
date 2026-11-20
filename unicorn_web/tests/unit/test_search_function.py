@@ -23,7 +23,7 @@ def test_search_by_city(dynamodb, lambda_context):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert type(data) == list
+    assert isinstance(data, list)
     # Only APPROVED items are returned; test data has 1 APPROVED item (main-street#124)
     assert len(data) == 1
     item = data[0]
@@ -45,7 +45,7 @@ def test_search_by_city_and_street(dynamodb, lambda_context):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert type(data) == list
+    assert isinstance(data, list)
     # Only APPROVED items with SK beginning with "main-street#" are returned
     assert len(data) == 1
     item = data[0]

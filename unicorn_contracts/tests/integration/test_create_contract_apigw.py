@@ -52,7 +52,7 @@ class TestCreateContract(TestCase):
         sleep(5)
         try:
             eb_event = next(get_cw_logs_values(self.eb_log_group, payload["property_id"]))
-        except Exception:
-            raise Exception(f"Unable to get EventBridge Event from CloudWatch Logs group {self.eb_log_group}")
+        except Exception as err:
+            raise Exception(f"Unable to get EventBridge Event from CloudWatch Logs group {self.eb_log_group}") from err
 
         self.assertEqual(eb_event["detail"]["contract_status"], "DRAFT")

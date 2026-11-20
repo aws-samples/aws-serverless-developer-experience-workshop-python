@@ -5,7 +5,7 @@ STAGE ?= local
 REGION ?= ap-southeast-2
 STACK_PREFIX = uni-prop-$(STAGE)
 
-.PHONY: help build deploy deploy-domain deploy-service deploy-schema deploy-subscriptions deploy-contracts-subscriptions deploy-web-subscriptions delete-contracts-subscriptions delete-web-subscriptions test lint format clean delete
+.PHONY: help build deploy deploy-domain deploy-service deploy-schema deploy-subscriptions deploy-contracts-subscriptions deploy-web-subscriptions delete-contracts-subscriptions delete-web-subscriptions test lint format clean delete unit-test ci
 
 help: ## Show available commands
 	@echo "Unicorn Approvals Service Infrastructure"
@@ -16,7 +16,7 @@ help: ## Show available commands
 
 build: ## Build the application
 	@echo "Building Python application..."
-	@uv sync --dev
+	@uv sync --extra dev
 	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
 	@sam build --template-file infrastructure/approvals-service/template.yaml
 
@@ -99,16 +99,16 @@ deploy: deploy-domain deploy-service deploy-schema deploy-contracts-subscription
 
 test: ## Run tests
 	@echo "Running tests..."
-	@uv run pytest
+	@uv run --extra dev pytest
 
 unit-test: ## Run unit tests only
 	@echo "Running unit tests..."
-	@uv run pytest tests/unit -v
+	@uv run --extra dev pytest tests/unit -v
 
 lint: ## Lint Python code and CloudFormation templates
 	@echo "Linting Python code..."
-	@uv run ruff check .
-	@uv run ruff format --check .
+	@uv run --extra dev ruff check --no-fix .
+	@uv run --extra dev ruff format --check .
 	@echo "Linting CloudFormation templates..."
 	@cfn-lint infrastructure/approvals-service/template.yaml -a cfn_lint_serverless.rules
 	@cfn-lint infrastructure/domain.yaml
@@ -118,8 +118,15 @@ lint: ## Lint Python code and CloudFormation templates
 
 format: ## Format Python code
 	@echo "Formatting Python code..."
-	@uv run ruff format .
-	@uv run ruff check --fix .
+	@uv run --extra dev ruff format .
+	@uv run --extra dev ruff check --fix .
+
+# The AWS SDK clients need a region even in unit tests; credentials are never needed.
+# UV_LOCKED makes every uv command fail if uv.lock is out of date with pyproject.toml.
+ci: export AWS_REGION ?= $(REGION)
+ci: export AWS_DEFAULT_REGION ?= $(REGION)
+ci: export UV_LOCKED = 1
+ci: lint unit-test build ## Run the same checks as CI (lint, unit tests, build); needs no AWS credentials
 
 clean: ## Clean build artifacts
 	@echo "Cleaning build artifacts..."

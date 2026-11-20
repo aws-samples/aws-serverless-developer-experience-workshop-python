@@ -28,6 +28,10 @@ exclude = [
     "venv",
 ]
 
+# Generated EventBridge schema code bindings. Regenerated from the schema registry,
+# so they are not linted or formatted here.
+extend-exclude = ["src/schema"]
+
 # Same as Black.
 line-length = 120
 indent-width = 4
