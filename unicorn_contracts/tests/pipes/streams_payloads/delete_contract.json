@@ -7,7 +7,7 @@
     },
     "OldImage": {
         "contract_last_modified_on": {
-            "S": "25/08/2023 02:14:20"
+            "S": "25/08/2023 02:14:54"
         },
         "address": {
             "M": {
@@ -36,9 +36,6 @@
         },
         "contract_status": {
             "S": "APPROVED"
-        },
-        "modified_date": {
-            "S": "25/08/2023 02:14:54"
         },
         "property_id": {
             "S": "usa/anytown/main-street/123"
