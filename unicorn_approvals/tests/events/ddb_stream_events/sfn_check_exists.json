@@ -10,7 +10,7 @@
         "ApproximateCreationDateTime": 1661312354.0,
         "Keys": { "property_id": { "S": "usa/anytown/main-street/999" } },
         "NewImage": {
-          "contract_last_modified_on": { "S": "24/08/2022 03:37:28" },
+          "contract_last_modified_on": { "S": "2022-08-24T03:37:28Z" },
           "contract_id": { "S": "418b32e7-87c4-40d2-a551-4d7a56830905" },
           "contract_status": { "S": "DRAFT" },
           "property_id": { "S": "usa/anytown/main-street/999" },
@@ -19,7 +19,7 @@
           }
         },
         "OldImage": {
-          "contract_last_modified_on": { "S": "24/08/2022 03:37:28" },
+          "contract_last_modified_on": { "S": "2022-08-24T03:37:28Z" },
           "contract_id": { "S": "418b32e7-87c4-40d2-a551-4d7a56830905" },
           "contract_status": { "S": "DRAFT" },
           "property_id": { "S": "usa/anytown/main-street/999" }

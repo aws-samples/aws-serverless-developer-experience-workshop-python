@@ -15,7 +15,7 @@
         },
         "NewImage": {
           "contract_last_modified_on": {
-            "S": "25/08/2022 01:44:02"
+            "S": "2022-08-25T01:44:02Z"
           },
           "contract_id": {
             "S": "ef3f01a5-79ec-411a-b59a-7dbb19208ead"
@@ -29,7 +29,7 @@
         },
         "OldImage": {
           "contract_last_modified_on": {
-            "S": "24/08/2022 15:53:26"
+            "S": "2022-08-24T15:53:26Z"
           },
           "sfn_wait_approved_task_token": {
             "S": "AQDIAAAAKgAAAAMAAAAAAAAAAapnwdMR3Z7RAg3IavSq2hbHt+CZPIQYaakFO6Em9Ik00VsGcaznxotIUGB2t7kihvuu/ffeoF+Z4yg4dggTxtzVwvRJwUDQr33/s/LhJyvEfNS57PXCv/CYFssJZ+28FRCAYbGekKaopYhaUlvq0taLGMaEfIbRBeLUmLHInDkPPDbwTA==N0LRrCP3bIFW1MPkMQC3kd35p8yflvpThHCeviqe3qeyKBX03+ziocuyvNHVpktMuECnHL3MN9a6BfpSM1KItYI+qdIC74ls83ALSjjOs8G8pOz4OudcliLYAvmZPRQXvFaw6aSMLfJJ7xRpEFSBwj1zDzbadMLtfudG78pmZX1m75/idMU5gz0UPkC87bVQN6Kyjl7obxAeUO4aoqGJeNz6WbJQtrsUhiQWVEH/AwjUAj9Q0DwRqRPqeWyrv4MIMKea/Xu9vhXbcS+zPWPq8onN9fyAqoMNh64K6wSGWxtAbaaByKxNpQu7o9ho/Iu/ME0KOAqyUK6vcnXOpIwIoMAZiG34KF4UnQsD0gIokQcGLbehMGRixvEJMDZIloLxkuH0jvpIvD5xokGxpHwiVMISi2XRJ92nnGmWTCLWqsqJlsg4We6snJp0Akw2w1Nt41lgY8kWkjxHNWEHDIMjzx1zeWiVa9b9aDDcckb71ouknJCN4gbxVs+yP30M97qnCEmMrc25Yq7cEXLhu5Dh"
