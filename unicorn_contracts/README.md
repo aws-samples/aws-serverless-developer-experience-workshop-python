@@ -32,7 +32,7 @@ An example of `ContractStatusChanged` event:
   "id": "c071bfbf-83c4-49ca-a6ff-3df053957145",
   "resources": [],
   "detail": {
-    "contract_updated_on": "10/08/2022 19:56:30",
+    "contract_last_modified_on": "2022-08-10T19:56:30Z",
     "ContractId": "617dda8c-e79b-406a-bc5b-3a4712f5e4d7",
     "PropertyId": "usa/anytown/main-street/111",
     "ContractStatus": "DRAFT"
