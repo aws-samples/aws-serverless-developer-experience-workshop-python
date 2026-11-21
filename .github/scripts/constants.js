@@ -47,6 +47,11 @@ module.exports = Object.freeze({
     // Team shared by all four workshop repositories; mentioned when a merged PR names no issue.
     "HANDLE_MAINTAINERS_TEAM": "@aws-samples/aws-serverless-developer-experience-workshop",
 
+    /** @type {RegExp} */
+    // The template's "Issue number:" field: start of a line, optional bold, then the number,
+    // written as 42, #42, or an issue URL. Mentions of the field elsewhere in the text never match.
+    "RELATED_ISSUE_REGEX": /^[ \t]*(?:\*\*)?Issue number:(?:\*\*)?[ \t]*(?:#|https?:\/\/\S*\/issues\/)?(?<issue>\d+)\b/m,
+
     /** @type {string[]} */
     "IGNORE_AUTHORS": ["dependabot[bot]", "markdownify[bot]"],
 
