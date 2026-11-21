@@ -32,9 +32,6 @@ on:
       prAction:
         description: "PR event action"
         value: ${{ jobs.export_pr_details.outputs.prAction }}
-      prIsMerged:
-        description: "Whether PR is merged"
-        value: ${{ jobs.export_pr_details.outputs.prIsMerged }}
 
 permissions: {}
 
@@ -56,7 +53,6 @@ jobs:
       prBody: ${{ steps.prBody.outputs.prBody }}
       prAuthor: ${{ steps.prAuthor.outputs.prAuthor }}
       prAction: ${{ steps.prAction.outputs.prAction }}
-      prIsMerged: ${{ steps.prIsMerged.outputs.prIsMerged }}
     steps:
       # In case the caller workflow doesn't check out, which would fail with file not found
       - name: Check out repository
@@ -93,6 +89,3 @@ jobs:
       - name: Export Pull Request Action
         id: prAction
         run: echo prAction="$(jq -c '.action' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: Export Pull Request Merged status
-        id: prIsMerged
-        run: echo prIsMerged="$(jq -c '.pull_request.merged' "${FILENAME}")" >> "$GITHUB_OUTPUT"
