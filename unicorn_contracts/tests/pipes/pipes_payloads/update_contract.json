@@ -13,7 +13,7 @@
         },
         "NewImage": {
             "contract_last_modified_on": {
-                "S": "25/08/2023 02:14:54"
+                "S": "2023-08-25T02:14:54Z"
             },
             "address": {
                 "M": {
@@ -35,7 +35,7 @@
                 "S": "John Smith"
             },
             "contract_created": {
-                "S": "25/08/2023 02:14:20"
+                "S": "2023-08-25T02:14:20Z"
             },
             "contract_id": {
                 "S": "5bb04023-74aa-41fc-b86b-447602759270"
@@ -49,7 +49,7 @@
         },
         "OldImage": {
             "contract_last_modified_on": {
-                "S": "25/08/2023 02:14:20"
+                "S": "2023-08-25T02:14:20Z"
             },
             "address": {
                 "M": {
@@ -71,7 +71,7 @@
                 "S": "John Smith"
             },
             "contract_created": {
-                "S": "25/08/2023 02:14:20"
+                "S": "2023-08-25T02:14:20Z"
             },
             "contract_id": {
                 "S": "5bb04023-74aa-41fc-b86b-447602759270"

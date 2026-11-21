@@ -34,6 +34,21 @@ dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
 
 
+def format_timestamp(instant: datetime) -> str:
+    """Format an instant as a contract timestamp: ``yyyy-MM-ddTHH:mm:ssZ``.
+
+    The value is UTC, in whole seconds (any fraction is truncated), with a literal ``Z``.
+    Every value has the same width, so comparing the strings orders them by time.
+    A naive ``datetime`` is treated as local time, as Python does.
+    """
+    return instant.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def now_timestamp() -> str:
+    """The current instant as a contract timestamp."""
+    return format_timestamp(datetime.now(timezone.utc))
+
+
 @metrics.log_metrics(capture_cold_start_metric=True)  # type: ignore
 @logger.inject_lambda_context
 @tracer.capture_method
@@ -76,7 +91,8 @@ def create_contract(event: dict) -> None:
         DynamoDB put Item response
     """
 
-    current_date = datetime.now(timezone.utc).isoformat()
+    # One clock reading, so a new contract's two timestamps are identical
+    current_date = now_timestamp()
     contract = {
         "property_id": event["property_id"],  # PK
         "address": event["address"],
@@ -148,7 +164,7 @@ def update_contract(contract: dict) -> None:
 
     try:
         contract["contract_status"] = ContractStatus.APPROVED.name
-        current_date = datetime.now(timezone.utc).isoformat()
+        current_date = now_timestamp()
 
         response = table.update_item(
             Key={
