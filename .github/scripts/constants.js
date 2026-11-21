@@ -28,8 +28,6 @@ module.exports = Object.freeze({
     /** @type {number} */
     "PR_NUMBER": process.env.PR_NUMBER || 0,
 
-    /** @type {string} */
-    "PR_IS_MERGED": process.env.PR_IS_MERGED || "false",
 
     /** @type {string} */
     "LABEL_BLOCK": "do-not-merge",
@@ -40,12 +38,7 @@ module.exports = Object.freeze({
     /** @type {string} */
     "LABEL_BLOCK_MISSING_LICENSE_AGREEMENT": "need-license-agreement-acknowledge",
 
-    /** @type {string} */
-    "LABEL_PENDING_RELEASE": "pending-release",
 
-    /** @type {string} */
-    // Team shared by all four workshop repositories; mentioned when a merged PR names no issue.
-    "HANDLE_MAINTAINERS_TEAM": "@aws-samples/aws-serverless-developer-experience-workshop",
 
     /** @type {RegExp} */
     // The template's "Issue number:" field: start of a line, optional bold, then the number,
