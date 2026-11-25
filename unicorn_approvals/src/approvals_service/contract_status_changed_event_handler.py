@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT-0
 
 import os
+from datetime import datetime, timezone
 
 import boto3
 from aws_lambda_powertools.logging import Logger
@@ -76,6 +77,18 @@ def save_contract_status(contract_status_changed_event):
         ExpressionAttributeValues={
             ":c": contract_status_changed_event.contract_id,
             ":t": contract_status_changed_event.contract_status,
-            ":m": contract_status_changed_event.contract_last_modified_on,
+            ":m": to_timestamp(contract_status_changed_event.contract_last_modified_on),
         },
     )
+
+
+def to_timestamp(value):
+    """Return the contract timestamp as a ``yyyy-MM-ddTHH:mm:ssZ`` string for DynamoDB.
+
+    The schema declares ``contract_last_modified_on`` as ``format: date-time``. Code bindings
+    generated from the schema registry therefore parse it into a ``datetime``, which boto3
+    cannot store. A string is passed through unchanged.
+    """
+    if isinstance(value, datetime):
+        return value.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return value
