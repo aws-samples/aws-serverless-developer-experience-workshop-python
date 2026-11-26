@@ -1,117 +1,103 @@
-#### Global Variables
-stackName		:= $(shell yq -r '.default.global.parameters.stack_name' samconfig.toml)
+# Makefile for Unicorn Contracts Service Infrastructure
 
+# Variables
+STAGE ?= local
+REGION ?= ap-southeast-2
+STACK_PREFIX = uni-prop-$(STAGE)
 
-#### Test Variables
-apiUrl			= $(call cf_output,$(stackName),ApiUrl)
-ddbPropertyId 	= $(call get_ddb_key,create_contract_valid_payload_1)
+.PHONY: help build deploy deploy-domain deploy-schema deploy-service test lint format clean delete unit-test ci
 
+help: ## Show available commands
+	@echo "Unicorn Contracts Service Infrastructure"
+	@echo ""
+	@echo "Usage: make [target] [STAGE=local|dev|prod] [REGION=ap-southeast-2]"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
-#### Build/Deploy Tasks
-ci: clean build deploy
+build: ## Build the application
+	@echo "Building Python application..."
+	@uv sync --extra dev
+	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
+	@sam build --template-file infrastructure/contracts-service/template.yaml
 
-build:
-	ruff format 
-	sam validate --lint
-	cfn-lint template.yaml -a cfn_lint_serverless.rules
-	uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
-	sam build -c $(DOCKER_OPTS)
+deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
+	@echo "Deploying domain resources..."
+	@sam deploy \
+		--template-file infrastructure/domain.yaml \
+		--stack-name $(STACK_PREFIX)-contracts-domain \
+		--parameter-overrides Stage=$(STAGE) \
+		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
-deps:
-	uv sync
+deploy-schema: ## Deploy event schema
+	@echo "Deploying event schema..."
+	@sam deploy \
+		--template-file infrastructure/schema-registry/ContractStatusChanged-schema.yaml \
+		--stack-name $(STACK_PREFIX)-contracts-schema-ContractStatusChanged \
+		--parameter-overrides Stage=$(STAGE) \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
-deploy: deps build
-	sam deploy
+deploy-service: build ## Deploy service resources (Lambda, API Gateway, DynamoDB)
+	@echo "Deploying service resources..."
+	@sam deploy \
+		--stack-name $(STACK_PREFIX)-contracts-contracts-service \
+		--parameter-overrides Stage=$(STAGE) \
+		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
-#### Tests
-test: unit-test integration-test
+deploy: deploy-domain deploy-schema deploy-service ## Deploy all infrastructure and application
 
-unit-test:
-	uv run pytest tests/unit/
+test: ## Run tests
+	@echo "Running tests..."
+	@uv run --extra dev pytest
 
-integration-test: deps
-	uv run pytest tests/integration/
+unit-test: ## Run unit tests only
+	@echo "Running unit tests..."
+	@uv run --extra dev pytest tests/unit -v
 
-curl-test: clean-tests
-	$(call runif,CREATE CONTRACT)
-	$(call mcurl,POST,create_contract_valid_payload_1)
+lint: ## Lint Python code and CloudFormation templates
+	@echo "Linting Python code..."
+	@uv run --extra dev ruff check --no-fix .
+	@uv run --extra dev ruff format --check .
+	@echo "Linting CloudFormation templates..."
+	@cfn-lint infrastructure/contracts-service/template.yaml -a cfn_lint_serverless.rules
+	@cfn-lint infrastructure/domain.yaml
+	@cfn-lint infrastructure/schema-registry/ContractStatusChanged-schema.yaml
 
-	$(call runif,Query DDB)
-	$(call ddb_get,$(ddbPropertyId))
+format: ## Format Python code
+	@echo "Formatting Python code..."
+	@uv run --extra dev ruff format .
+	@uv run --extra dev ruff check --fix .
 
-	$(call runif,UPDATE CONTRACT)
-	$(call mcurl,PUT,update_existing_contract_valid_payload_1)
+# The AWS SDK clients need a region even in unit tests; credentials are never needed.
+# UV_LOCKED makes every uv command fail if uv.lock is out of date with pyproject.toml.
+ci: export AWS_REGION ?= $(REGION)
+ci: export AWS_DEFAULT_REGION ?= $(REGION)
+ci: export UV_LOCKED = 1
+ci: lint unit-test build ## Run the same checks as CI (lint, unit tests, build); needs no AWS credentials
 
-	$(call runif,Query DDB)
-	$(call ddb_get,$(ddbPropertyId))
+clean: ## Clean build artifacts
+	@echo "Cleaning build artifacts..."
+	@rm -rf .aws-sam/
+	@rm -rf .pytest_cache/
+	@rm -rf .ruff_cache/
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
-	$(call runif,Delete DDB Items)
-	$(MAKE) clean-tests
-
-	@echo "[DONE]"
-
-
-clean-tests:
-	$(call ddb_delete,$(ddbPropertyId)) || true
-
-
-#### Utilities
-sync:
-	sam sync --stack-name $(stackName) --watch
-
-logs:
-	sam logs -t
-
-clean:
-	find . -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null || true
-	find . -type f -name requirements.txt -exec rm -f {} \; 2>/dev/null || true
-	rm -rf .pytest_cache/ .aws-sam/ || true
-
-delete:
-	sam delete --stack-name $(stackName) --no-prompts
-
-ci_init:
-	uv venv
-	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
-	uv pip install -r src/requirements.txt
-
-
-#### Helper Functions
-define runif
-	@echo
-	@echo "Run $(1) now?"
-	@read
-	@echo "Running $(1)"
-endef
-
-define ddb_get
-	@aws dynamodb get-item \
-		--table-name $(call cf_output,$(stackName),ContractsTableName) \
-		--key 		'$(1)' \
-	| jq -f tests/integration/transformations/ddb_contract.jq
-endef
-
-define ddb_delete
-	aws dynamodb delete-item \
-		--table-name $(call cf_output,$(stackName),ContractsTableName) \
-		--key 		'$(1)'
-endef
-
-define mcurl
-	curl -X $(1) -H "Content-type: application/json" -d @$(call payload,$(2)) $(apiUrl)contracts
-endef
-
-define get_ddb_key
-$(shell jq '. | {property_id:{S:.property_id}}' $(call payload,$(1)) | tr -d ' ')
-endef
-
-define payload
-tests/integration/events/$(1).json
-endef
-
-define cf_output
-	$(shell aws cloudformation describe-stacks \
-		--output text \
-		--stack-name $(1) \
-		--query 'Stacks[0].Outputs[?OutputKey==`$(2)`].OutputValue')
-endef
+delete: ## Delete all stacks
+	@echo "Deleting stacks in reverse order..."
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-contracts-contracts-service --region $(REGION) || true
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-contracts-schema-ContractStatusChanged --region $(REGION) || true
+	@echo "Waiting for service and schema stacks to be deleted..."
+	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-contracts-contracts-service --region $(REGION) || true
+	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-contracts-schema-ContractStatusChanged --region $(REGION) || true
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-contracts-domain --region $(REGION) || true
+	@echo "All stacks deleted"

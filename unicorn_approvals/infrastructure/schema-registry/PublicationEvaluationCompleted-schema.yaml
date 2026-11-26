@@ -1,0 +1,104 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  EventBridge schema definition for PublicationEvaluationCompleted events.
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+
+  # EventBridge schema definition for PublicationEvaluationCompleted events
+  # This schema validates the structure of events published when property publication evaluations are completed
+  # and enables type-safe event handling across consuming services.
+  PublicationEvaluationCompleted:
+    Type: AWS::EventSchemas::Schema
+    Properties:
+      Type: "OpenApi3"
+      RegistryName: !Sub "{{resolve:ssm:/uni-prop/${Stage}/ApprovalsSchemaRegistryName}}"
+      SchemaName: "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}@PublicationEvaluationCompleted"
+      Description: The EventBridge schema for when a property publication evaluation is completed.
+      Content: |
+          {
+            "openapi": "3.0.0",
+            "info": {
+              "version": "1.0.0",
+              "title": "PublicationEvaluationCompleted"
+            },
+            "paths": {},
+            "components": {
+              "schemas": {
+                "AWSEvent": {
+                  "type": "object",
+                  "required": [
+                    "detail-type",
+                    "resources",
+                    "detail",
+                    "id",
+                    "source",
+                    "time",
+                    "region",
+                    "version",
+                    "account"
+                  ],
+                  "x-amazon-events-detail-type": "PublicationEvaluationCompleted",
+                  "x-amazon-events-source": "{{resolve:ssm:/uni-prop/UnicornApprovalsNamespace}}",
+                  "properties": {
+                    "detail": {
+                      "$ref": "#/components/schemas/PublicationEvaluationCompleted"
+                    },
+                    "account": {
+                      "type": "string"
+                    },
+                    "detail-type": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "region": {
+                      "type": "string"
+                    },
+                    "resources": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "source": {
+                      "type": "string"
+                    },
+                    "time": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "PublicationEvaluationCompleted": {
+                  "type": "object",
+                  "required": [
+                    "property_id",
+                    "evaluation_result"
+                  ],
+                  "properties": {
+                    "property_id": {
+                      "type": "string"
+                    },
+                    "evaluation_result": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }

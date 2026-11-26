@@ -7,7 +7,7 @@
     },
     "OldImage": {
         "contract_last_modified_on": {
-            "S": "25/08/2023 02:14:20"
+            "S": "2023-08-25T02:14:54Z"
         },
         "address": {
             "M": {
@@ -29,16 +29,13 @@
             "S": "John Smith"
         },
         "contract_created": {
-            "S": "25/08/2023 02:14:20"
+            "S": "2023-08-25T02:14:20Z"
         },
         "contract_id": {
             "S": "5bb04023-74aa-41fc-b86b-447602759270"
         },
         "contract_status": {
             "S": "APPROVED"
-        },
-        "modified_date": {
-            "S": "25/08/2023 02:14:54"
         },
         "property_id": {
             "S": "usa/anytown/main-street/123"

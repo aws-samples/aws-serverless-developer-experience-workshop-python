@@ -13,17 +13,20 @@ def load_event(filename):
     return json.load(open(EVENTS_DIR / f"{filename}.json", "r"))
 
 
-def return_env_vars_dict(k={}):
+def return_env_vars_dict(k=None):
+    if k is None:
+        k = {}
+
     d = {
         "AWS_DEFAULT_REGION": "ap-southeast-2",
         "CONTRACT_STATUS_TABLE": TABLE_NAME,
         "EVENT_BUS": EVENTBUS_NAME,
-        "SERVICE_NAMESPACE": "unicorn.approvals",
-        "POWERTOOLS_SERVICE_NAME": "unicorn.approvals",
+        "SERVICE_NAMESPACE": "unicorn-approvals",
+        "POWERTOOLS_SERVICE_NAME": "unicorn-approvals",
         "POWERTOOLS_TRACE_DISABLED": "true",
         "POWERTOOLS_LOGGER_LOG_EVENT": "true",
         "POWERTOOLS_LOGGER_SAMPLE_RATE": "0.1",
-        "POWERTOOLS_METRICS_NAMESPACE": "unicorn.approvals",
+        "POWERTOOLS_METRICS_NAMESPACE": "unicorn-approvals",
         "LOG_LEVEL": "INFO",
     }
     d.update(k)
@@ -56,8 +59,8 @@ def create_ddb_table_contracts_with_entry(dynamodb):
     table.meta.client.get_waiter("table_exists").wait(TableName=TABLE_NAME)
     contract = {
         "property_id": "usa/anytown/main-street/123",  # PK
-        "contact_created": "01/08/2022 20:36:30",
-        "contract_last_modified_on": "01/08/2022 20:36:30",
+        "contract_created": "2022-08-01T20:36:30Z",
+        "contract_last_modified_on": "2022-08-01T20:36:30Z",
         "contract_id": "11111111",
         "address": {"country": "USA", "city": "Anytown", "street": "Main Street", "number": 123},
         "seller_name": "John Smith",

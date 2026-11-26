@@ -3,14 +3,14 @@
 
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
 from aws_lambda_powertools.logging import Logger
-from aws_lambda_powertools.metrics import Metrics
+from aws_lambda_powertools.metrics import Metrics, MetricUnit
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.data_classes import event_source, SQSEvent
 from aws_lambda_powertools.utilities.typing import LambdaContext
@@ -32,6 +32,21 @@ metrics: Metrics = Metrics()
 # Initialise boto3 clients
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE)  # type: ignore
+
+
+def format_timestamp(instant: datetime) -> str:
+    """Format an instant as a contract timestamp: ``yyyy-MM-ddTHH:mm:ssZ``.
+
+    The value is UTC, in whole seconds (any fraction is truncated), with a literal ``Z``.
+    Every value has the same width, so comparing the strings orders them by time.
+    A naive ``datetime`` is treated as local time, as Python does.
+    """
+    return instant.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def now_timestamp() -> str:
+    """The current instant as a contract timestamp."""
+    return format_timestamp(datetime.now(timezone.utc))
 
 
 @metrics.log_metrics(capture_cold_start_metric=True)  # type: ignore
@@ -76,7 +91,8 @@ def create_contract(event: dict) -> None:
         DynamoDB put Item response
     """
 
-    current_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    # One clock reading, so a new contract's two timestamps are identical
+    current_date = now_timestamp()
     contract = {
         "property_id": event["property_id"],  # PK
         "address": event["address"],
@@ -105,6 +121,7 @@ def create_contract(event: dict) -> None:
 
         # Annotate trace with contract status
         tracer.put_annotation(key="ContractStatus", value=contract["contract_status"])
+        metrics.add_metric(name="ContractCreated", unit=MetricUnit.Count, value=1)
 
     except ClientError as e:
         code = e.response["Error"]["Code"]
@@ -147,13 +164,13 @@ def update_contract(contract: dict) -> None:
 
     try:
         contract["contract_status"] = ContractStatus.APPROVED.name
-        current_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        current_date = now_timestamp()
 
         response = table.update_item(
             Key={
                 "property_id": contract["property_id"],
             },
-            UpdateExpression="set contract_status=:t, modified_date=:m",
+            UpdateExpression="set contract_status=:t, contract_last_modified_on=:m",
             ConditionExpression=Attr("property_id").exists()
             & Attr("contract_status").is_in([ContractStatus.DRAFT.name]),
             ExpressionAttributeValues={

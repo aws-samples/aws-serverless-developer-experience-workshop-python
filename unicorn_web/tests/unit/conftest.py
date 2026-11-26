@@ -20,13 +20,13 @@ def aws_credentials():
 
 @pytest.fixture(scope="function")
 def env_vars():
-    os.environ["POWERTOOLS_SERVICE_NAME"] = "unicorn.contracts"
-    os.environ["SERVICE_NAMESPACE"] = "unicorn.contracts"
-    os.environ["POWERTOOLS_SERVICE_NAME"] = "unicorn.contracts"
+    os.environ["POWERTOOLS_SERVICE_NAME"] = "unicorn-contracts"
+    os.environ["SERVICE_NAMESPACE"] = "unicorn-contracts"
+    os.environ["POWERTOOLS_SERVICE_NAME"] = "unicorn-contracts"
     os.environ["POWERTOOLS_TRACE_DISABLED"] = "true"
     os.environ["POWERTOOLS_LOGGER_LOG_EVENT"] = "Info"
     os.environ["POWERTOOLS_LOGGER_SAMPLE_RATE"] = "0.1"
-    os.environ["POWERTOOLS_METRICS_NAMESPACE"] = "unicorn.contracts"
+    os.environ["POWERTOOLS_METRICS_NAMESPACE"] = "unicorn-contracts"
     os.environ["LOG_LEVEL"] = "INFO"
 
 

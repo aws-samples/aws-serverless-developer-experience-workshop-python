@@ -1,69 +1,119 @@
-#### Global Variables
-stackName		:= $(shell yq -r '.default.global.parameters.stack_name' samconfig.toml)
+# Makefile for Unicorn Web Service Infrastructure
 
+# Variables
+STAGE ?= local
+REGION ?= ap-southeast-2
+STACK_PREFIX = uni-prop-$(STAGE)
 
-#### Test Variables
-apiUrl			= $(call cf_output,$(stackName),ApiUrl)
+.PHONY: help build deploy deploy-domain deploy-schema deploy-subscriptions deploy-service test lint format clean delete unit-test ci
 
+help: ## Show available commands
+	@echo "Unicorn Web Service Infrastructure"
+	@echo ""
+	@echo "Usage: make [target] [STAGE=local|dev|prod] [REGION=ap-southeast-2]"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
+build: ## Build the application
+	@echo "Building Python application..."
+	@uv sync --extra dev
+	@uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
+	@sam build --template-file infrastructure/web-service/template.yaml
 
-#### Build/Deploy Tasks
-build:
-	ruff format
-	sam validate --lint
-	cfn-lint template.yaml -a cfn_lint_serverless.rules
-	uv export --no-hashes --format=requirements-txt --output-file=src/requirements.txt
-	sam build -c $(DOCKER_OPTS)
+deploy-domain: ## Deploy domain resources (EventBridge, Schema Registry)
+	@echo "Deploying domain resources..."
+	@sam deploy \
+		--template-file infrastructure/domain.yaml \
+		--stack-name $(STACK_PREFIX)-web-domain \
+		--parameter-overrides Stage=$(STAGE) \
+		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
-deps:
-	uv sync
+deploy-schema: ## Deploy event schema
+	@echo "Deploying event schema..."
+	@sam deploy \
+		--template-file infrastructure/schema-registry/PublicationApprovalRequested-schema.yaml \
+		--stack-name $(STACK_PREFIX)-web-schema-PublicationApprovalRequested \
+		--parameter-overrides Stage=$(STAGE) \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
-deploy: deps build
-	sam deploy
+deploy-subscriptions: ## Deploy event subscriptions
+	@echo "Deploying event subscriptions..."
+	@sam deploy \
+		--template-file infrastructure/subscriptions/unicorn-approvals-subscriptions.yaml \
+		--stack-name $(STACK_PREFIX)-web-subscriptions-approvals \
+		--parameter-overrides Stage=$(STAGE) \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
+deploy-service: build ## Deploy web service
+	@echo "Deploying web service..."
+	@sam deploy \
+		--stack-name $(STACK_PREFIX)-web-service \
+		--parameter-overrides Stage=$(STAGE) \
+		--capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+		--region $(REGION) \
+		--resolve-s3 \
+		--no-confirm-changeset \
+		--no-fail-on-empty-changeset
 
-#### Tests
-test: unit-test
+deploy: deploy-domain deploy-schema deploy-subscriptions deploy-service ## Deploy all infrastructure and application
 
-unit-test:
-	uv run pytest tests/unit/
+test: ## Run tests
+	@echo "Running tests..."
+	@uv run --extra dev pytest
 
-curl-test:
-	$(call mcurl,GET,search/usa/anytown)
-	$(call mcurl,GET,search/usa/anytown/main-street)
-	$(call mcurl,GET,properties/usa/anytown/main-street/111)
-	@echo "[DONE]"
+unit-test: ## Run unit tests only
+	@echo "Running unit tests..."
+	@uv run --extra dev pytest tests/unit -v
 
+lint: ## Lint Python code and CloudFormation templates
+	@echo "Linting Python code..."
+	@uv run --extra dev ruff check --no-fix .
+	@uv run --extra dev ruff format --check .
+	@echo "Linting CloudFormation templates..."
+	@cfn-lint infrastructure/web-service/template.yaml -a cfn_lint_serverless.rules
+	@cfn-lint infrastructure/domain.yaml
+	@cfn-lint infrastructure/schema-registry/PublicationApprovalRequested-schema.yaml
+	@cfn-lint infrastructure/subscriptions/unicorn-approvals-subscriptions.yaml
 
-#### Utilities
-sync:
-	sam sync --stack-name $(stackName) --watch
+format: ## Format Python code
+	@echo "Formatting Python code..."
+	@uv run --extra dev ruff format .
+	@uv run --extra dev ruff check --fix .
 
-logs:
-	sam logs -t
+# The AWS SDK clients need a region even in unit tests; credentials are never needed.
+# UV_LOCKED makes every uv command fail if uv.lock is out of date with pyproject.toml.
+ci: export AWS_REGION ?= $(REGION)
+ci: export AWS_DEFAULT_REGION ?= $(REGION)
+ci: export UV_LOCKED = 1
+ci: lint unit-test build ## Run the same checks as CI (lint, unit tests, build); needs no AWS credentials
 
-clean:
-	find . -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null || true
-	find . -type f -name requirements.txt -exec rm -f {} \; 2>/dev/null || true
-	rm -rf .pytest_cache/ .aws-sam/ || true
+clean: ## Clean build artifacts
+	@echo "Cleaning build artifacts..."
+	@rm -rf .aws-sam/
+	@rm -rf .pytest_cache/
+	@rm -rf .ruff_cache/
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
-delete:
-	sam delete --stack-name $(stackName) --no-prompts
-
-ci_init:
-	uv venv
-	uv export --no-hashes --format=requirements.txt --output-file=src/requirements.txt --extra=dev
-	uv pip install -r src/requirements.txt
-
-
-#### Helper Functions
-define mcurl
-	curl -s -X $(1) -H "Content-type: application/json" $(apiUrl)$(2) | jq
-endef
-
-define cf_output
-	$(shell aws cloudformation describe-stacks \
-		--output text \
-		--stack-name $(1) \
-		--query 'Stacks[0].Outputs[?OutputKey==`$(2)`].OutputValue')
-endef
+delete: ## Delete all stacks
+	@echo "Deleting stacks in reverse order..."
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-web-service --region $(REGION) || true
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-web-subscriptions-approvals --region $(REGION) || true
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-web-schema-PublicationApprovalRequested --region $(REGION) || true
+	@echo "Waiting for service, subscriptions, and schema stacks to be deleted..."
+	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-web-service --region $(REGION) || true
+	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-web-subscriptions-approvals --region $(REGION) || true
+	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-web-schema-PublicationApprovalRequested --region $(REGION) || true
+	@aws cloudformation delete-stack --stack-name $(STACK_PREFIX)-web-domain --region $(REGION) || true
+	@echo "Waiting for domain stack to be deleted..."
+	@aws cloudformation wait stack-delete-complete --stack-name $(STACK_PREFIX)-web-domain --region $(REGION) || true
+	@echo "All stacks deleted"

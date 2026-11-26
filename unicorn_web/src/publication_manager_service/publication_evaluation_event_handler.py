@@ -74,13 +74,17 @@ def publication_approved(event_detail, errors):
 
     property_id = event_detail.property_id
     evaluation_result = event_detail.evaluation_result
+
+    valid_results = {"APPROVED", "DECLINED"}
+    if evaluation_result.upper() not in valid_results:
+        logger.warning(f"Unknown evaluation_result '{evaluation_result}'; skipping DynamoDB update")
+        return {"result": "Skipped — unknown evaluation result"}
+
     country, city, street, number = property_id.split("/")
 
     pk_details = f"{country}#{city}".replace(" ", "-").lower()
     pk = f"PROPERTY#{pk_details}"
     sk = f"{street}#{str(number)}".replace(" ", "-").lower()
-
-    metrics.add_metric(name="PropertiesAdded", unit=MetricUnit.Count, value=1)
 
     logger.info(f"Storing new property in DynamoDB with PK {pk} and SK {sk}")
     dynamodb_response = table.update_item(

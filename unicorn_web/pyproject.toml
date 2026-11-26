@@ -6,27 +6,37 @@ authors = [
     {name = "Amazon Web Services"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 
 dependencies = [
-    "aws-lambda-powertools[tracer]>=3.18.0",
-    "aws-xray-sdk>=2.14.0",
-    "boto3>=1.40.2",
-    "requests>=2.32.3",
-    "crhelper>=2.0.11",
+    "aws-lambda-powertools[tracer]>=3.41.0",
+    "aws-xray-sdk>=2.16.0",
+    "boto3>=1.44.9",
+    "requests>=2.34.2",
+    "crhelper>=2.0.12",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "aws-lambda-powertools[all]>=3.18.0",
-    "moto[dynamodb,events,sqs]>=5.1.9",
-    "importlib-metadata>=8.4.0",
-    "pyyaml>=6.0.2",
+    "aws-lambda-powertools[all]>=3.41.0",
+    "moto[dynamodb,events,sqs]>=5.2.5",
+    "importlib-metadata>=10.2.0",
+    "pyyaml>=6.0.4",
     "arnparse>=0.0.2",
-    "pytest>=8.4.1",
-    "ruff>=0.12.7",
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.6",
 ]
 
 [tool.setuptools]
 package-dir = {"web_service" = "src"}
 packages = ["web_service"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -vv -W ignore::UserWarning --cov=src --cov-report=term-missing --cov-fail-under=80"
+testpaths = ["tests/unit", "tests/integration"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+omit = ["*/schema/*"]

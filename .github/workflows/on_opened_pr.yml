@@ -1,27 +1,40 @@
 name: On new PR
 
 on:
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers] reads PR details only; never runs PR code
     workflows: ["Record PR details"]
     types:
       - completed
 
+permissions: {}
+
 jobs:
   get_pr_details:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read # download the PR details artifact
+      contents: read
     uses: ./.github/workflows/reusable_export_pr_details.yml
     with:
       record_pr_workflow_id: ${{ github.event.workflow_run.id }}
       workflow_origin: ${{ github.event.repository.full_name }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+
   check_related_issue:
     needs: get_pr_details
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-      - name: "Ensure related issue is present"
-        uses: actions/github-script@v7
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Ensure related issue is present
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_BODY: ${{ needs.get_pr_details.outputs.prBody }}
           PR_NUMBER: ${{ needs.get_pr_details.outputs.prNumber }}
@@ -32,13 +45,21 @@ jobs:
           script: |
             const script = require('.github/scripts/label_missing_related_issue.js')
             await script({github, context, core})
+
   check_acknowledge_section:
     needs: get_pr_details
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-      - name: "Ensure acknowledgement section is present"
-        uses: actions/github-script@v7
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Ensure acknowledgement section is present
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_BODY: ${{ needs.get_pr_details.outputs.prBody }}
           PR_NUMBER: ${{ needs.get_pr_details.outputs.prNumber }}

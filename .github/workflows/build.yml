@@ -1,80 +1,62 @@
-name: Build Python Services
+name: Build
 
+# Runs the same checks as `make ci` in each service folder. Every job reports a
+# result on every push and pull request, so the jobs can be required checks.
 on:
   push:
     branches: [develop, main]
-    paths:
-      - 'unicorn_contracts/**'
-      - 'unicorn_approvals/**'
-      - 'unicorn_web/**'
   pull_request:
     branches: [develop, main]
-    paths:
-      - 'unicorn_contracts/**'
-      - 'unicorn_approvals/**'
-      - 'unicorn_web/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
+    name: ${{ matrix.service }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
-        service: [unicorn_contracts, unicorn_approvals, unicorn_web]
         include:
-          - service: unicorn_contracts
-            display_name: Unicorn Contracts Service
-          - service: unicorn_approvals
-            display_name: Unicorn Approvals Service
-          - service: unicorn_web
-            display_name: Unicorn Web Service
-
+          - service: contracts
+            directory: unicorn_contracts
+          - service: approvals
+            directory: unicorn_approvals
+          - service: web
+            directory: unicorn_web
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: 3.12
+          persist-credentials: false
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - name: Set up Python 3.13
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          version: 0.7.8
+          python-version: "3.13"
 
-      - name: Install AWS SAM CLI
-        uses: aws-actions/setup-sam@v2
+      - name: Install cfn-lint
+        run: python -m pip install cfn-lint==1.61.0 cfn-lint-serverless==0.3.6
 
-      - name: Install cfn-lint and plugins
-        run: |
-          pip install cfn-lint
-          pip install cfn-lint-serverless
-
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod a+x /usr/local/bin/yq
-
-      - name: Initialize dependencies for ${{ matrix.display_name }}
-        run: make ci_init
-        working-directory: ./${{ matrix.service }}
-
-      - name: Build ${{ matrix.display_name }}
-        run: |
-          # Use uv run to ensure all commands run in the virtual environment
-          uv run make build
-        working-directory: ./${{ matrix.service }}
-        env:
-          DOCKER_OPTS: --use-container
-
-      - name: Upload build artifacts for ${{ matrix.display_name }}
-        uses: actions/upload-artifact@v4
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@341eee193f458fa5aae5d52c94b0c5cf3a1c5a52 # v3
         with:
-          name: ${{ matrix.service }}-build-artifacts
-          path: ${{ matrix.service }}/.aws-sam/
-          retention-days: 7
+          use-installer: true
+          version: 1.174.0
 
-      - name: Clean up ${{ matrix.display_name }}
-        run: uv run make clean
-        working-directory: ./${{ matrix.service }}
-        if: always() 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: 0.13.9
+
+      - name: Run CI checks
+        run: make ci

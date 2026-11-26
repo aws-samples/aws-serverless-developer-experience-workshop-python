@@ -32,21 +32,18 @@ on:
       prAction:
         description: "PR event action"
         value: ${{ jobs.export_pr_details.outputs.prAction }}
-      prIsMerged:
-        description: "Whether PR is merged"
-        value: ${{ jobs.export_pr_details.outputs.prIsMerged }}
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   export_pr_details:
-    
+    # Callers must grant these permissions to the job that calls this workflow.
     permissions:
-      actions: read  # download PR artifact
-
+      actions: read # download PR artifact
+      contents: read
     if: inputs.workflow_origin == 'aws-samples/aws-serverless-developer-experience-workshop-python'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       FILENAME: pr.txt
     # Map the job outputs to step outputs
@@ -56,12 +53,14 @@ jobs:
       prBody: ${{ steps.prBody.outputs.prBody }}
       prAuthor: ${{ steps.prAuthor.outputs.prAuthor }}
       prAction: ${{ steps.prAction.outputs.prAction }}
-      prIsMerged: ${{ steps.prIsMerged.outputs.prIsMerged }}
     steps:
-      - name: Checkout repository # in case caller workflow doesn't checkout thus failing with file not found
-        uses: actions/checkout@v4
-      - name: "Download previously saved PR"
-        uses: actions/github-script@v7
+      # In case the caller workflow doesn't check out, which would fail with file not found
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download previously saved PR
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           WORKFLOW_ID: ${{ inputs.record_pr_workflow_id }}
         # For security, we only download artifacts tied to the successful PR recording workflow
@@ -70,29 +69,23 @@ jobs:
           script: |
             const script = require('.github/scripts/download_pr_artifact.js')
             await script({github, context, core})
-      # NodeJS standard library doesn't provide ZIP capabilities; use system `unzip` command instead
-      - name: "Unzip PR artifact"
+      # Node.js standard library doesn't provide ZIP capabilities; use system `unzip` command instead
+      - name: Unzip PR artifact
         run: unzip pr.zip
-      # NOTE: We need separate steps for each mapped output and respective IDs
-      # otherwise the parent caller won't see them regardless on how outputs are set.
-      - name: "Export Pull Request Number"
+      # NOTE: We need separate steps for each mapped output and respective IDs,
+      # otherwise the parent caller won't see them regardless of how outputs are set.
+      - name: Export Pull Request Number
         id: prNumber
         run: echo prNumber="$(jq -c '.number' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: "Export Pull Request Title"
+      - name: Export Pull Request Title
         id: prTitle
         run: echo prTitle="$(jq -c '.pull_request.title' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: "Export Pull Request Body"
+      - name: Export Pull Request Body
         id: prBody
         run: echo prBody="$(jq -c '.pull_request.body' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: "Export Pull Request Author"
+      - name: Export Pull Request Author
         id: prAuthor
         run: echo prAuthor="$(jq -c '.pull_request.user.login' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: "Export Pull Request Action"
+      - name: Export Pull Request Action
         id: prAction
         run: echo prAction="$(jq -c '.action' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: "Export Pull Request Merged status"
-        id: prIsMerged
-        run: echo prIsMerged="$(jq -c '.pull_request.merged' "${FILENAME}")" >> "$GITHUB_OUTPUT"
-      - name: "Export Pull Request labels"
-        id: prLabels
-        run: echo prLabels="$(jq -c '.labels' "${FILENAME}")" >> "$GITHUB_OUTPUT"

@@ -55,7 +55,7 @@ def publish_event(detail_type, resources, detail):
     except ClientError as e:
         error_msg = f"Unable to send event to Event Bus: {e}"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise Exception(error_msg) from e
 
     failed_count = response["FailedEntryCount"]
 
@@ -74,10 +74,7 @@ def get_property(pk: str, sk: str) -> dict:
     response = table.get_item(
         Key={"PK": pk, "SK": sk},
         AttributesToGet=[
-            "currency",
             "status",
-            "listprice",
-            "contract",
             "country",
             "city",
             "number",
@@ -132,7 +129,6 @@ def request_approval(raw_data: dict):
         "number": int(item.pop("number")),
     }
     item["status"] = TARGET_STATE
-    item["listprice"] = int(item["listprice"])
 
     metrics.add_metric(name="ApprovalsRequested", unit=MetricUnit.Count, value=1)
     publish_event(detail_type="PublicationApprovalRequested", resources=[property_id], detail=item)
